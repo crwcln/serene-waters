@@ -87,6 +87,53 @@
             50% { box-shadow: 0 0 20px 3px rgba(239, 68, 68, 0.35); border-color: rgba(254, 202, 202, 0.95); }
         }
         .siren-pulse { animation: sirenGlow 1.1s infinite; }
+
+        @keyframes modalPopIn {
+            0% { opacity: 0; transform: scale(0.93) translateY(14px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .modal-animate-in {
+            animation: modalPopIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes toastSlideIn {
+            0% { opacity: 0; transform: translateX(36px) scale(0.95); }
+            100% { opacity: 1; transform: translateX(0) scale(1); }
+        }
+        @keyframes toastSlideOut {
+            0% { opacity: 1; transform: translateX(0) scale(1); }
+            100% { opacity: 0; transform: translateX(32px) scale(0.94); }
+        }
+        .toast-enter { animation: toastSlideIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+        .toast-exit { animation: toastSlideOut 0.26s ease-in forwards; }
+
+        @keyframes floatGentle {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+        .animate-float { animation: floatGentle 3.2s ease-in-out infinite; }
+
+        @keyframes shimmerSweep {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        .btn-shimmer {
+            background-size: 200% auto;
+            animation: shimmerSweep 3.8s linear infinite;
+        }
+
+        @keyframes hudBump {
+            0% { transform: scale(1); }
+            40% { transform: scale(1.13); filter: brightness(1.25); }
+            100% { transform: scale(1); }
+        }
+        .hud-bump { animation: hudBump 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+
+        @keyframes backdropFade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .backdrop-animate { animation: backdropFade 0.22s ease-out forwards; }
     </style>
 </head>
 <body class="relative w-screen h-screen overflow-hidden select-none">
@@ -96,7 +143,7 @@
 
     <!-- START MENU OVERLAY (Blurred Backdrop, Play, Character Select, Options) -->
     <div id="startMenuScreen" class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/75 backdrop-blur-md transition-opacity duration-500">
-        <div class="w-full max-w-2xl maritime-card rounded-3xl border border-amber-300/30 p-5 sm:p-7 relative overflow-hidden">
+        <div class="w-full max-w-2xl maritime-card modal-animate-in rounded-3xl border border-amber-300/30 p-5 sm:p-7 relative overflow-hidden">
             <div class="absolute -top-24 -right-24 w-64 h-64 rounded-full bg-amber-400/10 blur-3xl pointer-events-none"></div>
             <div class="absolute -bottom-24 -left-24 w-64 h-64 rounded-full bg-sky-500/10 blur-3xl pointer-events-none"></div>
 
@@ -162,7 +209,7 @@
                     </div>
                 </div>
 
-                <button id="launchGameBtn" class="btn-nautical w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 text-slate-950 font-accent text-xs sm:text-sm font-extrabold uppercase tracking-[0.18em] shadow-xl flex items-center justify-center gap-2.5 cursor-pointer">
+                <button id="launchGameBtn" class="btn-nautical btn-shimmer w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-300 to-orange-500 text-slate-950 font-accent text-xs sm:text-sm font-extrabold uppercase tracking-[0.18em] shadow-xl flex items-center justify-center gap-2.5 cursor-pointer">
                     <span>Set Sail &amp; Play</span>
                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                 </button>
@@ -205,7 +252,7 @@
 
     <!-- FEATURE BRIEFING / EXPLANATORY SPLASH OVERLAY (Blurred Backdrop) -->
     <div id="transitionSplash" class="hidden fixed inset-0 z-40 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md transition-opacity duration-200">
-        <div class="w-full max-w-lg maritime-card rounded-3xl border border-amber-300/35 p-6 text-left shadow-2xl">
+        <div class="w-full max-w-lg maritime-card modal-animate-in rounded-3xl border border-amber-300/35 p-6 text-left shadow-2xl">
             <div class="flex items-center gap-3 mb-3">
                 <div id="splashIconContainer" class="w-12 h-12 rounded-2xl bg-amber-400/15 border border-amber-300/40 flex items-center justify-center text-amber-300 shrink-0"></div>
                 <div>
@@ -284,6 +331,13 @@
                 <button id="openTownBtn" class="btn-nautical pulse-gold rounded-2xl px-2.5 sm:px-3.5 py-2 text-[11px] sm:text-xs font-accent font-bold uppercase tracking-wider bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 shadow-lg flex items-center gap-1.5 cursor-pointer">
                     <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"></path><path d="M5 21V7l8-4v18"></path><path d="M19 21V11l-6-4"></path><path d="M9 9v.01"></path><path d="M9 12v.01"></path><path d="M9 15v.01"></path><path d="M9 18v.01"></path></svg>
                     <span>Town</span>
+                </button>
+
+                <!-- ROLE CAMPAIGN -->
+                <button id="openCampaignBtn" class="btn-nautical maritime-panel hover:bg-indigo-950/70 border-indigo-400/40 rounded-2xl p-2 sm:px-3 sm:py-2 text-xs font-semibold text-indigo-200 flex items-center gap-1.5 cursor-pointer" title="Role Story Campaign">
+                    <svg class="w-4 h-4 text-indigo-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
+                    <span class="hidden sm:inline">Campaign</span>
+                    <span id="hudCampaignBadge" class="font-mono-num text-[10px] bg-indigo-500/30 border border-indigo-300/40 px-1.5 py-0.2 rounded-full text-indigo-100">1/4</span>
                 </button>
 
                 <!-- Global Leaderboard -->
@@ -394,7 +448,7 @@
 
     <!-- VILLAGER DIALOGUE & TASK POPUP MODAL -->
     <div id="villagerModal" class="hidden fixed inset-0 z-40 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-3 sm:p-5">
-        <div class="maritime-card rounded-3xl max-w-md w-full p-5 sm:p-6 border-amber-300/40 shadow-2xl">
+        <div class="maritime-card modal-animate-in rounded-3xl max-w-md w-full p-5 sm:p-6 border-amber-300/40 shadow-2xl">
             <div class="flex items-center justify-between gap-3 pb-3 border-b border-slate-700/70">
                 <div class="flex items-center gap-3">
                     <div id="villagerAvatarBadge" class="w-11 h-11 rounded-2xl bg-amber-400/15 border border-amber-300/40 flex items-center justify-center text-amber-300 shrink-0">
@@ -443,7 +497,7 @@
     <!-- MODAL 1: HARBOR TOWN BUILDING INTERIOR (MARKET / QUESTS / OUTFITTER) -->
     <!-- ===================================================================== -->
     <div id="townBuildingModal" class="hidden fixed inset-0 z-30 bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
-        <div class="maritime-card rounded-3xl max-w-2xl w-full max-h-[88vh] flex flex-col overflow-hidden border-amber-300/35">
+        <div class="maritime-card modal-animate-in rounded-3xl max-w-2xl w-full max-h-[88vh] flex flex-col overflow-hidden border-amber-300/35">
             <div class="p-4 sm:p-5 border-b border-slate-700/70 flex items-center justify-between bg-slate-900/60">
                 <div>
                     <div id="buildingModalKicker" class="font-accent text-[10px] uppercase tracking-[0.2em] text-amber-300 font-bold">Pier 01 • Livewell Exchange</div>
@@ -472,13 +526,13 @@
     <!-- MODAL 2: CATCH LANDED SUMMARY -->
     <!-- ===================================================================== -->
     <div id="catchModal" class="hidden fixed inset-0 z-30 bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="maritime-card rounded-3xl max-w-md w-full p-6 text-center border-sky-400/40 shadow-2xl">
+        <div class="maritime-card modal-animate-in rounded-3xl max-w-md w-full p-6 text-center border-sky-400/40 shadow-2xl">
             <div class="flex items-center justify-center gap-2 mb-2">
                 <span id="catchRarityBadge" class="font-accent text-[10px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full bg-sky-500/20 border border-sky-400/40 text-sky-300 font-bold">Common</span>
                 <span id="catchNewTag" class="hidden font-accent text-[10px] uppercase tracking-[0.18em] px-2.5 py-1 rounded-full bg-amber-400 text-slate-950 font-extrabold">New Species!</span>
             </div>
             <h3 id="catchName" class="font-display text-3xl font-bold text-white mb-3">Willow Bluegill</h3>
-            <div id="catchSpeciesArt" class="my-3 flex items-center justify-center bg-slate-950/70 border border-slate-800 rounded-2xl py-4"></div>
+            <div id="catchSpeciesArt" class="my-3 flex items-center justify-center bg-slate-950/70 border border-slate-800 rounded-2xl py-4 animate-float"></div>
             <div class="grid grid-cols-3 gap-2 my-4 text-center">
                 <div class="bg-slate-900/85 border border-slate-800 rounded-xl p-2.5">
                     <div class="text-[10px] uppercase tracking-wider text-slate-400">Weight</div>
@@ -508,7 +562,7 @@
     <!-- MODAL 3: GLOBAL MARITIME LEADERBOARD -->
     <!-- ===================================================================== -->
     <div id="leaderboardModal" class="hidden fixed inset-0 z-30 bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
-        <div class="maritime-card rounded-3xl max-w-2xl w-full max-h-[88vh] flex flex-col overflow-hidden">
+        <div class="maritime-card modal-animate-in rounded-3xl max-w-2xl w-full max-h-[88vh] flex flex-col overflow-hidden">
             <div class="p-5 border-b border-slate-700/70 flex items-center justify-between bg-slate-900/50">
                 <div>
                     <div class="font-accent text-[10px] uppercase tracking-[0.2em] text-amber-300 font-bold">International Registry</div>
@@ -530,7 +584,7 @@
     <!-- MODAL 4: HIGH-RISK & CONTRABAND OPERATIONS -->
     <!-- ===================================================================== -->
     <div id="riskModal" class="hidden fixed inset-0 z-30 bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
-        <div class="maritime-card rounded-3xl max-w-2xl w-full max-h-[88vh] flex flex-col overflow-hidden border-rose-500/35">
+        <div class="maritime-card modal-animate-in rounded-3xl max-w-2xl w-full max-h-[88vh] flex flex-col overflow-hidden border-rose-500/35">
             <div class="p-5 border-b border-rose-500/25 flex items-center justify-between bg-rose-950/30">
                 <div>
                     <div class="font-accent text-[10px] uppercase tracking-[0.2em] text-rose-400 font-bold">High-Stakes Syndicate</div>
@@ -549,7 +603,7 @@
     <!-- MODAL 5: EMPIRE & FLEET HQ -->
     <!-- ===================================================================== -->
     <div id="businessModal" class="hidden fixed inset-0 z-30 bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
-        <div class="maritime-card rounded-3xl max-w-2xl w-full max-h-[88vh] flex flex-col overflow-hidden">
+        <div class="maritime-card modal-animate-in rounded-3xl max-w-2xl w-full max-h-[88vh] flex flex-col overflow-hidden">
             <div class="p-5 border-b border-slate-700/70 flex items-center justify-between">
                 <div>
                     <div class="font-accent text-[10px] uppercase tracking-[0.2em] text-emerald-300 font-bold">Industrial Expansion</div>
@@ -568,7 +622,7 @@
     <!-- MODAL 6: EXPEDITION CHARTS / REGIONS -->
     <!-- ===================================================================== -->
     <div id="locationsModal" class="hidden fixed inset-0 z-30 bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
-        <div class="maritime-card rounded-3xl max-w-2xl w-full max-h-[88vh] flex flex-col overflow-hidden">
+        <div class="maritime-card modal-animate-in rounded-3xl max-w-2xl w-full max-h-[88vh] flex flex-col overflow-hidden">
             <div class="p-5 border-b border-slate-700/70 flex items-center justify-between">
                 <div>
                     <div class="font-accent text-[10px] uppercase tracking-[0.2em] text-sky-300 font-bold">Navigation Charts</div>
@@ -587,7 +641,7 @@
     <!-- MODAL 7: 600-SPECIES ENCYCLOPEDIA (FISHDEX) -->
     <!-- ===================================================================== -->
     <div id="dexModal" class="hidden fixed inset-0 z-30 bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
-        <div class="maritime-card rounded-3xl max-w-4xl w-full max-h-[88vh] flex flex-col overflow-hidden">
+        <div class="maritime-card modal-animate-in rounded-3xl max-w-4xl w-full max-h-[88vh] flex flex-col overflow-hidden">
             <div class="p-5 border-b border-slate-700/70 flex flex-wrap items-center justify-between gap-2">
                 <div>
                     <div class="font-accent text-[10px] uppercase tracking-[0.2em] text-teal-300 font-bold">Marine Registry</div>
@@ -613,9 +667,28 @@
         </div>
     </div>
 
+    <!-- ===================================================================== -->
+    <!-- MODAL 8: ROLE-SPECIFIC STORY CAMPAIGNS (4 CHARACTER CAMPAIGNS) -->
+    <!-- ===================================================================== -->
+    <div id="campaignModal" class="hidden fixed inset-0 z-30 bg-slate-950/75 backdrop-blur-md backdrop-animate flex items-center justify-center p-3 sm:p-6">
+        <div class="maritime-card modal-animate-in rounded-3xl max-w-2xl w-full max-h-[88vh] flex flex-col overflow-hidden border-indigo-400/40">
+            <div class="p-5 border-b border-indigo-500/25 flex items-center justify-between bg-indigo-950/35">
+                <div>
+                    <div id="campaignRoleKicker" class="font-accent text-[10px] uppercase tracking-[0.22em] text-indigo-300 font-bold">Character Charter Campaign</div>
+                    <h2 id="campaignTitleHeader" class="font-display text-2xl font-bold text-white">The Master Fisher's Odyssey</h2>
+                    <p id="campaignSubtitleHeader" class="text-xs text-indigo-200/80 mt-0.5">Complete all 4 chapters of your specialist's maritime saga for permanent mastery perks.</p>
+                </div>
+                <button id="closeCampaignBtn" class="w-9 h-9 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center cursor-pointer">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div id="campaignChaptersList" class="p-5 overflow-y-auto custom-scroll space-y-3"></div>
+        </div>
+    </div>
+
     <!-- Custom Reset Save Confirmation Modal -->
     <div id="confirmResetModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-        <div class="maritime-card rounded-3xl max-w-sm w-full p-6 text-center border-rose-500/40">
+        <div class="maritime-card modal-animate-in rounded-3xl max-w-sm w-full p-6 text-center border-rose-500/40">
             <h3 class="font-display text-xl font-bold text-white mb-2">Reset Charter Progress?</h3>
             <p class="text-xs text-slate-300 mb-5">This will permanently clear your treasury, fleet, town quests, and 600-species FishDex records.</p>
             <div class="flex gap-3">
@@ -1095,6 +1168,190 @@
             }
         ];
 
+        // =========================================================================
+        // 3B. FOUR CHARACTER-EXCLUSIVE STORY CAMPAIGNS (4 CHAPTERS EACH)
+        // =========================================================================
+        const ROLE_CAMPAIGNS = {
+            fisher: {
+                title: "The Master Fisher's Odyssey",
+                subtitle: "Prove your angling mastery from quiet village creeks to colossal pelagic leviathans.",
+                masteryPerk: "+15% Permanent Fish Value & +10% Reel Strike Zone",
+                chapters: [
+                    {
+                        id: 'fisher_c1',
+                        chapter: 'Chapter I',
+                        title: 'First Light on Willow Creek',
+                        story: 'Every legend starts with a bamboo pole and patience. Land 5 fish and discover at least 4 unique species.',
+                        type: 'caught_and_species',
+                        targetCaught: 5,
+                        targetSpecies: 4,
+                        rewardCoins: 180
+                    },
+                    {
+                        id: 'fisher_c2',
+                        chapter: 'Chapter II',
+                        title: 'The Heavyweight Contender',
+                        story: 'Word of your casting precision has reached Emerald Mist Lake. Land a single fish weighing 8 lbs or more.',
+                        type: 'max_single_weight',
+                        targetWeight: 8,
+                        rewardCoins: 650
+                    },
+                    {
+                        id: 'fisher_c3',
+                        chapter: 'Chapter III',
+                        title: 'Deep-Water Specimen Hunter',
+                        story: 'Venture into deeper currents and land 6 Rare, Epic, Legendary, or Mythic specimens.',
+                        type: 'rare_plus_caught',
+                        targetRare: 6,
+                        rewardCoins: 2400
+                    },
+                    {
+                        id: 'fisher_c4',
+                        chapter: 'Chapter IV',
+                        title: 'Leviathan Harpooner',
+                        story: 'Mount an Industrial Harpoon Cannon and spear your first Colossal Leviathan from the deep.',
+                        type: 'colossal_caught',
+                        targetColossal: 1,
+                        rewardCoins: 12000
+                    }
+                ]
+            },
+            fishmonger: {
+                title: "The Harbor Baron's Ledger",
+                subtitle: "Dominate waterfront commerce, fulfill guild contracts, and build a coastal trade empire.",
+                masteryPerk: "+20% Permanent Market Sale Prices",
+                chapters: [
+                    {
+                        id: 'monger_c1',
+                        chapter: 'Chapter I',
+                        title: 'Opening the Pier Stall',
+                        story: 'Establish your presence on the boardwalk. Sell 6 fish at the Fishmonger Market and acquire 1 Harbor Stall.',
+                        type: 'sold_and_stall',
+                        targetSold: 6,
+                        targetStalls: 1,
+                        rewardCoins: 220
+                    },
+                    {
+                        id: 'monger_c2',
+                        chapter: 'Chapter II',
+                        title: 'Guild Favored Supplier',
+                        story: 'The Harbormaster trusts your fresh deliveries. Complete 2 Guild Quests or Villager Tasks.',
+                        type: 'quests_completed',
+                        targetQuests: 2,
+                        rewardCoins: 750
+                    },
+                    {
+                        id: 'monger_c3',
+                        chapter: 'Chapter III',
+                        title: 'Artisan Export House',
+                        story: 'Expand your curing operations by owning 2 Artisan Timber Smokehouses and accumulating $4,500 Net Worth.',
+                        type: 'smokehouse_and_worth',
+                        targetSmoke: 2,
+                        targetWorth: 4500,
+                        rewardCoins: 2800
+                    },
+                    {
+                        id: 'monger_c4',
+                        chapter: 'Chapter IV',
+                        title: 'Sovereign Trade Monopoly',
+                        story: 'Command the international exchange with $35,000 lifetime earnings across your ports of call.',
+                        type: 'lifetime_earnings',
+                        targetEarnings: 35000,
+                        rewardCoins: 14000
+                    }
+                ]
+            },
+            industrialist: {
+                title: "The Oceanic Syndicate Blueprint",
+                subtitle: "Scale from a single skiff into a mechanized deep-sea harvesting powerhouse.",
+                masteryPerk: "+25% Permanent Passive Fleet Yield",
+                chapters: [
+                    {
+                        id: 'ind_c1',
+                        chapter: 'Chapter I',
+                        title: 'Hiring the First Crew',
+                        story: 'Manual labor only scales so far. Recruit 2 Hired Skiff Deckhands in Empire HQ.',
+                        type: 'deckhands_owned',
+                        targetDeckhands: 2,
+                        rewardCoins: 350
+                    },
+                    {
+                        id: 'ind_c2',
+                        chapter: 'Chapter II',
+                        title: 'Automated Cashflow',
+                        story: 'Optimize your coastal logistics until your fleet generates at least $45/sec in passive revenue.',
+                        type: 'passive_rate',
+                        targetRate: 45,
+                        rewardCoins: 1400
+                    },
+                    {
+                        id: 'ind_c3',
+                        chapter: 'Chapter III',
+                        title: 'Steel-Hulled Armada',
+                        story: 'Commission 2 Commercial Trawler Vessels to harvest offshore schools around the clock.',
+                        type: 'trawlers_owned',
+                        targetTrawlers: 2,
+                        rewardCoins: 6500
+                    },
+                    {
+                        id: 'ind_c4',
+                        chapter: 'Chapter IV',
+                        title: 'Hadal Extraction Platform',
+                        story: 'Construct an Automated Coastal Cannery and reach $120,000 Net Worth.',
+                        type: 'cannery_and_worth',
+                        targetCannery: 1,
+                        targetWorth: 120000,
+                        rewardCoins: 25000
+                    }
+                ]
+            },
+            smuggler: {
+                title: "The Shadow Tide Run",
+                subtitle: "Outsmart Coast Guard patrols, run high-stakes contraband, and amass an illicit fortune.",
+                masteryPerk: "+25% Contraband Payouts & -20% Patrol Bust Chance",
+                chapters: [
+                    {
+                        id: 'smug_c1',
+                        chapter: 'Chapter I',
+                        title: 'Testing the Waters',
+                        story: 'Activate at least 1 Risk & Contraband operation and land 4 catches under patrol watch.',
+                        type: 'risk_catches',
+                        targetRiskCatches: 4,
+                        rewardCoins: 280
+                    },
+                    {
+                        id: 'smug_c2',
+                        chapter: 'Chapter II',
+                        title: 'Midnight Offload',
+                        story: 'Run 2 simultaneous Risk tactics and sell $1,200 worth of high-risk catches at the market.',
+                        type: 'dual_risk_earnings',
+                        targetActiveRisks: 2,
+                        targetEarnings: 1200,
+                        rewardCoins: 1100
+                    },
+                    {
+                        id: 'smug_c3',
+                        chapter: 'Chapter III',
+                        title: 'Phantom of the Fjord',
+                        story: 'Unlock Sunburst Coral Atoll or beyond and land 8 catches while running active contraband tactics.',
+                        type: 'risk_catches',
+                        targetRiskCatches: 12,
+                        rewardCoins: 4200
+                    },
+                    {
+                        id: 'smug_c4',
+                        chapter: 'Chapter IV',
+                        title: 'Kingpin of the Seven Ports',
+                        story: 'Amass $60,000 Net Worth while commanding at least 3 active Syndicate operations.',
+                        type: 'syndicate_kingpin',
+                        targetActiveRisks: 3,
+                        targetWorth: 60000,
+                        rewardCoins: 20000
+                    }
+                ]
+            }
+        };
+
         const UPGRADES = {
             rod: {
                 title: 'Precision Fishing Rod',
@@ -1310,6 +1567,13 @@
                 coins: 20,
                 lifetimeEarnings: 20,
                 totalCaught: 0,
+                totalSold: 0,
+                maxSingleWeight: 0,
+                rarePlusCaught: 0,
+                colossalCaught: 0,
+                questsCompleted: 0,
+                riskCatches: 0,
+                claimedCampaignChapters: {},
                 finesPaid: 0,
                 currentLocation: 'creek',
                 harpoonMode: false,
@@ -1344,6 +1608,7 @@
                     quests: Array.isArray(parsed.quests) && parsed.quests.length > 0 ? parsed.quests : def.quests,
                     activeVillagerTask: parsed.activeVillagerTask || null,
                     seenBriefings: { ...(parsed.seenBriefings || {}) },
+                    claimedCampaignChapters: { ...(parsed.claimedCampaignChapters || {}) },
                     activeRisks: { ...(parsed.activeRisks || {}) },
                     upgrades: { ...def.upgrades, ...(parsed.upgrades || {}) },
                     business: { ...def.business, ...(parsed.business || {}) },
@@ -1383,6 +1648,104 @@
         let player = loadProgress();
         let activeTownTab = 'market';
 
+        function getRoleCampaignStatus(roleId = player.characterId) {
+            const camp = ROLE_CAMPAIGNS[roleId] || ROLE_CAMPAIGNS.fisher;
+            const claimed = player.claimedCampaignChapters || {};
+            let completedCount = 0;
+
+            const chapters = camp.chapters.map((ch, idx) => {
+                const isClaimed = !!claimed[ch.id];
+                if (isClaimed) completedCount++;
+                let current = 0;
+                let max = 1;
+                let ready = false;
+
+                if (ch.type === 'caught_and_species') {
+                    const spCount = Object.keys(player.caughtSpecies || {}).length;
+                    current = Math.min(ch.targetCaught, player.totalCaught || 0) + Math.min(ch.targetSpecies, spCount);
+                    max = ch.targetCaught + ch.targetSpecies;
+                    ready = (player.totalCaught || 0) >= ch.targetCaught && spCount >= ch.targetSpecies;
+                } else if (ch.type === 'max_single_weight') {
+                    current = Math.min(ch.targetWeight, +(player.maxSingleWeight || 0).toFixed(1));
+                    max = ch.targetWeight;
+                    ready = (player.maxSingleWeight || 0) >= ch.targetWeight;
+                } else if (ch.type === 'rare_plus_caught') {
+                    current = Math.min(ch.targetRare, player.rarePlusCaught || 0);
+                    max = ch.targetRare;
+                    ready = (player.rarePlusCaught || 0) >= ch.targetRare;
+                } else if (ch.type === 'colossal_caught') {
+                    current = Math.min(ch.targetColossal, player.colossalCaught || 0);
+                    max = ch.targetColossal;
+                    ready = (player.colossalCaught || 0) >= ch.targetColossal;
+                } else if (ch.type === 'sold_and_stall') {
+                    const stalls = player.business.village_stall || 0;
+                    current = Math.min(ch.targetSold, player.totalSold || 0) + Math.min(ch.targetStalls, stalls);
+                    max = ch.targetSold + ch.targetStalls;
+                    ready = (player.totalSold || 0) >= ch.targetSold && stalls >= ch.targetStalls;
+                } else if (ch.type === 'quests_completed') {
+                    current = Math.min(ch.targetQuests, player.questsCompleted || 0);
+                    max = ch.targetQuests;
+                    ready = (player.questsCompleted || 0) >= ch.targetQuests;
+                } else if (ch.type === 'smokehouse_and_worth') {
+                    const smoke = player.business.smokehouse || 0;
+                    const w = getNetWorth();
+                    current = Math.min(ch.targetSmoke, smoke) + (w >= ch.targetWorth ? 1 : 0);
+                    max = ch.targetSmoke + 1;
+                    ready = smoke >= ch.targetSmoke && w >= ch.targetWorth;
+                } else if (ch.type === 'lifetime_earnings') {
+                    current = Math.min(ch.targetEarnings, Math.round(player.lifetimeEarnings || 0));
+                    max = ch.targetEarnings;
+                    ready = (player.lifetimeEarnings || 0) >= ch.targetEarnings;
+                } else if (ch.type === 'deckhands_owned') {
+                    current = Math.min(ch.targetDeckhands, player.business.deckhands || 0);
+                    max = ch.targetDeckhands;
+                    ready = (player.business.deckhands || 0) >= ch.targetDeckhands;
+                } else if (ch.type === 'passive_rate') {
+                    const rate = Math.round(getPassiveIncomePerSec());
+                    current = Math.min(ch.targetRate, rate);
+                    max = ch.targetRate;
+                    ready = rate >= ch.targetRate;
+                } else if (ch.type === 'trawlers_owned') {
+                    current = Math.min(ch.targetTrawlers, player.business.trawlers || 0);
+                    max = ch.targetTrawlers;
+                    ready = (player.business.trawlers || 0) >= ch.targetTrawlers;
+                } else if (ch.type === 'cannery_and_worth') {
+                    const can = player.business.cannery || 0;
+                    const w = getNetWorth();
+                    current = Math.min(ch.targetCannery, can) + (w >= ch.targetWorth ? 1 : 0);
+                    max = ch.targetCannery + 1;
+                    ready = can >= ch.targetCannery && w >= ch.targetWorth;
+                } else if (ch.type === 'risk_catches') {
+                    current = Math.min(ch.targetRiskCatches, player.riskCatches || 0);
+                    max = ch.targetRiskCatches;
+                    ready = (player.riskCatches || 0) >= ch.targetRiskCatches;
+                } else if (ch.type === 'dual_risk_earnings') {
+                    const activeR = Object.values(player.activeRisks || {}).filter(Boolean).length;
+                    const earn = Math.round(player.lifetimeEarnings || 0);
+                    current = Math.min(ch.targetActiveRisks, activeR) + (earn >= ch.targetEarnings ? 1 : 0);
+                    max = ch.targetActiveRisks + 1;
+                    ready = activeR >= ch.targetActiveRisks && earn >= ch.targetEarnings;
+                } else if (ch.type === 'syndicate_kingpin') {
+                    const activeR = Object.values(player.activeRisks || {}).filter(Boolean).length;
+                    const w = getNetWorth();
+                    current = Math.min(ch.targetActiveRisks, activeR) + (w >= ch.targetWorth ? 1 : 0);
+                    max = ch.targetActiveRisks + 1;
+                    ready = activeR >= ch.targetActiveRisks && w >= ch.targetWorth;
+                }
+
+                const prevClaimed = idx === 0 ? true : !!claimed[camp.chapters[idx - 1].id];
+                const unlocked = prevClaimed || isClaimed || ready;
+                return { ...ch, isClaimed, ready, unlocked, current, max };
+            });
+
+            const masteryUnlocked = completedCount >= camp.chapters.length;
+            return { camp, chapters, completedCount, total: camp.chapters.length, masteryUnlocked };
+        }
+
+        function hasRoleMastery(roleId) {
+            return getRoleCampaignStatus(roleId).masteryUnlocked;
+        }
+
         function getActiveCharacter() {
             return CHARACTER_ROLES.find(c => c.id === player.characterId) || CHARACTER_ROLES[0];
         }
@@ -1419,8 +1782,9 @@
             }
             const char = getActiveCharacter();
             if (char.id === 'smuggler' && totalBustRisk > 0) {
-                payoutMult *= 1.20;
+                payoutMult *= hasRoleMastery('smuggler') ? 1.45 : 1.20;
             }
+            if (hasRoleMastery('smuggler')) totalBustRisk *= 0.80;
             return {
                 payoutMult,
                 luckAdd,
@@ -1443,7 +1807,8 @@
             const ev = getActiveWorldEvent();
             const risk = getRiskModifiers();
             const char = getActiveCharacter();
-            return total * ev.incomeMult * risk.fleetMult * char.fleetBonus;
+            const indMastery = hasRoleMastery('industrialist') ? 1.25 : 1.0;
+            return total * ev.incomeMult * risk.fleetMult * char.fleetBonus * indMastery;
         }
 
         function getBusinessSaleMultiplier() {
@@ -1452,7 +1817,8 @@
                 bonusPct += (player.business[unit.id] || 0) * unit.saleBonusPct;
             }
             const char = getActiveCharacter();
-            return (1 + bonusPct / 100) * char.saleBonus;
+            const mBonus = (hasRoleMastery('fishmonger') ? 1.20 : 1.0) * (hasRoleMastery('fisher') ? 1.15 : 1.0);
+            return (1 + bonusPct / 100) * char.saleBonus * mBonus;
         }
 
         function getNetWorth() {
@@ -1543,23 +1909,46 @@
         let seagulls = [];
         let chimneySmoke = [];
 
-        // Harpoon Aim-and-Fire Mini-Game State
-        let harpoonAimAngle = -0.35;
+        // Harpoon Aim-and-Fire Mini-Game State (Upgraded with Aim-Assist Lock, Generous Hitboxes & Fast Bolts)
+        let harpoonAimAngle = 0.35;
         let harpoonAimDir = 1;
-        let harpoonBoltsLeft = 3;
+        let harpoonBoltsLeft = 6;
         let harpoonHits = 0;
-        let harpoonHitsRequired = 3;
+        let harpoonHitsRequired = 2;
         let harpoonFlight = null; // { x, y, vx, vy, active }
-        let harpoonTargetPos = { x: 0, y: 0, vx: 120, vy: 45 };
+        let harpoonTargetPos = { x: 0, y: 0, vx: 75, vy: 30 };
         let harpoonWaveTimer = 0;
+        let harpoonLockQuality = 0; // 0..1 proximity of aim line to Leviathan center
 
-        // Timing-Bar Reeling Mini-Game State
+        // Multi-Challenge Reeling Mini-Game State (6 Distinct Regular Fish Catch Challenges!)
+        // 1. 'classic_bar'   : Classic Oscillating Timing Bar
+        // 2. 'sonar_ring'    : Contracting Sonar Pulse Ring (Tap as shrinking ring enters target annulus)
+        // 3. 'tension_hold'  : Deep-Current Tension Hold (Hold/Tap to keep buoyancy float inside green drift zone)
+        // 4. 'triple_rhythm' : Swift Barracuda Triple-Beat Cadence (Hit 3 rhythmic beat markers in sequence)
+        // 5. 'dual_pendulum' : Twin-Current Counter-Needle Sync (Strike when both needles cross the central lock)
+        // 6. 'tide_dial'     : Rotating Compass Tide Dial (Tap as spinning compass hand sweeps through arc)
+        const REEL_CHALLENGE_TYPES = [
+            { id: 'classic_bar',   label: 'PRECISION TIMING BAR', prompt: 'Tap or press Spacebar when the needle enters the GREEN or GOLD zone!' },
+            { id: 'sonar_ring',    label: 'SONAR PULSE LOCK',     prompt: 'Tap or press Spacebar as the shrinking white ring aligns with the GREEN target ring!' },
+            { id: 'tension_hold',  label: 'CURRENT DRIFT HOLD',   prompt: 'HOLD or tap repeatedly to keep the bobber float inside the GREEN current band!' },
+            { id: 'triple_rhythm', label: 'TRIPLE-BEAT CADENCE',  prompt: 'Tap or press Spacebar on each of the 3 glowing rhythm pulses as the sweep crosses!' },
+            { id: 'dual_pendulum', label: 'TWIN-NEEDLE SYNC',     prompt: 'Tap or press Spacebar when BOTH opposing needles converge inside the center lock!' },
+            { id: 'tide_dial',     label: 'COMPASS TIDE SWEEP',   prompt: 'Tap or press Spacebar when the rotating compass hand sweeps across the GREEN arc!' }
+        ];
+        let activeReelChallenge = REEL_CHALLENGE_TYPES[0];
         let reelProgress = 0.25;
         let reelNeedlePos = 0.5;
+        let reelNeedle2Pos = 0.5;
         let reelNeedleDir = 1;
         let reelZoneCenter = 0.5;
         let reelZoneWidth = 0.26;
         let reelCritWidth = 0.08;
+        let reelRingRadius = 1.0;
+        let reelDialAngle = 0;
+        let reelDialTargetAngle = 1.2;
+        let reelHoldingInput = false;
+        let reelRhythmIndex = 0;
+        let reelRhythmHitMask = [false, false, false];
         let reelCombo = 0;
         let reelFeedbackText = '';
         let reelFeedbackColor = '#34d399';
@@ -1735,41 +2124,54 @@
 
             const lineTier = UPGRADES.line.tiers[player.upgrades.line || 0];
             const char = getActiveCharacter();
-            const zoneScale = (lineTier ? lineTier.zoneScale : 1.0) * char.strikeZoneBonus;
+            const fisherMasteryZone = hasRoleMastery('fisher') ? 1.10 : 1.0;
+            const zoneScale = (lineTier ? lineTier.zoneScale : 1.0) * char.strikeZoneBonus * fisherMasteryZone;
+
+            // Pick one of the 6 regular fish catch challenges
+            activeReelChallenge = REEL_CHALLENGE_TYPES[Math.floor(Math.random() * REEL_CHALLENGE_TYPES.length)];
 
             state = GAME_STATE.REELING;
-            reelProgress = 0.28;
+            reelProgress = 0.30;
             reelNeedlePos = 0.12;
+            reelNeedle2Pos = 0.88;
             reelNeedleDir = 1;
             reelZoneCenter = 0.35 + Math.random() * 0.3;
-            reelZoneWidth = Math.min(0.46, Math.max(0.14, (0.30 - sp.fightStrength * 0.12) * zoneScale));
-            reelCritWidth = Math.max(0.05, reelZoneWidth * 0.32);
+            reelZoneWidth = Math.min(0.48, Math.max(0.16, (0.32 - sp.fightStrength * 0.11) * zoneScale));
+            reelCritWidth = Math.max(0.06, reelZoneWidth * 0.34);
+            reelRingRadius = 1.0;
+            reelDialAngle = 0;
+            reelDialTargetAngle = 1.2 + Math.random() * 3.4;
+            reelHoldingInput = false;
+            reelRhythmIndex = 0;
+            reelRhythmHitMask = [false, false, false];
             reelCombo = 0;
             reelFeedbackTimer = 0;
 
             sound.playSplash(1.1);
-            updateActionPrompt('Tap or press Spacebar when the needle enters the GREEN or GOLD zone!', 'bg-amber-400');
+            updateActionPrompt(activeReelChallenge.prompt, 'bg-amber-400');
         }
 
         function startHarpoonMiniGame() {
             state = GAME_STATE.HARPOONING;
             const harpoonLvl = player.upgrades.harpoon || 1;
-            harpoonHitsRequired = 3;
-            harpoonBoltsLeft = harpoonLvl >= 2 ? 5 : 4;
+            harpoonHitsRequired = 2;
+            harpoonBoltsLeft = harpoonLvl >= 2 ? 7 : 6;
             harpoonHits = 0;
             harpoonFlight = null;
             harpoonWaveTimer = 0;
+            harpoonLockQuality = 0;
             const tip = getRodTipPos();
             harpoonTargetPos = {
-                x: Math.max(tip.x + 220, width * 0.62),
-                y: Math.min(height - 95, getWaterlineY() + 145),
-                vx: 135,
-                vy: 55
+                x: Math.max(tip.x + 200, width * 0.56),
+                y: Math.min(height - 105, getWaterlineY() + 135),
+                vx: harpoonLvl >= 2 ? 62 : 76,
+                vy: 28
             };
-            harpoonAimAngle = 0.32;
+            const idealAngle = Math.atan2(harpoonTargetPos.y - tip.y, harpoonTargetPos.x - tip.x);
+            harpoonAimAngle = Math.max(0.08, idealAngle - 0.16);
             harpoonAimDir = 1;
             sound.playSplash(1.3);
-            updateActionPrompt('HARPOON CANNON! Tap or press Spacebar to fire pneumatic bolts into the Leviathan!', 'bg-amber-400');
+            updateActionPrompt('HARPOON LOCK! Tap or press Spacebar when the sightline turns GREEN/GOLD!', 'bg-amber-400');
         }
 
         function fireHarpoonBolt() {
@@ -1779,16 +2181,23 @@
 
             harpoonBoltsLeft--;
             const tip = getRodTipPos();
-            const speed = 780;
+            const speed = 1120;
+            // Smart pneumatic auto-guidance when fired near target lock
+            const idealAngle = Math.atan2(hookedFish.y - tip.y, hookedFish.x - tip.x);
+            const angleDiff = idealAngle - harpoonAimAngle;
+            const guidedAngle = Math.abs(angleDiff) < 0.14
+                ? harpoonAimAngle + angleDiff * 0.72
+                : harpoonAimAngle;
+
             harpoonFlight = {
                 x: tip.x,
                 y: tip.y,
-                vx: Math.cos(harpoonAimAngle) * speed,
-                vy: Math.sin(harpoonAimAngle) * speed,
+                vx: Math.cos(guidedAngle) * speed,
+                vy: Math.sin(guidedAngle) * speed,
                 active: true
             };
             sound.playCast();
-            spawnSplashParticles(tip.x, tip.y, 6, '#fbbf24');
+            spawnSplashParticles(tip.x, tip.y, 8, '#fbbf24');
         }
 
         function handleTimingStrike() {
@@ -1796,22 +2205,72 @@
             const sp = hookedFish.species;
             const rodTier = UPGRADES.rod.tiers[player.upgrades.rod || 0];
             const powerMult = rodTier ? rodTier.power : 1.0;
+            const cType = activeReelChallenge.id;
 
-            const dist = Math.abs(reelNeedlePos - reelZoneCenter);
-            const inCrit = dist <= reelCritWidth * 0.5;
-            const inZone = dist <= reelZoneWidth * 0.5;
+            // For Tension Hold, tapping gives an upward buoyancy boost while holding sustains lift
+            if (cType === 'tension_hold') {
+                reelNeedlePos = Math.min(0.95, reelNeedlePos + 0.14);
+                sound.playTone(520, 'sine', 0.06, 0.08);
+                return;
+            }
+
+            let inCrit = false;
+            let inZone = false;
+
+            if (cType === 'classic_bar') {
+                const dist = Math.abs(reelNeedlePos - reelZoneCenter);
+                inCrit = dist <= reelCritWidth * 0.5;
+                inZone = dist <= reelZoneWidth * 0.5;
+            } else if (cType === 'sonar_ring') {
+                // Target ring sits at radius 0.42
+                const dist = Math.abs(reelRingRadius - 0.42);
+                inCrit = dist <= reelCritWidth * 0.45;
+                inZone = dist <= reelZoneWidth * 0.55;
+            } else if (cType === 'triple_rhythm') {
+                // 3 beat markers at 0.25, 0.50, 0.75
+                const beats = [0.25, 0.50, 0.75];
+                let hitIdx = -1;
+                beats.forEach((bPos, idx) => {
+                    if (!reelRhythmHitMask[idx] && Math.abs(reelNeedlePos - bPos) <= reelZoneWidth * 0.42) {
+                        hitIdx = idx;
+                        if (Math.abs(reelNeedlePos - bPos) <= reelCritWidth * 0.45) inCrit = true;
+                    }
+                });
+                if (hitIdx !== -1) {
+                    inZone = true;
+                    reelRhythmHitMask[hitIdx] = true;
+                    if (reelRhythmHitMask.every(Boolean)) {
+                        inCrit = true;
+                        reelRhythmHitMask = [false, false, false];
+                    }
+                }
+            } else if (cType === 'dual_pendulum') {
+                // Both needles converge around center 0.50
+                const d1 = Math.abs(reelNeedlePos - 0.5);
+                const d2 = Math.abs(reelNeedle2Pos - 0.5);
+                const maxD = Math.max(d1, d2);
+                inCrit = maxD <= reelCritWidth * 0.55;
+                inZone = maxD <= reelZoneWidth * 0.58;
+            } else if (cType === 'tide_dial') {
+                let diff = Math.abs(((reelDialAngle - reelDialTargetAngle + Math.PI * 3) % (Math.PI * 2)) - Math.PI);
+                const arcHalf = reelZoneWidth * 2.1;
+                inCrit = diff <= arcHalf * 0.35;
+                inZone = diff <= arcHalf;
+            }
 
             if (inCrit || inZone) {
                 reelCombo++;
-                const baseGain = inCrit ? 0.34 : 0.21;
+                const baseGain = inCrit ? 0.36 : 0.23;
                 const comboBonus = Math.min(0.14, reelCombo * 0.025);
-                const gain = (baseGain + comboBonus) * (0.85 + powerMult * 0.22) / (0.85 + sp.fightStrength * 0.35);
+                const gain = (baseGain + comboBonus) * (0.88 + powerMult * 0.22) / (0.85 + sp.fightStrength * 0.34);
                 reelProgress = Math.min(1, reelProgress + gain);
 
                 reelFeedbackText = inCrit ? `CRITICAL STRIKE! x${reelCombo}` : `SOLID REEL! x${reelCombo}`;
                 reelFeedbackColor = inCrit ? '#fbbf24' : '#34d399';
                 reelFeedbackTimer = 0.85;
                 reelZoneCenter = 0.24 + Math.random() * 0.52;
+                reelRingRadius = 1.0;
+                reelDialTargetAngle = (reelDialAngle + 1.4 + Math.random() * 2.5) % (Math.PI * 2);
 
                 sound.playTimingHit(inCrit, reelCombo);
                 spawnSplashParticles(bobber.x, bobber.y, inCrit ? 12 : 6, inCrit ? '#fbbf24' : '#34d399');
@@ -1821,10 +2280,11 @@
                 }
             } else {
                 reelCombo = 0;
-                reelProgress -= (0.14 + sp.fightStrength * 0.06);
+                reelProgress -= (0.12 + sp.fightStrength * 0.05);
                 reelFeedbackText = 'MISSED TIMING!';
                 reelFeedbackColor = '#f87171';
                 reelFeedbackTimer = 0.85;
+                if (cType === 'sonar_ring') reelRingRadius = 1.0;
                 sound.playTimingMiss();
 
                 if (reelProgress <= 0) {
@@ -1886,6 +2346,16 @@
             const isNewSpecies = !player.caughtSpecies[sp.id];
             player.caughtSpecies[sp.id] = (player.caughtSpecies[sp.id] || 0) + 1;
             player.totalCaught = (player.totalCaught || 0) + 1;
+            player.maxSingleWeight = Math.max(player.maxSingleWeight || 0, weight);
+            if (sp.rarity !== 'Common' && sp.rarity !== 'Uncommon') {
+                player.rarePlusCaught = (player.rarePlusCaught || 0) + 1;
+            }
+            if (sp.rarity === 'Colossal' || sp.tooBigForRod) {
+                player.colossalCaught = (player.colossalCaught || 0) + 1;
+            }
+            if (Object.values(player.activeRisks || {}).some(Boolean)) {
+                player.riskCatches = (player.riskCatches || 0) + 1;
+            }
 
             const catchRecord = {
                 uid: Date.now() + '_' + Math.random().toString(36).slice(2, 6),
@@ -2389,14 +2859,15 @@
             const tip = getRodTipPos();
             ctx.save();
 
-            // Aiming Trajectory Dashed Sightline from Harpoon Cannon
-            const aimLen = Math.min(460, width * 0.55);
+            const lockedOn = harpoonLockQuality >= 0.72;
+            const aimLen = Math.min(620, width * 0.78);
             const endX = tip.x + Math.cos(harpoonAimAngle) * aimLen;
             const endY = tip.y + Math.sin(harpoonAimAngle) * aimLen;
 
-            ctx.strokeStyle = 'rgba(251, 191, 36, 0.72)';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([8, 6]);
+            // Aiming Trajectory Sightline (Turns bright emerald/gold when locked onto Leviathan!)
+            ctx.strokeStyle = lockedOn ? '#34d399' : 'rgba(251, 191, 36, 0.78)';
+            ctx.lineWidth = lockedOn ? 3.5 : 2.2;
+            if (!lockedOn) ctx.setLineDash([8, 6]);
             ctx.beginPath();
             ctx.moveTo(tip.x, tip.y);
             ctx.lineTo(endX, endY);
@@ -2407,12 +2878,21 @@
             if (hookedFish) {
                 const tx = hookedFish.x;
                 const ty = hookedFish.y;
-                const rad = 32;
-                ctx.strokeStyle = '#f87171';
-                ctx.lineWidth = 2.2;
+                const rad = lockedOn ? 44 : 38;
+                ctx.strokeStyle = lockedOn ? '#34d399' : '#f87171';
+                ctx.lineWidth = lockedOn ? 3 : 2.2;
                 ctx.beginPath();
                 ctx.arc(tx, ty, rad, 0, Math.PI * 2);
                 ctx.stroke();
+
+                if (lockedOn) {
+                    ctx.fillStyle = 'rgba(16, 185, 129, 0.16)';
+                    ctx.fill();
+                    ctx.fillStyle = '#34d399';
+                    ctx.font = 'bold 11px Syne, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('TARGET LOCKED — FIRE!', tx, ty - rad - 12);
+                }
 
                 ctx.beginPath();
                 ctx.moveTo(tx - rad - 8, ty); ctx.lineTo(tx - rad + 6, ty);
@@ -2477,67 +2957,143 @@
         }
 
         function drawReelingMiniGameHUD() {
-            const barW = Math.min(380, width - 48);
+            const barW = Math.min(390, width - 44);
             const barH = 24;
             const bx = (width - barW) * 0.5;
             const by = Math.max(115, getWaterlineY() - 96);
+            const cType = activeReelChallenge.id;
+            const isCircular = (cType === 'sonar_ring' || cType === 'tide_dial');
+            const panelH = isCircular ? 124 : 88;
 
-            // Outer Container Panel
             ctx.save();
             ctx.fillStyle = 'rgba(9, 20, 36, 0.92)';
             ctx.strokeStyle = 'rgba(148, 184, 218, 0.45)';
             ctx.lineWidth = 1.5;
             ctx.beginPath();
-            ctx.roundRect(bx - 14, by - 34, barW + 28, 86, 16);
+            ctx.roundRect(bx - 14, by - 34, barW + 28, panelH, 16);
             ctx.fill();
             ctx.stroke();
 
-            // Hooked Species Header
+            // Hooked Species & Challenge Type Header
             const spName = hookedFish ? hookedFish.species.name : 'Hooked Catch';
             ctx.fillStyle = '#f8fafc';
-            ctx.font = 'bold 12px Syne, sans-serif';
+            ctx.font = 'bold 11px Syne, sans-serif';
             ctx.textAlign = 'left';
-            ctx.fillText(spName.toUpperCase(), bx, by - 14);
+            ctx.fillText(`${spName.toUpperCase()} • ${activeReelChallenge.label}`, bx, by - 14);
 
             ctx.fillStyle = '#fbbf24';
             ctx.font = 'bold 11px "IBM Plex Mono", monospace';
             ctx.textAlign = 'right';
             ctx.fillText(`REEL ${Math.round(reelProgress * 100)}%`, bx + barW, by - 14);
 
-            // Timing Track Background
-            ctx.fillStyle = '#0f172a';
-            ctx.beginPath();
-            ctx.roundRect(bx, by, barW, barH, 10);
-            ctx.fill();
+            if (cType === 'sonar_ring') {
+                // Challenge 2: Contracting Sonar Pulse Ring
+                const cx = bx + barW * 0.5;
+                const cy = by + 34;
+                const maxR = 34;
+                const targetR = maxR * 0.42;
 
-            // Green Strike Zone
-            const zoneLeft = bx + Math.max(0, reelZoneCenter - reelZoneWidth * 0.5) * barW;
-            const zoneW = Math.min(barW, reelZoneWidth * barW);
-            ctx.fillStyle = 'rgba(16, 185, 129, 0.45)';
-            ctx.beginPath();
-            ctx.roundRect(zoneLeft, by + 2, zoneW, barH - 4, 8);
-            ctx.fill();
+                ctx.strokeStyle = 'rgba(16, 185, 129, 0.55)';
+                ctx.lineWidth = 8;
+                ctx.beginPath();
+                ctx.arc(cx, cy, targetR, 0, Math.PI * 2);
+                ctx.stroke();
 
-            // Gold Critical Center Zone
-            const critLeft = bx + Math.max(0, reelZoneCenter - reelCritWidth * 0.5) * barW;
-            const critW = Math.min(barW, reelCritWidth * barW);
-            ctx.fillStyle = '#fbbf24';
-            ctx.beginPath();
-            ctx.roundRect(critLeft, by + 2, critW, barH - 4, 6);
-            ctx.fill();
+                ctx.strokeStyle = '#fbbf24';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(cx, cy, targetR, 0, Math.PI * 2);
+                ctx.stroke();
 
-            // Moving Timing Needle
-            const needleX = bx + reelNeedlePos * barW;
-            ctx.fillStyle = '#ffffff';
-            ctx.shadowColor = '#ffffff';
-            ctx.shadowBlur = 8;
-            ctx.beginPath();
-            ctx.roundRect(needleX - 3, by - 4, 6, barH + 8, 3);
-            ctx.fill();
-            ctx.shadowBlur = 0;
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(cx, cy, Math.max(3, maxR * reelRingRadius), 0, Math.PI * 2);
+                ctx.stroke();
+            } else if (cType === 'tide_dial') {
+                // Challenge 6: Rotating Compass Tide Dial
+                const cx = bx + barW * 0.5;
+                const cy = by + 34;
+                const dialR = 32;
+                const arcHalf = reelZoneWidth * 2.1;
+
+                ctx.strokeStyle = '#1e293b';
+                ctx.lineWidth = 7;
+                ctx.beginPath();
+                ctx.arc(cx, cy, dialR, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.strokeStyle = '#10b981';
+                ctx.lineWidth = 7;
+                ctx.beginPath();
+                ctx.arc(cx, cy, dialR, reelDialTargetAngle - arcHalf, reelDialTargetAngle + arcHalf);
+                ctx.stroke();
+
+                ctx.strokeStyle = '#fbbf24';
+                ctx.lineWidth = 7;
+                ctx.beginPath();
+                ctx.arc(cx, cy, dialR, reelDialTargetAngle - arcHalf * 0.35, reelDialTargetAngle + arcHalf * 0.35);
+                ctx.stroke();
+
+                // Spinning Hand
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(cx + Math.cos(reelDialAngle) * (dialR + 4), cy + Math.sin(reelDialAngle) * (dialR + 4));
+                ctx.stroke();
+            } else {
+                // Linear Track Challenges (Classic Bar, Tension Hold, Triple Rhythm, Dual Pendulum)
+                ctx.fillStyle = '#0f172a';
+                ctx.beginPath();
+                ctx.roundRect(bx, by, barW, barH, 10);
+                ctx.fill();
+
+                if (cType === 'triple_rhythm') {
+                    [0.25, 0.50, 0.75].forEach((bPos, idx) => {
+                        const hit = reelRhythmHitMask[idx];
+                        const zw = reelZoneWidth * 0.75 * barW;
+                        ctx.fillStyle = hit ? 'rgba(56, 189, 248, 0.5)' : 'rgba(16, 185, 129, 0.5)';
+                        ctx.beginPath();
+                        ctx.roundRect(bx + bPos * barW - zw * 0.5, by + 2, zw, barH - 4, 6);
+                        ctx.fill();
+                    });
+                } else {
+                    const center = cType === 'dual_pendulum' ? 0.5 : reelZoneCenter;
+                    const zoneLeft = bx + Math.max(0, center - reelZoneWidth * 0.5) * barW;
+                    const zoneW = Math.min(barW, reelZoneWidth * barW);
+                    ctx.fillStyle = 'rgba(16, 185, 129, 0.45)';
+                    ctx.beginPath();
+                    ctx.roundRect(zoneLeft, by + 2, zoneW, barH - 4, 8);
+                    ctx.fill();
+
+                    const critLeft = bx + Math.max(0, center - reelCritWidth * 0.5) * barW;
+                    const critW = Math.min(barW, reelCritWidth * barW);
+                    ctx.fillStyle = '#fbbf24';
+                    ctx.beginPath();
+                    ctx.roundRect(critLeft, by + 2, critW, barH - 4, 6);
+                    ctx.fill();
+                }
+
+                // Needle 1
+                const needleX = bx + reelNeedlePos * barW;
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.roundRect(needleX - 3, by - 4, 6, barH + 8, 3);
+                ctx.fill();
+
+                // Needle 2 for Dual Pendulum
+                if (cType === 'dual_pendulum') {
+                    const n2X = bx + reelNeedle2Pos * barW;
+                    ctx.fillStyle = '#38bdf8';
+                    ctx.beginPath();
+                    ctx.roundRect(n2X - 3, by - 4, 6, barH + 8, 3);
+                    ctx.fill();
+                }
+            }
 
             // Catch Progress Bar Underneath
-            const progY = by + barH + 10;
+            const progY = isCircular ? (by + 74) : (by + barH + 10);
             ctx.fillStyle = '#1e293b';
             ctx.beginPath();
             ctx.roundRect(bx, progY, barW, 8, 4);
@@ -2548,7 +3104,6 @@
             ctx.roundRect(bx, progY, barW * Math.max(0, Math.min(1, reelProgress)), 8, 4);
             ctx.fill();
 
-            // Floating Hit/Miss Feedback Text
             if (reelFeedbackTimer > 0) {
                 ctx.fillStyle = reelFeedbackColor;
                 ctx.font = 'bold 13px Syne, sans-serif';
@@ -3143,6 +3698,7 @@
         }
 
         function advanceQuestsOnSale(soldCount, soldWeight) {
+            player.totalSold = (player.totalSold || 0) + soldCount;
             player.quests.forEach(q => {
                 if (q.progress >= q.target) return;
                 if (q.type === 'sell_count') {
@@ -3299,6 +3855,7 @@
                         player.coins += rewardBonus;
                         player.lifetimeEarnings = (player.lifetimeEarnings || 0) + rewardBonus;
                         const freshSet = generateTownQuests(player.currentLocation, getNetWorth());
+                        player.questsCompleted = (player.questsCompleted || 0) + 1;
                         player.quests[qIdx] = freshSet[qIdx % freshSet.length];
 
                         sound.playCatchFanfare('Epic');
@@ -3363,7 +3920,7 @@
         // 8. OTHER MODALS, FIRST-TIME SPLASH BRIEFINGS & HUD SYNCHRONIZATION
         // =========================================================================
         function closeAllModals() {
-            ['townBuildingModal', 'villagerModal', 'catchModal', 'leaderboardModal', 'riskModal', 'businessModal', 'locationsModal', 'dexModal', 'transitionSplash'].forEach(id => {
+            ['townBuildingModal', 'villagerModal', 'campaignModal', 'catchModal', 'leaderboardModal', 'riskModal', 'businessModal', 'locationsModal', 'dexModal', 'transitionSplash'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.classList.add('hidden');
             });
@@ -3479,6 +4036,64 @@
 
             document.getElementById('catchSpeciesArt').innerHTML = buildSpeciesPreviewSVG(sp);
             document.getElementById('catchModal').classList.remove('hidden');
+        }
+
+        function renderCampaignModal() {
+            const char = getActiveCharacter();
+            const status = getRoleCampaignStatus(char.id);
+            document.getElementById('campaignRoleKicker').textContent = `${char.name} • Exclusive Saga (${status.completedCount}/${status.total})`;
+            document.getElementById('campaignTitleHeader').textContent = status.camp.title;
+            document.getElementById('campaignSubtitleHeader').textContent = `${status.camp.subtitle} Mastery Reward: ${status.camp.masteryPerk}`;
+
+            const list = document.getElementById('campaignChaptersList');
+            list.innerHTML = `
+                <div class="rounded-2xl p-3.5 border ${status.masteryUnlocked ? 'bg-emerald-500/15 border-emerald-400/60' : 'bg-indigo-950/60 border-indigo-400/35'} flex items-center justify-between gap-3">
+                    <div>
+                        <div class="font-accent text-[10px] uppercase tracking-wider font-bold ${status.masteryUnlocked ? 'text-emerald-300' : 'text-indigo-300'}">
+                            ${status.masteryUnlocked ? 'ROLE MASTERY UNLOCKED!' : '4-CHAPTER MASTERY BONUS'}
+                        </div>
+                        <div class="text-xs font-bold text-white mt-0.5">${status.camp.masteryPerk}</div>
+                    </div>
+                    <span class="font-mono-num text-xs font-bold px-2.5 py-1 rounded-lg bg-slate-900 text-amber-300">${status.completedCount}/${status.total}</span>
+                </div>
+            ` + status.chapters.map(ch => {
+                const pct = Math.min(100, Math.round((ch.current / Math.max(1, ch.max)) * 100));
+                return `
+                    <div class="bg-slate-900/85 border ${ch.isClaimed ? 'border-emerald-400/50' : ch.ready ? 'border-amber-400/70' : 'border-slate-700/75'} rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <span class="font-accent text-[10px] uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-bold">${ch.chapter}</span>
+                                <span class="font-bold text-white text-sm">${ch.title}</span>
+                            </div>
+                            <p class="text-xs text-slate-300 mt-1 leading-relaxed">${ch.story}</p>
+                            <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mt-2.5">
+                                <div class="h-full ${ch.isClaimed ? 'bg-emerald-400' : 'bg-amber-400'} transition-all" style="width:${pct}%"></div>
+                            </div>
+                        </div>
+                        <button data-claim-chapter="${ch.id}" ${(!ch.ready || ch.isClaimed) ? 'disabled' : ''} class="btn-nautical px-4 py-2.5 rounded-xl font-accent text-xs font-extrabold uppercase tracking-wider shrink-0 cursor-pointer ${ch.isClaimed ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/35 cursor-default' : ch.ready ? 'bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 shadow-lg' : 'bg-slate-800 text-slate-500 cursor-not-allowed'}">
+                            ${ch.isClaimed ? 'Completed' : ch.ready ? `Claim +$${formatMoney(ch.rewardCoins)}` : `$${formatMoney(ch.rewardCoins)}`}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            list.querySelectorAll('button[data-claim-chapter]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const chId = btn.getAttribute('data-claim-chapter');
+                    const ch = status.chapters.find(c => c.id === chId);
+                    if (!ch || !ch.ready || ch.isClaimed) return;
+
+                    player.claimedCampaignChapters[chId] = true;
+                    player.coins += ch.rewardCoins;
+                    player.lifetimeEarnings = (player.lifetimeEarnings || 0) + ch.rewardCoins;
+
+                    sound.playCatchFanfare('Legendary');
+                    saveProgress();
+                    updateHUD();
+                    renderCampaignModal();
+                    showToast(`${ch.chapter} Completed! Claimed +$${formatMoney(ch.rewardCoins)}!`, 'border-amber-400 text-amber-200');
+                });
+            });
         }
 
         function renderLeaderboardModal() {
@@ -3682,7 +4297,17 @@
             const passive = getPassiveIncomePerSec();
             const activeRiskCount = Object.values(player.activeRisks).filter(Boolean).length;
 
-            document.getElementById('hudCoins').textContent = `$${formatMoney(player.coins)}`;
+            const coinEl = document.getElementById('hudCoins');
+            const formattedCoins = `$${formatMoney(player.coins)}`;
+            if (coinEl.textContent !== formattedCoins) {
+                coinEl.textContent = formattedCoins;
+                coinEl.classList.remove('hud-bump');
+                void coinEl.offsetWidth;
+                coinEl.classList.add('hud-bump');
+            }
+            const campStat = getRoleCampaignStatus(char.id);
+            const campBadge = document.getElementById('hudCampaignBadge');
+            if (campBadge) campBadge.textContent = `${campStat.completedCount}/${campStat.total}`;
             document.getElementById('hudPassiveRate').textContent = `+$${formatMoney(passive)}/s`;
             document.getElementById('hudNetWorth').textContent = `$${formatMoney(getNetWorth())}`;
             document.getElementById('hudRoleBadge').textContent = char.name.replace('The ', '');
@@ -3723,12 +4348,13 @@
             const container = document.getElementById('toastContainer');
             if (!container) return;
             const toast = document.createElement('div');
-            toast.className = `maritime-panel rounded-2xl px-4 py-2.5 text-xs font-semibold shadow-xl border transition-all duration-300 ${extraClasses}`;
+            toast.className = `maritime-panel toast-enter rounded-2xl px-4 py-2.5 text-xs font-semibold shadow-xl border ${extraClasses}`;
             toast.textContent = msg;
             container.appendChild(toast);
             setTimeout(() => {
-                toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 300);
+                toast.classList.remove('toast-enter');
+                toast.classList.add('toast-exit');
+                setTimeout(() => toast.remove(), 280);
             }, 3400);
         }
 
@@ -3869,6 +4495,7 @@
                 if (existing && existing.villagerId === v.id && existing.progress >= existing.target) {
                     player.coins += existing.reward;
                     player.lifetimeEarnings = (player.lifetimeEarnings || 0) + existing.reward;
+                    player.questsCompleted = (player.questsCompleted || 0) + 1;
                     player.activeVillagerTask = null;
                     sound.playCatchFanfare('Rare');
                     saveProgress();
@@ -3922,6 +4549,14 @@
             // Catch Continue
             document.getElementById('catchContinueBtn').addEventListener('click', () => {
                 document.getElementById('catchModal').classList.add('hidden');
+            });
+
+            document.getElementById('openCampaignBtn').addEventListener('click', () => {
+                renderCampaignModal();
+                document.getElementById('campaignModal').classList.remove('hidden');
+            });
+            document.getElementById('closeCampaignBtn').addEventListener('click', () => {
+                document.getElementById('campaignModal').classList.add('hidden');
             });
 
             // Leaderboard
@@ -4056,6 +4691,7 @@
                 } else if (state === GAME_STATE.BITE) {
                     setHookAndStartReeling();
                 } else if (state === GAME_STATE.REELING) {
+                    reelHoldingInput = true;
                     handleTimingStrike();
                 } else if (state === GAME_STATE.HARPOONING) {
                     fireHarpoonBolt();
@@ -4063,6 +4699,7 @@
             });
 
             window.addEventListener('pointerup', () => {
+                reelHoldingInput = false;
                 if (worldScene === 'SEA' && state === GAME_STATE.CHARGING) {
                     releaseCast();
                 }
@@ -4098,8 +4735,9 @@
                         startChargingCast();
                     } else if (state === GAME_STATE.BITE && !e.repeat) {
                         setHookAndStartReeling();
-                    } else if (state === GAME_STATE.REELING && !e.repeat) {
-                        handleTimingStrike();
+                    } else if (state === GAME_STATE.REELING) {
+                        reelHoldingInput = true;
+                        if (!e.repeat) handleTimingStrike();
                     } else if (state === GAME_STATE.HARPOONING && !e.repeat) {
                         fireHarpoonBolt();
                     }
@@ -4110,6 +4748,7 @@
                 if (e.code === 'ArrowLeft' || e.code === 'KeyA') townKeys.left = false;
                 if (e.code === 'ArrowRight' || e.code === 'KeyD') townKeys.right = false;
 
+                if (e.code === 'Space') reelHoldingInput = false;
                 if (worldScene === 'SEA' && e.code === 'Space' && state === GAME_STATE.CHARGING) {
                     e.preventDefault();
                     releaseCast();
@@ -4257,21 +4896,49 @@
                 }
             }
 
-            // Reeling Timing-Bar Needle Oscillation
+            // Reeling 6-Challenge Physics Simulation
             if (state === GAME_STATE.REELING && hookedFish) {
                 const sp = hookedFish.species;
-                const needleSpeed = (1.15 + sp.fightStrength * 0.95) * ev.needleMult;
-                reelNeedlePos += reelNeedleDir * needleSpeed * dt;
-                if (reelNeedlePos >= 1) {
-                    reelNeedlePos = 1;
-                    reelNeedleDir = -1;
-                } else if (reelNeedlePos <= 0) {
-                    reelNeedlePos = 0;
-                    reelNeedleDir = 1;
-                }
+                const cType = activeReelChallenge.id;
+                const needleSpeed = (1.10 + sp.fightStrength * 0.90) * ev.needleMult;
 
-                // Gentle progress decay so player must time strikes actively
-                reelProgress = Math.max(0.02, reelProgress - (0.045 + sp.fightStrength * 0.04) * dt);
+                if (cType === 'tension_hold') {
+                    // Buoyancy float drifts down with current, rises when holding input
+                    const lift = reelHoldingInput ? 0.72 : -0.48;
+                    reelNeedlePos = Math.max(0.04, Math.min(0.96, reelNeedlePos + lift * dt));
+                    const inZone = Math.abs(reelNeedlePos - reelZoneCenter) <= reelZoneWidth * 0.55;
+                    if (inZone) {
+                        reelProgress += (0.34 - sp.fightStrength * 0.08) * dt;
+                        reelFeedbackText = 'HOLDING TENSION!';
+                        reelFeedbackColor = '#34d399';
+                        reelFeedbackTimer = 0.25;
+                        if (reelProgress >= 1) {
+                            completeCatch(hookedFish);
+                            return;
+                        }
+                    } else {
+                        reelProgress = Math.max(0.02, reelProgress - 0.14 * dt);
+                    }
+                } else if (cType === 'sonar_ring') {
+                    reelRingRadius -= (0.68 + sp.fightStrength * 0.35) * ev.needleMult * dt;
+                    if (reelRingRadius <= 0.08) reelRingRadius = 1.0;
+                    reelProgress = Math.max(0.02, reelProgress - (0.04 + sp.fightStrength * 0.03) * dt);
+                } else if (cType === 'tide_dial') {
+                    reelDialAngle = (reelDialAngle + (2.6 + sp.fightStrength * 1.6) * ev.needleMult * dt) % (Math.PI * 2);
+                    reelProgress = Math.max(0.02, reelProgress - (0.04 + sp.fightStrength * 0.03) * dt);
+                } else {
+                    // classic_bar, triple_rhythm, dual_pendulum
+                    reelNeedlePos += reelNeedleDir * needleSpeed * dt;
+                    if (reelNeedlePos >= 1) {
+                        reelNeedlePos = 1;
+                        reelNeedleDir = -1;
+                    } else if (reelNeedlePos <= 0) {
+                        reelNeedlePos = 0;
+                        reelNeedleDir = 1;
+                    }
+                    reelNeedle2Pos = 1 - reelNeedlePos;
+                    reelProgress = Math.max(0.02, reelProgress - (0.042 + sp.fightStrength * 0.035) * dt);
+                }
 
                 hookedFish.x = bobber.x + Math.sin(timeSec * 18) * 6;
                 hookedFish.y = bobber.y + Math.cos(timeSec * 14) * 4;
@@ -4279,28 +4946,35 @@
                 if (reelFeedbackTimer > 0) reelFeedbackTimer -= dt;
             }
 
-            // Harpoon Mini-Game Aim Sweep, Leviathan Evasion & Bolt Ballistics
+            // Harpoon Mini-Game Aim Sweep (with Magnetic Slowdown near Target), Smooth Leviathan Path & Generous Hitbox
             if (state === GAME_STATE.HARPOONING && hookedFish) {
                 harpoonWaveTimer += dt;
                 const harpoonLvl = player.upgrades.harpoon || 1;
-                const aimSpeed = harpoonLvl >= 2 ? 0.95 : 1.18;
+                const tip = getRodTipPos();
+                const idealAngle = Math.atan2(hookedFish.y - tip.y, hookedFish.x - tip.x);
+                const angleDelta = Math.abs(idealAngle - harpoonAimAngle);
+                harpoonLockQuality = Math.max(0, Math.min(1, 1 - angleDelta / 0.16));
+
+                // Slow down aim sweep when aligned with the Leviathan so firing feels crisp & fair
+                const baseAimSpeed = harpoonLvl >= 2 ? 0.56 : 0.68;
+                const aimSpeed = baseAimSpeed * (1 - harpoonLockQuality * 0.55);
                 harpoonAimAngle += harpoonAimDir * aimSpeed * dt;
-                if (harpoonAimAngle > 0.92) {
-                    harpoonAimAngle = 0.92;
+                if (harpoonAimAngle > 0.88) {
+                    harpoonAimAngle = 0.88;
                     harpoonAimDir = -1;
                 } else if (harpoonAimAngle < 0.06) {
                     harpoonAimAngle = 0.06;
                     harpoonAimDir = 1;
                 }
 
-                // Leviathan evasive swimming bounds
-                const minTx = Math.max(getBoatPos().x + 170, width * 0.36);
-                const maxTx = width - 75;
-                const minTy = waterY + 55;
-                const maxTy = height - 55;
+                // Predictable, smooth Leviathan patrol path
+                const minTx = Math.max(getBoatPos().x + 185, width * 0.38);
+                const maxTx = width - 95;
+                const minTy = waterY + 65;
+                const maxTy = height - 75;
 
                 harpoonTargetPos.x += harpoonTargetPos.vx * dt;
-                harpoonTargetPos.y += Math.sin(harpoonWaveTimer * 2.4) * 68 * dt;
+                harpoonTargetPos.y += Math.sin(harpoonWaveTimer * 1.4) * 34 * dt;
                 if (harpoonTargetPos.x > maxTx) {
                     harpoonTargetPos.x = maxTx;
                     harpoonTargetPos.vx = -Math.abs(harpoonTargetPos.vx);
@@ -4313,14 +4987,14 @@
                 hookedFish.x = harpoonTargetPos.x;
                 hookedFish.y = harpoonTargetPos.y;
                 hookedFish.dir = harpoonTargetPos.vx >= 0 ? 1 : -1;
-                hookedFish.tailPhase += dt * 11;
+                hookedFish.tailPhase += dt * 9;
 
-                // Bolt Flight & Hitbox Detection
+                // Bolt Flight & Generous Hitbox Detection
                 if (harpoonFlight && harpoonFlight.active) {
                     harpoonFlight.x += harpoonFlight.vx * dt;
                     harpoonFlight.y += harpoonFlight.vy * dt;
 
-                    const hitRadius = harpoonLvl >= 2 ? 44 : 36;
+                    const hitRadius = harpoonLvl >= 2 ? 64 : 54;
                     const distToLeviathan = Math.hypot(harpoonFlight.x - hookedFish.x, harpoonFlight.y - hookedFish.y);
 
                     if (distToLeviathan <= hitRadius) {
