@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Serene Waters — Maritime Fishery &amp; Fleet Tycoon</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%230284c7'/%3E%3Cstop offset='100%25' stop-color='%23061320'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Ccircle cx='32' cy='15' r='5.5' fill='none' stroke='%23fbbf24' stroke-width='4'/%3E%3Cline x1='32' y1='21' x2='32' y2='52' stroke='%23fbbf24' stroke-width='4.5' stroke-linecap='round'/%3E%3Cline x1='21' y1='29' x2='43' y2='29' stroke='%23fbbf24' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M15 39c0 10 8 15 17 15s17-5 17-15' fill='none' stroke='%23fbbf24' stroke-width='4.5' stroke-linecap='round'/%3E%3C/svg%3E">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Editorial Maritime Typography: Cormorant Garamond, Syne, Manrope & IBM Plex Mono -->
@@ -1329,9 +1330,16 @@
                 const raw = localStorage.getItem(SAVE_KEY);
                 if (!raw) return def;
                 const parsed = JSON.parse(raw);
+                const offlineRes = computeOfflineEarnings(parsed);
+                if (offlineRes) {
+                    parsed.coins = (parsed.coins || 0) + offlineRes.earned;
+                    parsed.lifetimeEarnings = (parsed.lifetimeEarnings || 0) + offlineRes.earned;
+                    pendingOfflineReport = offlineRes;
+                }
                 return {
                     ...def,
                     ...parsed,
+                    lastSavedAt: Date.now(),
                     hold: Array.isArray(parsed.hold) ? parsed.hold : [],
                     quests: Array.isArray(parsed.quests) && parsed.quests.length > 0 ? parsed.quests : def.quests,
                     activeVillagerTask: parsed.activeVillagerTask || null,
@@ -1348,8 +1356,28 @@
 
         function saveProgress() {
             try {
+                player.lastSavedAt = Date.now();
                 localStorage.setItem(SAVE_KEY, JSON.stringify(player));
             } catch (e) {}
+        }
+
+        let pendingOfflineReport = null;
+
+        function computeOfflineEarnings(savedObj) {
+            if (!savedObj || !savedObj.lastSavedAt || !savedObj.business) return null;
+            const elapsedSec = Math.floor((Date.now() - savedObj.lastSavedAt) / 1000);
+            if (elapsedSec < 15) return null;
+            const cappedSec = Math.min(elapsedSec, 8 * 3600); // Up to 8 hours offline cap
+            let baseRate = 0;
+            for (const unit of BUSINESS_UNITS) {
+                baseRate += (savedObj.business[unit.id] || 0) * unit.incomePerSec;
+            }
+            if (baseRate <= 0) return null;
+            const char = CHARACTER_ROLES.find(c => c.id === savedObj.characterId) || CHARACTER_ROLES[0];
+            const offlineEfficiency = 0.65;
+            const earned = Math.floor(baseRate * char.fleetBonus * offlineEfficiency * cappedSec);
+            if (earned < 1) return null;
+            return { earned, elapsedSec: cappedSec };
         }
 
         let player = loadProgress();
@@ -1494,6 +1522,7 @@
             WAITING: 'WAITING',
             BITE: 'BITE',
             REELING: 'REELING',
+            HARPOONING: 'HARPOONING',
             ESCAPED: 'ESCAPED'
         };
 
@@ -1513,6 +1542,16 @@
         let rainDrops = [];
         let seagulls = [];
         let chimneySmoke = [];
+
+        // Harpoon Aim-and-Fire Mini-Game State
+        let harpoonAimAngle = -0.35;
+        let harpoonAimDir = 1;
+        let harpoonBoltsLeft = 3;
+        let harpoonHits = 0;
+        let harpoonHitsRequired = 3;
+        let harpoonFlight = null; // { x, y, vx, vy, active }
+        let harpoonTargetPos = { x: 0, y: 0, vx: 120, vy: 45 };
+        let harpoonWaveTimer = 0;
 
         // Timing-Bar Reeling Mini-Game State
         let reelProgress = 0.25;
@@ -1689,6 +1728,11 @@
                 return;
             }
 
+            if (sp.tooBigForRod && player.harpoonMode) {
+                startHarpoonMiniGame();
+                return;
+            }
+
             const lineTier = UPGRADES.line.tiers[player.upgrades.line || 0];
             const char = getActiveCharacter();
             const zoneScale = (lineTier ? lineTier.zoneScale : 1.0) * char.strikeZoneBonus;
@@ -1705,6 +1749,46 @@
 
             sound.playSplash(1.1);
             updateActionPrompt('Tap or press Spacebar when the needle enters the GREEN or GOLD zone!', 'bg-amber-400');
+        }
+
+        function startHarpoonMiniGame() {
+            state = GAME_STATE.HARPOONING;
+            const harpoonLvl = player.upgrades.harpoon || 1;
+            harpoonHitsRequired = 3;
+            harpoonBoltsLeft = harpoonLvl >= 2 ? 5 : 4;
+            harpoonHits = 0;
+            harpoonFlight = null;
+            harpoonWaveTimer = 0;
+            const tip = getRodTipPos();
+            harpoonTargetPos = {
+                x: Math.max(tip.x + 220, width * 0.62),
+                y: Math.min(height - 95, getWaterlineY() + 145),
+                vx: 135,
+                vy: 55
+            };
+            harpoonAimAngle = 0.32;
+            harpoonAimDir = 1;
+            sound.playSplash(1.3);
+            updateActionPrompt('HARPOON CANNON! Tap or press Spacebar to fire pneumatic bolts into the Leviathan!', 'bg-amber-400');
+        }
+
+        function fireHarpoonBolt() {
+            if (state !== GAME_STATE.HARPOONING || !hookedFish) return;
+            if (harpoonFlight && harpoonFlight.active) return;
+            if (harpoonBoltsLeft <= 0) return;
+
+            harpoonBoltsLeft--;
+            const tip = getRodTipPos();
+            const speed = 780;
+            harpoonFlight = {
+                x: tip.x,
+                y: tip.y,
+                vx: Math.cos(harpoonAimAngle) * speed,
+                vy: Math.sin(harpoonAimAngle) * speed,
+                active: true
+            };
+            sound.playCast();
+            spawnSplashParticles(tip.x, tip.y, 6, '#fbbf24');
         }
 
         function handleTimingStrike() {
@@ -1861,45 +1945,142 @@
             openCatchModal(catchRecord, sp, isNewSpecies);
         }
 
+        function traceSpeciesBodyPath(ctx, shape, len, h, wave = 0) {
+            ctx.beginPath();
+            if (shape === 'panfish') {
+                // Tall, disc-like sunfish/angelfish silhouette
+                ctx.moveTo(len * 0.95, 0);
+                ctx.quadraticCurveTo(len * 0.35, -h * 1.45, -len * 0.25, -h * 1.25);
+                ctx.quadraticCurveTo(-len * 0.75, -h * 0.7, -len * 0.9, 0);
+                ctx.quadraticCurveTo(-len * 0.75, h * 0.7, -len * 0.25, h * 1.25);
+                ctx.quadraticCurveTo(len * 0.35, h * 1.45, len * 0.95, 0);
+            } else if (shape === 'pike') {
+                // Sleek torpedo predator silhouette with elongated snout
+                ctx.moveTo(len * 1.22, -h * 0.12);
+                ctx.quadraticCurveTo(len * 0.55, -h * 0.72, -len * 0.35, -h * 0.68);
+                ctx.lineTo(-len * 1.02, -h * 0.36);
+                ctx.lineTo(-len * 1.02, h * 0.36);
+                ctx.lineTo(-len * 0.35, h * 0.68);
+                ctx.quadraticCurveTo(len * 0.55, h * 0.72, len * 1.22, h * 0.12);
+            } else if (shape === 'eel') {
+                // Serpentine undulating ribbon/eel silhouette
+                ctx.moveTo(len * 1.15, 0);
+                ctx.bezierCurveTo(len * 0.5, -h * 0.65 + wave * 0.3, -len * 0.2, h * 0.65 - wave * 0.5, -len * 1.25, wave * 0.8);
+                ctx.bezierCurveTo(-len * 0.2, h * 1.05 - wave * 0.5, len * 0.5, h * 0.35 + wave * 0.3, len * 1.15, 0);
+            } else {
+                // Classic streamlined fusiform fish
+                ctx.ellipse(0, 0, len, h, 0, 0, Math.PI * 2);
+            }
+            ctx.closePath();
+        }
+
         function drawUnderwaterFish(fish, timeSec) {
             const sp = fish.species;
             const sonarLvl = player.upgrades.sonar || 0;
             const bodyLen = 18 * sp.sizeScale;
             const bodyH = 8 * sp.sizeScale;
+            const tailWag = Math.sin(fish.tailPhase) * (sp.bodyShape === 'eel' ? 6.5 : 4.5);
 
             ctx.save();
             ctx.translate(fish.x, fish.y);
             if (fish.dir < 0) ctx.scale(-1, 1);
 
             if (sonarLvl >= 1 && sp.rarity !== 'Common') {
-                ctx.strokeStyle = sp.rarity === 'Colossal' ? 'rgba(248, 113, 113, 0.7)' : 'rgba(251, 191, 36, 0.55)';
+                ctx.strokeStyle = sp.rarity === 'Colossal' ? 'rgba(248, 113, 113, 0.75)' : 'rgba(251, 191, 36, 0.55)';
                 ctx.lineWidth = 1.5;
                 ctx.beginPath();
-                ctx.ellipse(0, 0, bodyLen + 8, bodyH + 6, 0, 0, Math.PI * 2);
+                ctx.ellipse(0, 0, bodyLen * 1.2 + 8, bodyH * 1.3 + 6, 0, 0, Math.PI * 2);
                 ctx.stroke();
             }
 
-            const tailWag = Math.sin(fish.tailPhase) * 4.5;
+            // Dorsal & Pectoral Fins tailored to shape
             ctx.fillStyle = sp.colorFin;
-            ctx.beginPath();
-            ctx.moveTo(-bodyLen * 0.85, 0);
-            ctx.lineTo(-bodyLen * 1.35, -bodyH * 0.75 + tailWag);
-            ctx.lineTo(-bodyLen * 1.35, bodyH * 0.75 + tailWag);
-            ctx.closePath();
-            ctx.fill();
+            if (sp.bodyShape === 'panfish') {
+                ctx.beginPath();
+                ctx.moveTo(-bodyLen * 0.1, -bodyH * 1.1);
+                ctx.lineTo(-bodyLen * 0.55, -bodyH * 1.75);
+                ctx.lineTo(-bodyLen * 0.65, -bodyH * 0.8);
+                ctx.closePath();
+                ctx.fill();
+            } else if (sp.bodyShape !== 'eel') {
+                ctx.beginPath();
+                ctx.moveTo(bodyLen * 0.05, -bodyH * 0.75);
+                ctx.lineTo(-bodyLen * 0.25, -bodyH * 1.45);
+                ctx.lineTo(-bodyLen * 0.45, -bodyH * 0.7);
+                ctx.closePath();
+                ctx.fill();
+            }
 
+            // Caudal (Tail) Fin
+            if (sp.bodyShape !== 'eel') {
+                const tailBaseX = sp.bodyShape === 'pike' ? -bodyLen * 0.98 : -bodyLen * 0.82;
+                const tailTipX = sp.bodyShape === 'pike' ? -bodyLen * 1.48 : -bodyLen * 1.35;
+                const forkDepth = sp.bodyShape === 'pike' ? -bodyLen * 1.25 : tailTipX;
+                ctx.beginPath();
+                ctx.moveTo(tailBaseX, 0);
+                ctx.lineTo(tailTipX, -bodyH * 0.82 + tailWag);
+                ctx.lineTo(forkDepth, tailWag * 0.5);
+                ctx.lineTo(tailTipX, bodyH * 0.82 + tailWag);
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            // Primary Body Silhouette
             ctx.fillStyle = sp.colorPrimary;
-            ctx.beginPath();
-            ctx.ellipse(0, 0, bodyLen, bodyH, 0, 0, Math.PI * 2);
+            traceSpeciesBodyPath(ctx, sp.bodyShape, bodyLen, bodyH, tailWag);
             ctx.fill();
 
+            // Clipped Pattern Overlay (stripes, bars, koi, rainbow)
+            if (sp.pattern && sp.pattern !== 'none') {
+                ctx.save();
+                traceSpeciesBodyPath(ctx, sp.bodyShape, bodyLen, bodyH, tailWag);
+                ctx.clip();
+
+                if (sp.pattern === 'bars') {
+                    ctx.fillStyle = sp.colorSecondary;
+                    ctx.globalAlpha = 0.55;
+                    for (let bx = -bodyLen * 0.55; bx <= bodyLen * 0.45; bx += bodyLen * 0.32) {
+                        ctx.fillRect(bx, -bodyH * 1.6, bodyLen * 0.13, bodyH * 3.2);
+                    }
+                } else if (sp.pattern === 'stripes') {
+                    ctx.strokeStyle = sp.colorSecondary;
+                    ctx.lineWidth = Math.max(1.4, bodyH * 0.22);
+                    ctx.globalAlpha = 0.65;
+                    for (let sy = -bodyH * 0.35; sy <= bodyH * 0.35; sy += bodyH * 0.35) {
+                        ctx.beginPath();
+                        ctx.moveTo(-bodyLen * 1.1, sy);
+                        ctx.lineTo(bodyLen * 1.1, sy);
+                        ctx.stroke();
+                    }
+                } else if (sp.pattern === 'koi') {
+                    ctx.fillStyle = sp.colorSecondary;
+                    ctx.globalAlpha = 0.78;
+                    ctx.beginPath();
+                    ctx.arc(-bodyLen * 0.2, -bodyH * 0.2, bodyH * 0.55, 0, Math.PI * 2);
+                    ctx.arc(bodyLen * 0.32, bodyH * 0.18, bodyH * 0.48, 0, Math.PI * 2);
+                    ctx.fill();
+                } else if (sp.pattern === 'rainbow') {
+                    const rb = ctx.createLinearGradient(0, -bodyH, 0, bodyH);
+                    rb.addColorStop(0, sp.colorPrimary);
+                    rb.addColorStop(0.5, sp.colorSecondary);
+                    rb.addColorStop(1, '#ffffff');
+                    ctx.fillStyle = rb;
+                    ctx.globalAlpha = 0.65;
+                    ctx.fillRect(-bodyLen * 1.3, -bodyH * 1.6, bodyLen * 2.6, bodyH * 3.2);
+                }
+                ctx.restore();
+            }
+
+            // Eye
+            const eyeX = sp.bodyShape === 'pike' ? bodyLen * 0.82 : (sp.bodyShape === 'eel' ? bodyLen * 0.85 : bodyLen * 0.62);
+            const eyeY = sp.bodyShape === 'panfish' ? -bodyH * 0.32 : -bodyH * 0.18;
             ctx.fillStyle = '#ffffff';
             ctx.beginPath();
-            ctx.arc(bodyLen * 0.62, -bodyH * 0.22, 2.4, 0, Math.PI * 2);
+            ctx.arc(eyeX, eyeY, 2.4 * Math.min(1.4, sp.sizeScale), 0, Math.PI * 2);
             ctx.fill();
             ctx.fillStyle = '#0f172a';
             ctx.beginPath();
-            ctx.arc(bodyLen * 0.65, -bodyH * 0.22, 1.2, 0, Math.PI * 2);
+            ctx.arc(eyeX + 0.6, eyeY, 1.2 * Math.min(1.4, sp.sizeScale), 0, Math.PI * 2);
             ctx.fill();
 
             ctx.restore();
@@ -2173,9 +2354,11 @@
                 ctx.fill();
             }
 
-            // 7. Timing-Bar Reeling Mini-Game Overlay
+            // 7. Timing-Bar Reeling or Harpoon Cannon Mini-Game Overlay
             if (state === GAME_STATE.REELING) {
                 drawReelingMiniGameHUD();
+            } else if (state === GAME_STATE.HARPOONING) {
+                drawHarpoonMiniGameHUD();
             }
 
             // 8. Splash Particles
@@ -2200,6 +2383,97 @@
                 });
                 ctx.stroke();
             }
+        }
+
+        function drawHarpoonMiniGameHUD() {
+            const tip = getRodTipPos();
+            ctx.save();
+
+            // Aiming Trajectory Dashed Sightline from Harpoon Cannon
+            const aimLen = Math.min(460, width * 0.55);
+            const endX = tip.x + Math.cos(harpoonAimAngle) * aimLen;
+            const endY = tip.y + Math.sin(harpoonAimAngle) * aimLen;
+
+            ctx.strokeStyle = 'rgba(251, 191, 36, 0.72)';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([8, 6]);
+            ctx.beginPath();
+            ctx.moveTo(tip.x, tip.y);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Target Lock Reticle around Colossal Leviathan
+            if (hookedFish) {
+                const tx = hookedFish.x;
+                const ty = hookedFish.y;
+                const rad = 32;
+                ctx.strokeStyle = '#f87171';
+                ctx.lineWidth = 2.2;
+                ctx.beginPath();
+                ctx.arc(tx, ty, rad, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(tx - rad - 8, ty); ctx.lineTo(tx - rad + 6, ty);
+                ctx.moveTo(tx + rad - 6, ty); ctx.lineTo(tx + rad + 8, ty);
+                ctx.moveTo(tx, ty - rad - 8); ctx.lineTo(tx, ty - rad + 6);
+                ctx.moveTo(tx, ty + rad - 6); ctx.lineTo(tx, ty + rad + 8);
+                ctx.stroke();
+            }
+
+            // Flying Pneumatic Harpoon Bolt & Tether Cable
+            if (harpoonFlight && harpoonFlight.active) {
+                ctx.strokeStyle = 'rgba(226, 232, 240, 0.65)';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(tip.x, tip.y);
+                ctx.lineTo(harpoonFlight.x, harpoonFlight.y);
+                ctx.stroke();
+
+                const ang = Math.atan2(harpoonFlight.vy, harpoonFlight.vx);
+                ctx.save();
+                ctx.translate(harpoonFlight.x, harpoonFlight.y);
+                ctx.rotate(ang);
+                ctx.fillStyle = '#fbbf24';
+                ctx.beginPath();
+                ctx.moveTo(14, 0);
+                ctx.lineTo(-10, -5);
+                ctx.lineTo(-6, 0);
+                ctx.lineTo(-10, 5);
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            }
+
+            // Top Harpoon Status Card
+            const barW = Math.min(380, width - 48);
+            const bx = (width - barW) * 0.5;
+            const by = Math.max(115, getWaterlineY() - 96);
+
+            ctx.fillStyle = 'rgba(9, 20, 36, 0.92)';
+            ctx.strokeStyle = 'rgba(251, 191, 36, 0.55)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.roundRect(bx - 14, by - 34, barW + 28, 72, 16);
+            ctx.fill();
+            ctx.stroke();
+
+            const spName = hookedFish ? hookedFish.species.name : 'Colossal Leviathan';
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = 'bold 12px Syne, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(`HARPOON LOCK: ${spName.toUpperCase()}`, bx, by - 12);
+
+            ctx.fillStyle = '#f8fafc';
+            ctx.font = 'bold 12px "IBM Plex Mono", monospace';
+            ctx.fillText(`HITS: ${harpoonHits}/${harpoonHitsRequired}`, bx, by + 16);
+
+            ctx.fillStyle = '#38bdf8';
+            ctx.textAlign = 'right';
+            ctx.fillText(`BOLTS LEFT: ${harpoonBoltsLeft}`, bx + barW, by + 16);
+
+            ctx.restore();
         }
 
         function drawReelingMiniGameHUD() {
@@ -3128,6 +3402,69 @@
             };
         }
 
+        function buildSpeciesPreviewSVG(sp) {
+            const clipId = `fishClip_${sp.id.replace(/[^a-zA-Z0-9]/g, '_')}`;
+            let bodySvg = `<ellipse cx="64" cy="30" rx="34" ry="15" fill="${sp.colorPrimary}" />`;
+            let clipShape = `<ellipse cx="64" cy="30" rx="34" ry="15" />`;
+            let tailSvg = `<polygon points="32,30 12,15 19,30 12,45" fill="${sp.colorFin}" />`;
+            let finSvg = `<polygon points="62,16 50,7 46,17" fill="${sp.colorFin}" />`;
+            let eyeX = 84, eyeY = 26;
+
+            if (sp.bodyShape === 'panfish') {
+                const path = `M96,30 Q74,6 50,10 Q32,18 28,30 Q32,42 50,50 Q74,54 96,30 Z`;
+                bodySvg = `<path d="${path}" fill="${sp.colorPrimary}" />`;
+                clipShape = `<path d="${path}" />`;
+                tailSvg = `<polygon points="30,30 13,17 18,30 13,43" fill="${sp.colorFin}" />`;
+                finSvg = `<polygon points="60,11 45,3 42,13" fill="${sp.colorFin}" />`;
+                eyeX = 81; eyeY = 24;
+            } else if (sp.bodyShape === 'pike') {
+                const path = `M106,28 Q80,17 48,18 L24,23 L24,37 L48,42 Q80,43 106,32 Z`;
+                bodySvg = `<path d="${path}" fill="${sp.colorPrimary}" />`;
+                clipShape = `<path d="${path}" />`;
+                tailSvg = `<polygon points="26,30 8,15 15,30 8,45" fill="${sp.colorFin}" />`;
+                finSvg = `<polygon points="48,18 36,10 33,19" fill="${sp.colorFin}" />`;
+                eyeX = 91; eyeY = 27;
+            } else if (sp.bodyShape === 'eel') {
+                const path = `M104,30 C82,16 54,42 14,26 C52,48 82,24 104,30 Z`;
+                bodySvg = `<path d="${path}" fill="${sp.colorPrimary}" />`;
+                clipShape = `<path d="${path}" />`;
+                tailSvg = ``;
+                finSvg = `<path d="M84,24 Q60,14 34,27" stroke="${sp.colorFin}" stroke-width="3" fill="none" />`;
+                eyeX = 93; eyeY = 28;
+            }
+
+            let patternSvg = '';
+            if (sp.pattern === 'bars') {
+                patternSvg = `<g clip-path="url(#${clipId})" opacity="0.55" fill="${sp.colorSecondary}">
+                    <rect x="42" y="5" width="6" height="50"/><rect x="56" y="5" width="6" height="50"/><rect x="70" y="5" width="6" height="50"/>
+                </g>`;
+            } else if (sp.pattern === 'stripes') {
+                patternSvg = `<g clip-path="url(#${clipId})" opacity="0.65" stroke="${sp.colorSecondary}" stroke-width="2.5">
+                    <line x1="20" y1="25" x2="105" y2="25"/><line x1="20" y1="33" x2="105" y2="33"/>
+                </g>`;
+            } else if (sp.pattern === 'koi') {
+                patternSvg = `<g clip-path="url(#${clipId})" opacity="0.8" fill="${sp.colorSecondary}">
+                    <circle cx="54" cy="25" r="8"/><circle cx="75" cy="33" r="7"/>
+                </g>`;
+            } else if (sp.pattern === 'rainbow') {
+                patternSvg = `<g clip-path="url(#${clipId})" opacity="0.55">
+                    <rect x="15" y="24" width="90" height="7" fill="${sp.colorSecondary}"/>
+                </g>`;
+            }
+
+            return `
+                <svg class="w-36 h-20" viewBox="0 0 120 60">
+                    <defs><clipPath id="${clipId}">${clipShape}</clipPath></defs>
+                    ${finSvg}
+                    ${tailSvg}
+                    ${bodySvg}
+                    ${patternSvg}
+                    <circle cx="${eyeX}" cy="${eyeY}" r="3.6" fill="#ffffff" />
+                    <circle cx="${eyeX + 1}" cy="${eyeY}" r="1.8" fill="#0f172a" />
+                </svg>
+            `;
+        }
+
         function openCatchModal(record, sp, isNew) {
             document.getElementById('catchRarityBadge').textContent = sp.rarity;
             document.getElementById('catchName').textContent = sp.name;
@@ -3140,14 +3477,7 @@
             if (isNew) newTag.classList.remove('hidden');
             else newTag.classList.add('hidden');
 
-            document.getElementById('catchSpeciesArt').innerHTML = `
-                <svg class="w-28 h-16" viewBox="0 0 120 60">
-                    <ellipse cx="64" cy="30" rx="34" ry="15" fill="${sp.colorPrimary}" />
-                    <polygon points="30,30 12,16 18,30 12,44" fill="${sp.colorFin}" />
-                    <circle cx="84" cy="26" r="3.5" fill="#ffffff" />
-                    <circle cx="85" cy="26" r="1.8" fill="#0f172a" />
-                </svg>
-            `;
+            document.getElementById('catchSpeciesArt').innerHTML = buildSpeciesPreviewSVG(sp);
             document.getElementById('catchModal').classList.remove('hidden');
         }
 
@@ -3727,6 +4057,8 @@
                     setHookAndStartReeling();
                 } else if (state === GAME_STATE.REELING) {
                     handleTimingStrike();
+                } else if (state === GAME_STATE.HARPOONING) {
+                    fireHarpoonBolt();
                 }
             });
 
@@ -3768,6 +4100,8 @@
                         setHookAndStartReeling();
                     } else if (state === GAME_STATE.REELING && !e.repeat) {
                         handleTimingStrike();
+                    } else if (state === GAME_STATE.HARPOONING && !e.repeat) {
+                        fireHarpoonBolt();
                     }
                 }
             });
@@ -3944,6 +4278,82 @@
 
                 if (reelFeedbackTimer > 0) reelFeedbackTimer -= dt;
             }
+
+            // Harpoon Mini-Game Aim Sweep, Leviathan Evasion & Bolt Ballistics
+            if (state === GAME_STATE.HARPOONING && hookedFish) {
+                harpoonWaveTimer += dt;
+                const harpoonLvl = player.upgrades.harpoon || 1;
+                const aimSpeed = harpoonLvl >= 2 ? 0.95 : 1.18;
+                harpoonAimAngle += harpoonAimDir * aimSpeed * dt;
+                if (harpoonAimAngle > 0.92) {
+                    harpoonAimAngle = 0.92;
+                    harpoonAimDir = -1;
+                } else if (harpoonAimAngle < 0.06) {
+                    harpoonAimAngle = 0.06;
+                    harpoonAimDir = 1;
+                }
+
+                // Leviathan evasive swimming bounds
+                const minTx = Math.max(getBoatPos().x + 170, width * 0.36);
+                const maxTx = width - 75;
+                const minTy = waterY + 55;
+                const maxTy = height - 55;
+
+                harpoonTargetPos.x += harpoonTargetPos.vx * dt;
+                harpoonTargetPos.y += Math.sin(harpoonWaveTimer * 2.4) * 68 * dt;
+                if (harpoonTargetPos.x > maxTx) {
+                    harpoonTargetPos.x = maxTx;
+                    harpoonTargetPos.vx = -Math.abs(harpoonTargetPos.vx);
+                } else if (harpoonTargetPos.x < minTx) {
+                    harpoonTargetPos.x = minTx;
+                    harpoonTargetPos.vx = Math.abs(harpoonTargetPos.vx);
+                }
+                harpoonTargetPos.y = Math.max(minTy, Math.min(maxTy, harpoonTargetPos.y));
+
+                hookedFish.x = harpoonTargetPos.x;
+                hookedFish.y = harpoonTargetPos.y;
+                hookedFish.dir = harpoonTargetPos.vx >= 0 ? 1 : -1;
+                hookedFish.tailPhase += dt * 11;
+
+                // Bolt Flight & Hitbox Detection
+                if (harpoonFlight && harpoonFlight.active) {
+                    harpoonFlight.x += harpoonFlight.vx * dt;
+                    harpoonFlight.y += harpoonFlight.vy * dt;
+
+                    const hitRadius = harpoonLvl >= 2 ? 44 : 36;
+                    const distToLeviathan = Math.hypot(harpoonFlight.x - hookedFish.x, harpoonFlight.y - hookedFish.y);
+
+                    if (distToLeviathan <= hitRadius) {
+                        harpoonFlight.active = false;
+                        harpoonHits++;
+                        sound.playTimingHit(true, harpoonHits);
+                        spawnSplashParticles(hookedFish.x, hookedFish.y, 18, '#fbbf24');
+
+                        if (harpoonHits >= harpoonHitsRequired) {
+                            completeCatch(hookedFish);
+                            return;
+                        } else if (harpoonBoltsLeft <= 0) {
+                            sound.playSnap();
+                            showToast(`Out of harpoon bolts! ${hookedFish.species.name} broke free into the deep!`, 'border-rose-400 text-rose-200');
+                            resetToIdle();
+                            return;
+                        } else {
+                            showToast(`Direct Harpoon Hit (${harpoonHits}/${harpoonHitsRequired})! Fire again!`, 'border-amber-400 text-amber-200');
+                        }
+                    } else if (harpoonFlight.x > width + 40 || harpoonFlight.y > height + 40 || harpoonFlight.y < 0) {
+                        harpoonFlight.active = false;
+                        sound.playTimingMiss();
+                        if (harpoonBoltsLeft <= 0) {
+                            sound.playSnap();
+                            showToast(`Missed final harpoon bolt! ${hookedFish.species.name} escaped!`, 'border-rose-400 text-rose-200');
+                            resetToIdle();
+                            return;
+                        } else {
+                            showToast(`Bolt missed! ${harpoonBoltsLeft} bolt${harpoonBoltsLeft === 1 ? '' : 's'} remaining.`, 'border-slate-400 text-slate-200');
+                        }
+                    }
+                }
+            }
         }
 
         function gameLoop(now) {
@@ -3965,6 +4375,12 @@
             setupUIEventListeners();
             renderCharacterSelectionGrid();
             updateHUD();
+            if (pendingOfflineReport) {
+                const mins = Math.max(1, Math.round(pendingOfflineReport.elapsedSec / 60));
+                showToast(`Fleet Offline Yield (${mins}m away): +$${formatMoney(pendingOfflineReport.earned)}!`, 'border-emerald-400 text-emerald-200');
+                saveProgress();
+                pendingOfflineReport = null;
+            }
             requestAnimationFrame(gameLoop);
         };
     </script>
