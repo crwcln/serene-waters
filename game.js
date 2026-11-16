@@ -1,9 +1,46 @@
 /* ==========================================================================
-   Serene Waters: Maritime Fishery & Fleet Tycoon — Game Engine
+   Serene Waters: Maritime Fishery & Fleet Tycoon — Full Game Engine
    ========================================================================== */
 
 // --------------------------------------------------------------------------
-// 1. PROCEDURAL WEB AUDIO ENGINE (With Coast Guard Siren)
+// 1. CUSTOM MARITIME SVG ICONS (No Emojis)
+// --------------------------------------------------------------------------
+const ICONS = {
+    coin: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5a2.5 2.5 0 0 1 5 0c0 2.5-5 2.5-5 5a2.5 2.5 0 0 0 5 0"/></svg>`,
+    bucket: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8h14l-1.5 11a2 2 0 0 1-2 1.7h-7a2 2 0 0 1-2-1.7L5 8z"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/></svg>`,
+    town: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6"/></svg>`,
+    harpoon: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20L20 4M14 4h6v6M9 15l-4 4"/></svg>`,
+    charts: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>`,
+    empire: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20M4 20V8l6 4V8l6 4V4h4v16"/></svg>`,
+    risk: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L3 7v6c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V7l-9-5z"/><path d="M12 8v4M12 16h.01"/></svg>`,
+    dex: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`,
+    rank: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>`,
+    menu: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>`,
+    compass: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>`
+};
+
+function injectIcons() {
+    const map = {
+        iconTreasury: ICONS.coin,
+        iconHold: ICONS.bucket,
+        iconTownBtn: ICONS.town,
+        iconHarpoonBtn: ICONS.harpoon,
+        iconChartsBtn: ICONS.charts,
+        iconEmpireBtn: ICONS.empire,
+        iconRiskBtn: ICONS.risk,
+        iconDexBtn: ICONS.dex,
+        iconRankBtn: ICONS.rank,
+        iconMenuBtn: ICONS.menu,
+        iconCompass: ICONS.compass
+    };
+    Object.entries(map).forEach(([id, svg]) => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = svg;
+    });
+}
+
+// --------------------------------------------------------------------------
+// 2. PROCEDURAL WEB AUDIO ENGINE (With Coast Guard Siren)
 // --------------------------------------------------------------------------
 class SoundEngine {
     constructor() {
@@ -112,7 +149,7 @@ class SoundEngine {
 const sound = new SoundEngine();
 
 // --------------------------------------------------------------------------
-// 2. DISTINCT CHARACTER CAMPAIGNS, GAME MODES & STORIES
+// 3. DISTINCT CHARACTER CAMPAIGNS, GAME TYPES & STORIES
 // --------------------------------------------------------------------------
 const CHARACTER_CAMPAIGNS = {
     fisher: {
@@ -121,7 +158,7 @@ const CHARACTER_CAMPAIGNS = {
         gameMode: 'Apex Expedition Mode',
         coatColor: '#38bdf8',
         hatColor: '#0284c7',
-        perkSummary: '+25% Reeling Precision • +40% Rare & Leviathan Spawn Rate',
+        perkSummary: '+25% Reeling Zone • +40% Rare & Leviathan Spawn Rate',
         plot: 'Your grandfather vanished charting the Abyssal Trench. Upgrade your harpoon and log specimens across all 6 seas to finish his expedition.',
         mechanics: {
             zoneBonus: 1.25,
@@ -157,7 +194,7 @@ const CHARACTER_CAMPAIGNS = {
         gameMode: 'Market Tycoon & Contract Mode',
         coatColor: '#f59e0b',
         hatColor: '#b45309',
-        perkSummary: '+35% Harbor Market Sale Prices • +50% Guild Quest Payouts',
+        perkSummary: '+35% Harbor Market Sale Prices • +50% Guild & Villager Payouts',
         plot: 'Harbor Pier 01 is buried under debt to the port syndicate. Corner the local market, fulfill guild contracts, and buy out the harbor.',
         mechanics: {
             zoneBonus: 1.05,
@@ -175,7 +212,7 @@ const CHARACTER_CAMPAIGNS = {
             },
             {
                 title: 'Chapter II: Guild Pillar',
-                goalText: 'Complete 3 Harbormaster Guild Quests.',
+                goalText: 'Complete 3 Guild Quests or Villager Tasks.',
                 progress: (s) => Math.min(1, s.questsCompleted / 3),
                 check: (s) => s.questsCompleted >= 3
             },
@@ -265,7 +302,62 @@ const CHARACTER_CAMPAIGNS = {
 };
 
 // --------------------------------------------------------------------------
-// 3. LOCATIONS, 600 SPECIES GENERATOR, UPGRADES, EMPIRE & RISK DATA
+// 4. ONE-TIME FEATURE BRIEFINGS
+// --------------------------------------------------------------------------
+const FEATURE_BRIEFINGS = {
+    town: {
+        title: 'Welcome to Harbor Town',
+        desc: 'You have docked at the Harbor Boardwalk. Walk left and right to visit pier storefronts or speak directly with strolling townsfolk.',
+        bullets: [
+            'Pier 01 Fishmonger Market: Sell catches from your livewell for instant treasury funds.',
+            'Harbormaster Guild Hall: Fulfill multi-fish port supply contracts.',
+            'Drydock Outfitter: Upgrade your rod, livewell capacity, lure, radar, and harpoon.',
+            'Strolling Villagers: Walk up to villagers with speech bubbles to accept custom town tasks.'
+        ]
+    },
+    charts: {
+        title: 'Expedition Navigation Charts',
+        desc: 'Expand your fishery across 6 distinct oceanic and freshwater regions. Each region hosts 100 unique, strictly region-locked species.',
+        bullets: [
+            'Unlocking Regions: Increase your Total Net Worth to unlock deeper waters.',
+            'Regional Value Multipliers: Distant trenches and polar shelves yield up to 32x base catch value.'
+        ]
+    },
+    empire: {
+        title: 'Maritime Business HQ',
+        desc: 'Transition from solo angling to an automated maritime enterprise by investing in shore facilities and commercial vessels.',
+        bullets: [
+            'Continuous Passive Revenue: Assets generate treasury income every second, even while fishing.',
+            'Compound Scaling: Acquire multiple units of each facility to multiply your fleet output.'
+        ]
+    },
+    risk: {
+        title: 'Coast Guard Patrol & Risk Operations',
+        desc: 'High-reward maritime directives boost catch prices and fleet yields, but draw attention from Coast Guard patrol cutters.',
+        bullets: [
+            'Patrol Heat Meter: Risky operations raise Heat up to 100%.',
+            'Coast Guard Apprehension: If Heat hits 100%, sirens trigger, livewell catches are confiscated, and a 35% treasury fine is levied.'
+        ]
+    },
+    fishdex: {
+        title: 'Regional Ichthyology FishDex',
+        desc: 'Track all 600 cataloged aquatic species across the world’s 6 waters, from Common creek trout to Colossal Leviathans.',
+        bullets: [
+            '100 Species Per Region: Every water body features its own dedicated catalog.',
+            'Leviathan Class: Requires the Industrial Harpoon to land.'
+        ]
+    },
+    leaderboard: {
+        title: 'Global Maritime Registry',
+        desc: 'Compare your combined Net Worth (Treasury + Empire Assets + Livewell Hold) against rival fishing captains and conglomerates.',
+        bullets: [
+            'Real-Time Ranking: Climb from Rookie Angler to the #1 Maritime Tycoon.'
+        ]
+    }
+};
+
+// --------------------------------------------------------------------------
+// 5. LOCATIONS, 600 SPECIES GENERATOR, UPGRADES, EMPIRE & RISK DATA
 // --------------------------------------------------------------------------
 const LOCATIONS = [
     { id: 'creek', name: 'Willow Creek Village', unlockNetWorth: 0, mult: 1.0, skyTop: '#1e3a5f', skyBot: '#60a5fa', waterTop: '#0ea5e9', waterBot: '#032539', desc: 'Calm freshwater tributary ideal for small vessels.' },
@@ -293,7 +385,7 @@ const FISH_SPECIES = [];
 LOCATIONS.forEach((loc, locIdx) => {
     for (let i = 0; i < 100; i++) {
         let rarityIdx = 0;
-        if (i >= 95) rarityIdx = 5; // 5 Leviathans per region
+        if (i >= 95) rarityIdx = 5;
         else if (i >= 86) rarityIdx = 4;
         else if (i >= 72) rarityIdx = 3;
         else if (i >= 52) rarityIdx = 2;
@@ -343,7 +435,7 @@ const RISK_OPERATIONS = [
     {
         id: 'sanctuary_entry',
         name: 'Restricted Sanctuary Trawling',
-        desc: 'Enter protected marine reserves for +55% catch sale value, but adds +18% Coast Guard patrol heat per catch.',
+        desc: 'Enter protected marine reserves for +55% catch sale value, adding +18% Coast Guard patrol heat per catch.',
         valueMult: 1.55,
         passiveMult: 1.0,
         heatAdd: 18
@@ -359,7 +451,7 @@ const RISK_OPERATIONS = [
     {
         id: 'overlimit_nets',
         name: 'High-Capacity Drift Nets',
-        desc: 'Boosts Empire HQ fleet output by +65%, but generates +4% continuous Coast Guard heat every 5 seconds.',
+        desc: 'Boosts Empire HQ fleet output by +65%, generating +1% continuous Coast Guard heat per second.',
         valueMult: 1.0,
         passiveMult: 1.65,
         heatAdd: 8
@@ -376,7 +468,7 @@ const RIVAL_LEADERS = [
 ];
 
 // --------------------------------------------------------------------------
-// 4. GAME STATE & PERSISTENCE
+// 6. GAME STATE & PERSISTENCE
 // --------------------------------------------------------------------------
 function getDefaultState() {
     return {
@@ -398,7 +490,9 @@ function getDefaultState() {
         upgrades: { rod: 0, hold: 0, lure: 0, radar: 0, harpoon: 0 },
         empire: { stall: 0, deckhand: 0, smokehouse: 0, trawler: 0, cannery: 0, factoryShip: 0 },
         activeRisks: { sanctuary_entry: false, night_transponder: false, overlimit_nets: false },
-        activeQuest: null
+        activeQuest: null,
+        villagerTasks: {},
+        seenBriefings: {}
     };
 }
 
@@ -406,7 +500,7 @@ let state = loadState();
 
 function loadState() {
     try {
-        const raw = localStorage.getItem('serene_waters_v4');
+        const raw = localStorage.getItem('serene_waters_v5');
         if (raw) {
             return { ...getDefaultState(), ...JSON.parse(raw) };
         }
@@ -418,14 +512,14 @@ function loadState() {
 
 function saveState() {
     try {
-        localStorage.setItem('serene_waters_v4', JSON.stringify(state));
+        localStorage.setItem('serene_waters_v5', JSON.stringify(state));
     } catch (e) {
         console.warn('Save write error:', e);
     }
 }
 
 // --------------------------------------------------------------------------
-// 5. ECONOMY, CAMPAIGN & PATROL CALCULATIONS
+// 7. ECONOMY, CAMPAIGN & PATROL CALCULATIONS
 // --------------------------------------------------------------------------
 function getCampaign() {
     return CHARACTER_CAMPAIGNS[state.character] || CHARACTER_CAMPAIGNS.fisher;
@@ -499,7 +593,6 @@ function triggerCoastGuardApprehension() {
     state.livewell = [];
     state.heat = 0;
 
-    // Deactivate high-risk toggles upon apprehension
     Object.keys(state.activeRisks).forEach((k) => {
         state.activeRisks[k] = false;
     });
@@ -507,13 +600,13 @@ function triggerCoastGuardApprehension() {
     saveState();
     updateHUD(true);
     showToast(
-        `COAST GUARD APPREHENSION! Siren triggered: ${seizedCount} catch(es) confiscated and $${fine.toLocaleString()} fine assessed.`,
+        `COAST GUARD APPREHENSION! Siren triggered: ${seizedCount} catch(es) confiscated and $${fine.toLocaleString()} fine issued.`,
         'danger'
     );
 }
 
 // --------------------------------------------------------------------------
-// 6. CANVAS SIMULATION (SEA FISHING & WALKABLE HARBOR TOWN)
+// 8. CANVAS SIMULATION (SEA FISHING & FULL-DETAIL WALKABLE HARBOR TOWN)
 // --------------------------------------------------------------------------
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -533,7 +626,7 @@ const sim = {
     mode: 'sea', // 'sea' | 'town'
     fishPhase: 'idle', // 'idle' | 'charging' | 'casted' | 'reeling'
     castPower: 0,
-    bobber: { x: 0, y: 0, targetX: 0, vy: 0 },
+    bobber: { x: 0, y: 0, targetX: 0 },
     hookedFish: null,
     reelCursor: 0.5,
     reelDir: 1,
@@ -542,22 +635,63 @@ const sim = {
     particles: [],
     clouds: [],
     gulls: [],
+    smokePuffs: [],
     townPlayerX: 180,
     townWalkDir: 0,
     townBuildings: [
-        { id: 'boat', name: 'Moored Vessel (Return to Sea)', x: 140, w: 140, color: '#0284c7' },
-        { id: 'market', name: 'Pier 01 Fishmonger Market', x: 390, w: 170, color: '#d97706' },
-        { id: 'guild', name: 'Harbormaster Guild Hall', x: 660, w: 170, color: '#059669' },
-        { id: 'outfitter', name: 'Drydock Outfitter & Gear', x: 930, w: 170, color: '#7c3aed' }
+        { id: 'boat', name: 'Moored Vessel (Return to Sea)', x: 110, w: 150, color: '#0284c7', roof: '#0369a1' },
+        { id: 'market', name: 'Pier 01 Fishmonger Market', x: 350, w: 185, color: '#d97706', roof: '#b45309' },
+        { id: 'guild', name: 'Harbormaster Guild Hall', x: 620, w: 185, color: '#059669', roof: '#047857' },
+        { id: 'outfitter', name: 'Drydock Outfitter & Gear', x: 890, w: 185, color: '#7c3aed', roof: '#6d28d9' }
+    ],
+    villagers: [
+        {
+            id: 'barnaby',
+            name: 'Old Man Barnaby',
+            role: 'Retired Whaler',
+            x: 310,
+            minX: 260,
+            maxX: 540,
+            dir: 1,
+            speed: 24,
+            coat: '#64748b',
+            hat: '#334155',
+            greeting: 'Ahoy, Captain! My old joints ache before a squall—I have a task for you if your hold has room.'
+        },
+        {
+            id: 'clara',
+            name: 'Chef Clara',
+            role: 'Harbor Bistro Owner',
+            x: 590,
+            minX: 520,
+            maxX: 830,
+            dir: -1,
+            speed: 28,
+            coat: '#f43f5e',
+            hat: '#ffffff',
+            greeting: 'Fresh sea air! Dinner guests are lining up at the bistro—I have a task for you!'
+        },
+        {
+            id: 'orin',
+            name: 'Naturalist Orin',
+            role: 'Marine Biologist',
+            x: 860,
+            minX: 780,
+            maxX: 1080,
+            dir: 1,
+            speed: 20,
+            coat: '#14b8a6',
+            hat: '#0f766e',
+            greeting: 'Fascinating tide patterns today! I am cataloging local specimens—I have a task for you.'
+        }
     ]
 };
 
-// Initialize clouds & gulls
 for (let i = 0; i < 6; i++) {
     sim.clouds.push({ x: Math.random() * 1400, y: 60 + Math.random() * 110, speed: 10 + Math.random() * 14, scale: 0.7 + Math.random() * 0.6 });
 }
-for (let i = 0; i < 4; i++) {
-    sim.gulls.push({ x: Math.random() * 1200, y: 90 + Math.random() * 90, speed: 35 + Math.random() * 25, flap: Math.random() * 6 });
+for (let i = 0; i < 5; i++) {
+    sim.gulls.push({ x: Math.random() * 1200, y: 85 + Math.random() * 95, speed: 35 + Math.random() * 25, flap: Math.random() * 6 });
 }
 
 function spawnSchoolForLocation() {
@@ -568,7 +702,6 @@ function spawnSchoolForLocation() {
 
     for (let i = 0; i < 16; i++) {
         let candidate = pool[Math.floor(Math.random() * pool.length)];
-        // Reroll if common and character/lure boosts rare spawns
         const boost = campaign.mechanics.rareBonus + state.upgrades.lure * 0.15;
         if (candidate.rarity === 'Common' && Math.random() < (boost - 1) * 0.5) {
             candidate = pool[Math.min(pool.length - 1, Math.floor(Math.random() * pool.length * 0.5 + pool.length * 0.5))];
@@ -579,8 +712,7 @@ function spawnSchoolForLocation() {
             x: 120 + Math.random() * (width - 200),
             y: waterTopY + 55 + Math.random() * (height - waterTopY - 110),
             dir: Math.random() < 0.5 ? 1 : -1,
-            wiggle: Math.random() * Math.PI * 2,
-            attracted: false
+            wiggle: Math.random() * Math.PI * 2
         });
     }
 }
@@ -593,16 +725,52 @@ function resetFishingState() {
     updateActionPrompt();
 }
 
+function getNearestTownTarget() {
+    // Check strolling villagers first (within 75px)
+    let bestVillager = null;
+    let bestVDist = 75;
+    sim.villagers.forEach((v) => {
+        const d = Math.abs(sim.townPlayerX - v.x);
+        if (d < bestVDist) {
+            bestVDist = d;
+            bestVillager = v;
+        }
+    });
+    if (bestVillager) return { type: 'villager', data: bestVillager };
+
+    // Otherwise check buildings (within 105px)
+    let bestBuilding = null;
+    let bestBDist = 105;
+    sim.townBuildings.forEach((b) => {
+        const center = b.x + b.w / 2;
+        const d = Math.abs(sim.townPlayerX - center);
+        if (d < bestBDist) {
+            bestBDist = d;
+            bestBuilding = b;
+        }
+    });
+    if (bestBuilding) return { type: 'building', data: bestBuilding };
+    return null;
+}
+
 function updateActionPrompt() {
     const promptEl = document.getElementById('actionPrompt');
     const townControls = document.getElementById('townWalkControls');
+    const interactBtn = document.getElementById('btnTownInteract');
 
     if (sim.mode === 'town') {
         townControls.classList.remove('hidden');
-        const near = getNearestTownBuilding();
-        promptEl.textContent = near
-            ? `Standing outside ${near.name} — Click "Enter Building" or press E`
-            : 'Walk along the Harbor Boardwalk using Left/Right buttons or Arrow Keys';
+        const target = getNearestTownTarget();
+        if (target && target.type === 'villager') {
+            interactBtn.textContent = `Talk to ${target.data.name.split(' ')[0]}`;
+            promptEl.textContent = `${target.data.name}: "I have a task for you!" — Press E or click Talk`;
+        } else if (target && target.type === 'building') {
+            interactBtn.textContent = target.data.id === 'boat' ? 'Board Vessel' : 'Enter Building';
+            promptEl.textContent = `Outside ${target.data.name} — Press E or click Enter`;
+        } else {
+            interactBtn.textContent = 'Interact';
+            promptEl.textContent = 'Walk along the Harbor Boardwalk using Left/Right buttons or Arrow Keys';
+        }
         return;
     }
 
@@ -618,22 +786,8 @@ function updateActionPrompt() {
     }
 }
 
-function getNearestTownBuilding() {
-    let best = null;
-    let bestDist = 110;
-    sim.townBuildings.forEach((b) => {
-        const center = b.x + b.w / 2;
-        const d = Math.abs(sim.townPlayerX - center);
-        if (d < bestDist) {
-            bestDist = d;
-            best = b;
-        }
-    });
-    return best;
-}
-
 // --------------------------------------------------------------------------
-// 7. FISHING MECHANICS (CASTING, BITING & TIMING BAR)
+// 9. FISHING MECHANICS (CASTING, BITING & TIMING BAR)
 // --------------------------------------------------------------------------
 function handlePrimaryActionDown() {
     if (sim.mode !== 'sea') return;
@@ -694,7 +848,6 @@ function evaluateTimingStrike() {
 function completeCatch(fishObj) {
     const sp = fishObj.species;
 
-    // Check if Leviathan requires Industrial Harpoon
     if (sp.requiresHarpoon && (!state.harpoonArmed || state.upgrades.harpoon < 1)) {
         showToast(`${sp.name} snapped the line! Equip the Industrial Harpoon to land Leviathans.`, 'danger');
         resetFishingState();
@@ -725,7 +878,7 @@ function completeCatch(fishObj) {
         state.leviathansCaught += 1;
     }
 
-    // Add Patrol Heat if high-risk operations are active
+    // Check Coast Guard Patrol Heat
     let heatAdded = 0;
     RISK_OPERATIONS.forEach((op) => {
         if (state.activeRisks[op.id]) heatAdded += op.heatAdd;
@@ -739,13 +892,11 @@ function completeCatch(fishObj) {
         }
     }
 
-    // Remove caught fish & respawn another
     sim.underwaterFish = sim.underwaterFish.filter((f) => f !== fishObj);
     if (sim.underwaterFish.length < 14) {
         spawnSchoolForLocation();
     }
 
-    // Show Catch Modal
     document.getElementById('catchRarityBadge').textContent = `${sp.rarity.toUpperCase()} SPECIMEN`;
     document.getElementById('catchRarityBadge').style.color = sp.color;
     document.getElementById('catchFishName').textContent = sp.name;
@@ -774,13 +925,13 @@ function spawnParticles(x, y, color, count) {
 }
 
 // --------------------------------------------------------------------------
-// 8. CANVAS RENDERING (SEA & WALKABLE HARBOR TOWN)
+// 10. CANVAS RENDERING (SEA & ANIMATED HARBOR TOWN WITH VILLAGERS)
 // --------------------------------------------------------------------------
 function renderSkyAndBackdrop(dt) {
     const loc = LOCATIONS.find((l) => l.id === state.currentLocation) || LOCATIONS[0];
     const timeMode = TIME_MODES[timeModeIdx];
 
-    const skyGrad = ctx.createLinearGradient(0, 0, 0, height * 0.4);
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, height * 0.42);
     if (timeMode === 'Night') {
         skyGrad.addColorStop(0, '#030712');
         skyGrad.addColorStop(1, '#0f172a');
@@ -792,7 +943,20 @@ function renderSkyAndBackdrop(dt) {
         skyGrad.addColorStop(1, loc.skyBot);
     }
     ctx.fillStyle = skyGrad;
-    ctx.fillRect(0, 0, width, height * 0.42);
+    ctx.fillRect(0, 0, width, height * 0.45);
+
+    // Distant mountain ridge
+    ctx.fillStyle = timeMode === 'Night' ? 'rgba(15,23,42,0.75)' : 'rgba(15,23,42,0.22)';
+    ctx.beginPath();
+    ctx.moveTo(0, height * 0.38);
+    ctx.lineTo(width * 0.18, height * 0.25);
+    ctx.lineTo(width * 0.36, height * 0.34);
+    ctx.lineTo(width * 0.58, height * 0.22);
+    ctx.lineTo(width * 0.82, height * 0.32);
+    ctx.lineTo(width, height * 0.26);
+    ctx.lineTo(width, height * 0.38);
+    ctx.closePath();
+    ctx.fill();
 
     // Drifting clouds
     ctx.fillStyle = timeMode === 'Night' ? 'rgba(148,163,184,0.08)' : 'rgba(255,255,255,0.16)';
@@ -826,7 +990,6 @@ function renderSeaScene(dt, nowSec) {
     const loc = LOCATIONS.find((l) => l.id === state.currentLocation) || LOCATIONS[0];
     const waterY = height * 0.38;
 
-    // Water gradient
     const wGrad = ctx.createLinearGradient(0, waterY, 0, height);
     wGrad.addColorStop(0, loc.waterTop);
     wGrad.addColorStop(1, loc.waterBot);
@@ -848,14 +1011,13 @@ function renderSeaScene(dt, nowSec) {
     }
     ctx.restore();
 
-    // Wooden Pier & Vessel on Left
+    // Wooden Pier & Character
     ctx.fillStyle = '#451a03';
     ctx.fillRect(0, waterY - 12, 125, 16);
     ctx.fillStyle = '#78350f';
     ctx.fillRect(20, waterY - 12, 12, 95);
     ctx.fillRect(95, waterY - 12, 12, 95);
 
-    // Character on Pier
     const campaign = getCampaign();
     const charX = 95;
     const charY = waterY - 46;
@@ -878,7 +1040,7 @@ function renderSeaScene(dt, nowSec) {
     ctx.lineTo(rodTipX, rodTipY);
     ctx.stroke();
 
-    // Update & Draw Underwater Fish
+    // Underwater Fish
     sim.underwaterFish.forEach((f) => {
         f.wiggle += dt * 5 * f.species.speed;
 
@@ -911,7 +1073,6 @@ function renderSeaScene(dt, nowSec) {
         if (f.x < 135) f.dir = 1;
         if (f.x > width - 60) f.dir = -1;
 
-        // Radar rarity halo
         if (state.upgrades.radar > 0) {
             ctx.strokeStyle = f.species.color;
             ctx.lineWidth = 1.5;
@@ -920,7 +1081,6 @@ function renderSeaScene(dt, nowSec) {
             ctx.stroke();
         }
 
-        // Fish Silhouette
         ctx.save();
         ctx.translate(f.x, f.y);
         ctx.scale(f.dir * f.species.sizeScale, f.species.sizeScale);
@@ -973,7 +1133,7 @@ function renderSeaScene(dt, nowSec) {
         ctx.fillRect(bx + 2, by + 2, (barW - 4) * sim.castPower, barH - 4);
     }
 
-    // Reeling Timing Bar HUD
+    // Reeling Timing Bar
     if (sim.fishPhase === 'reeling' && sim.hookedFish) {
         const sp = sim.hookedFish.species;
         sim.reelCursor += sim.reelDir * dt * 1.15 * sp.barSpeed;
@@ -999,20 +1159,16 @@ function renderSeaScene(dt, nowSec) {
         const zoneWidth = Math.min(0.42, (0.18 + state.upgrades.rod * 0.025) * campaign.mechanics.zoneBonus);
         const goldWidth = zoneWidth * 0.32;
 
-        // Green catch zone
         ctx.fillStyle = 'rgba(16, 185, 129, 0.45)';
         ctx.fillRect(bx + barW * (0.5 - zoneWidth / 2), by + 2, barW * zoneWidth, barH - 4);
 
-        // Gold critical zone
         ctx.fillStyle = 'rgba(251, 191, 36, 0.85)';
         ctx.fillRect(bx + barW * (0.5 - goldWidth / 2), by + 2, barW * goldWidth, barH - 4);
 
-        // Moving marker
         const markerX = bx + barW * sim.reelCursor;
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(markerX - 3, by - 4, 6, barH + 8);
 
-        // Progress bar underneath
         ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
         ctx.fillRect(bx, by + barH + 8, barW, 10);
         ctx.fillStyle = '#38bdf8';
@@ -1020,44 +1176,139 @@ function renderSeaScene(dt, nowSec) {
     }
 }
 
-function renderTownScene(dt) {
+function renderTownScene(dt, nowSec) {
     const groundY = height * 0.68;
 
-    // Harbor water backdrop
+    // Harbor Water & Bobbing Reflections
     ctx.fillStyle = '#07243b';
     ctx.fillRect(0, groundY - 25, width, height - groundY + 25);
 
-    // Wooden Boardwalk
-    ctx.fillStyle = '#451a03';
-    ctx.fillRect(0, groundY, width, 26);
-    ctx.fillStyle = '#78350f';
-    for (let x = 0; x < width; x += 36) {
-        ctx.fillRect(x, groundY + 2, 32, 20);
+    // Chimney Smoke Animation
+    if (Math.random() < dt * 3.5) {
+        sim.smokePuffs.push({ x: 430, y: groundY - 148, r: 6, life: 2.2 });
+    }
+    for (let i = sim.smokePuffs.length - 1; i >= 0; i--) {
+        const s = sim.smokePuffs[i];
+        s.y -= 22 * dt;
+        s.x += Math.sin(nowSec + i) * 10 * dt;
+        s.r += 7 * dt;
+        s.life -= dt;
+        if (s.life <= 0) {
+            sim.smokePuffs.splice(i, 1);
+            continue;
+        }
+        ctx.fillStyle = `rgba(226, 232, 240, ${Math.max(0, s.life * 0.14)})`;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
     }
 
-    // Buildings
+    // Wooden Boardwalk & Pilings
+    ctx.fillStyle = '#451a03';
+    ctx.fillRect(0, groundY, width, 28);
+    ctx.fillStyle = '#78350f';
+    for (let x = 0; x < width; x += 36) {
+        ctx.fillRect(x, groundY + 2, 32, 22);
+    }
+
+    // Glowing Harbor Lampposts
+    [290, 580, 850, 1110].forEach((lx) => {
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(lx - 3, groundY - 95, 6, 95);
+        const glow = 0.25 + Math.sin(nowSec * 3 + lx) * 0.05;
+        ctx.fillStyle = `rgba(251, 191, 36, ${glow})`;
+        ctx.beginPath();
+        ctx.arc(lx, groundY - 100, 22, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#fde047';
+        ctx.beginPath();
+        ctx.arc(lx, groundY - 100, 5, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    // Detailed Storefronts & Moored Boat
     sim.townBuildings.forEach((b) => {
-        const bH = b.id === 'boat' ? 52 : 128;
+        if (b.id === 'boat') {
+            const bob = Math.sin(nowSec * 2.5) * 4;
+            const by = groundY - 38 + bob;
+            ctx.fillStyle = '#0369a1';
+            ctx.beginPath();
+            ctx.moveTo(b.x, by);
+            ctx.lineTo(b.x + b.w, by);
+            ctx.lineTo(b.x + b.w - 22, by + 34);
+            ctx.lineTo(b.x + 18, by + 34);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(b.x + 42, by - 26, 54, 26);
+            ctx.font = 'bold 12px Manrope, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(b.name, b.x + b.w / 2, by - 42);
+            return;
+        }
+
+        const bH = 132;
         const bY = groundY - bH;
         ctx.fillStyle = '#1e293b';
         ctx.fillRect(b.x, bY, b.w, bH);
+
+        // Animated Awning Stripes
+        const sway = Math.sin(nowSec * 2 + b.x) * 2;
         ctx.fillStyle = b.color;
-        ctx.fillRect(b.x - 6, bY - 12, b.w + 12, 16);
+        ctx.fillRect(b.x - 8, bY - 14 + sway, b.w + 16, 18);
+
+        // Warm Lit Windows
+        ctx.fillStyle = 'rgba(253, 224, 71, 0.25)';
+        ctx.fillRect(b.x + 18, bY + 28, 34, 34);
+        ctx.fillRect(b.x + b.w - 52, bY + 28, 34, 34);
 
         // Doorway
         ctx.fillStyle = '#0f172a';
-        ctx.fillRect(b.x + b.w / 2 - 16, groundY - 46, 32, 46);
+        ctx.fillRect(b.x + b.w / 2 - 18, groundY - 52, 36, 52);
 
         // Signboard
         ctx.fillStyle = '#f8fafc';
         ctx.font = 'bold 12px Manrope, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(b.name, b.x + b.w / 2, bY - 22);
+        ctx.fillText(b.name, b.x + b.w / 2, bY - 26);
     });
 
-    // Update & Render Walkable Character
-    sim.townPlayerX += sim.townWalkDir * 240 * dt;
-    sim.townPlayerX = Math.max(80, Math.min(Math.max(width - 80, 1120), sim.townPlayerX));
+    // Strolling Interactive Villagers
+    sim.villagers.forEach((v) => {
+        v.x += v.dir * v.speed * dt;
+        if (v.x >= v.maxX) v.dir = -1;
+        if (v.x <= v.minX) v.dir = 1;
+
+        const vy = groundY - 40;
+        ctx.fillStyle = v.coat;
+        ctx.fillRect(v.x - 9, vy + 13, 18, 27);
+        ctx.fillStyle = '#fed7aa';
+        ctx.beginPath();
+        ctx.arc(v.x, vy + 6, 7.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = v.hat;
+        ctx.fillRect(v.x - 10, vy - 2, 20, 4);
+
+        // Floating Task Bubble ("!")
+        const floatY = Math.sin(nowSec * 4 + v.x) * 3;
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(v.x - 42, vy - 34 + floatY, 84, 20, 8);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#fde047';
+        ctx.font = 'bold 10px Manrope, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Task Available!', v.x, vy - 21 + floatY);
+    });
+
+    // Walkable Player Character
+    sim.townPlayerX += sim.townWalkDir * 245 * dt;
+    sim.townPlayerX = Math.max(80, Math.min(Math.max(width - 80, 1140), sim.townPlayerX));
 
     const campaign = getCampaign();
     const px = sim.townPlayerX;
@@ -1105,7 +1356,7 @@ function gameLoop(now) {
     if (sim.mode === 'sea') {
         renderSeaScene(dt, now / 1000);
     } else {
-        renderTownScene(dt);
+        renderTownScene(dt, now / 1000);
     }
 
     renderParticles(dt);
@@ -1113,7 +1364,7 @@ function gameLoop(now) {
 }
 
 // --------------------------------------------------------------------------
-// 9. HUD, MODALS, CHARACTER CAMPAIGNS & TOWN INTERACTIONS
+// 11. HUD, ONE-TIME BRIEFINGS, VILLAGER DIALOGUE & MODALS
 // --------------------------------------------------------------------------
 function bumpStatElement(id) {
     const el = document.getElementById(id);
@@ -1137,7 +1388,6 @@ function updateHUD(animate = false) {
         bumpStatElement('hudNetWorth');
     }
 
-    // Heat badge
     const heatEl = document.getElementById('hudHeatBadge');
     if (state.heat > 0 || Object.values(state.activeRisks).some(Boolean)) {
         heatEl.classList.remove('hidden');
@@ -1146,7 +1396,6 @@ function updateHUD(animate = false) {
         heatEl.classList.add('hidden');
     }
 
-    // Harpoon button
     const harpoonBtn = document.getElementById('btnHarpoonToggle');
     if (state.upgrades.harpoon > 0) {
         harpoonBtn.classList.remove('hidden');
@@ -1155,7 +1404,6 @@ function updateHUD(animate = false) {
         harpoonBtn.classList.add('hidden');
     }
 
-    // Town toggle button
     document.getElementById('btnTownLabel').textContent = sim.mode === 'sea' ? 'Go to Town' : 'Return to Sea';
 
     // Update Active Character Campaign Story Tracker
@@ -1187,6 +1435,26 @@ function showToast(message, type = 'info') {
     setTimeout(() => div.remove(), 4200);
 }
 
+let pendingBriefingCallback = null;
+function runWithBriefing(key, actionFn) {
+    if (state.seenBriefings[key] || !FEATURE_BRIEFINGS[key]) {
+        actionFn();
+        return;
+    }
+    const info = FEATURE_BRIEFINGS[key];
+    state.seenBriefings[key] = true;
+    saveState();
+
+    document.getElementById('briefingTitle').textContent = info.title;
+    document.getElementById('briefingDesc').textContent = info.desc;
+    document.getElementById('briefingBullets').innerHTML = info.bullets
+        .map((b) => `<div class="flex items-start gap-2"><span class="text-amber-400 font-bold">•</span><span>${b}</span></div>`)
+        .join('');
+
+    pendingBriefingCallback = actionFn;
+    document.getElementById('briefingModal').classList.remove('hidden');
+}
+
 function openUniversalModal(subtitle, title, htmlContent) {
     document.getElementById('modalSubtitle').textContent = subtitle;
     document.getElementById('modalTitle').textContent = title;
@@ -1198,7 +1466,6 @@ function closeUniversalModal() {
     document.getElementById('universalModal').classList.add('hidden');
 }
 
-// Render Start Menu Character Cards
 function renderCharacterSelector() {
     const grid = document.getElementById('characterCardsGrid');
     grid.innerHTML = Object.values(CHARACTER_CAMPAIGNS)
@@ -1224,6 +1491,58 @@ function renderCharacterSelector() {
             saveState();
         });
     });
+}
+
+// Villager Conversation & Custom Task Modal
+function talkToVillager(villager) {
+    if (!state.villagerTasks[villager.id]) {
+        const loc = LOCATIONS.find((l) => l.id === state.currentLocation) || LOCATIONS[0];
+        const needed = 2 + Math.floor(Math.random() * 3);
+        const reward = Math.round((140 + needed * 65) * loc.mult * (state.character === 'fishmonger' ? 1.5 : 1.0));
+        state.villagerTasks[villager.id] = {
+            needed,
+            reward,
+            taskDesc: `Bring ${needed} fresh fish from your livewell hold.`
+        };
+        saveState();
+    }
+
+    const task = state.villagerTasks[villager.id];
+    const ready = state.livewell.length >= task.needed;
+
+    openUniversalModal(
+        `${villager.role} • Harbor Town Resident`,
+        villager.name,
+        `
+        <div class="maritime-card rounded-xl p-5 space-y-4">
+            <p class="text-sm italic text-amber-100">"${villager.greeting}"</p>
+            <div class="bg-[#081728] p-4 rounded-xl border border-amber-300/25 space-y-2">
+                <div class="text-xs font-label uppercase text-emerald-400">Villager Task</div>
+                <div class="text-sm font-semibold text-white">${task.taskDesc}</div>
+                <div class="text-xs text-slate-400">Your Livewell Hold: <span class="font-mono-num text-sky-300">${state.livewell.length}/${task.needed}</span> • Reward: <span class="font-mono-num text-amber-300">$${task.reward.toLocaleString()}</span></div>
+            </div>
+            <div class="flex justify-end">
+                <button id="btnFulfillVillagerTask" class="btn-brass" ${ready ? '' : 'disabled'}>Deliver Catch & Claim $${task.reward.toLocaleString()}</button>
+            </div>
+        </div>`
+    );
+
+    const claimBtn = document.getElementById('btnFulfillVillagerTask');
+    if (claimBtn) {
+        claimBtn.addEventListener('click', () => {
+            if (state.livewell.length < task.needed) return;
+            state.livewell.splice(0, task.needed);
+            state.cash += task.reward;
+            state.totalEarned += task.reward;
+            state.questsCompleted += 1;
+            delete state.villagerTasks[villager.id];
+            sound.playCoin();
+            saveState();
+            updateHUD(true);
+            closeUniversalModal();
+            showToast(`${villager.name} thanked you and paid $${task.reward.toLocaleString()}!`);
+        });
+    }
 }
 
 // Town Building Handlers
@@ -1373,12 +1692,31 @@ function enterTownBuilding(buildingId) {
     }
 }
 
+function triggerTownInteraction() {
+    const target = getNearestTownTarget();
+    if (!target) return;
+    if (target.type === 'villager') {
+        talkToVillager(target.data);
+    } else if (target.type === 'building') {
+        enterTownBuilding(target.data.id);
+    }
+}
+
 // --------------------------------------------------------------------------
-// 10. EVENT LISTENERS & INITIALIZATION
+// 12. EVENT LISTENERS & INITIALIZATION
 // --------------------------------------------------------------------------
 function setupListeners() {
-    // Canvas Pointer & Keyboard Fishing/Town Controls
-    canvas.addEventListener('pointerdown', handlePrimaryActionDown);
+    canvas.addEventListener('pointerdown', (e) => {
+        if (sim.mode === 'town') {
+            // Allow tapping directly on a villager or building on the boardwalk
+            const clickX = e.clientX;
+            sim.townPlayerX = clickX;
+            triggerTownInteraction();
+            return;
+        }
+        handlePrimaryActionDown();
+    });
+
     window.addEventListener('pointerup', handlePrimaryActionUp);
 
     window.addEventListener('keydown', (e) => {
@@ -1391,8 +1729,7 @@ function setupListeners() {
             if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') sim.townWalkDir = -1;
             if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') sim.townWalkDir = 1;
             if (e.key === 'e' || e.key === 'E' || e.key === 'Enter') {
-                const b = getNearestTownBuilding();
-                if (b) enterTownBuilding(b.id);
+                triggerTownInteraction();
             }
         }
     });
@@ -1411,20 +1748,24 @@ function setupListeners() {
     btnLeft.addEventListener('pointerup', () => (sim.townWalkDir = 0));
     btnRight.addEventListener('pointerdown', () => (sim.townWalkDir = 1));
     btnRight.addEventListener('pointerup', () => (sim.townWalkDir = 0));
-    document.getElementById('btnTownInteract').addEventListener('click', () => {
-        const b = getNearestTownBuilding();
-        if (b) enterTownBuilding(b.id);
-    });
+    document.getElementById('btnTownInteract').addEventListener('click', triggerTownInteraction);
 
-    // Toggle Sea / Town
+    // Toggle Sea / Town (with one-time briefing)
     document.getElementById('btnToggleTown').addEventListener('click', () => {
-        sim.mode = sim.mode === 'sea' ? 'town' : 'sea';
-        sim.townPlayerX = 180;
-        resetFishingState();
-        updateHUD();
+        if (sim.mode === 'sea') {
+            runWithBriefing('town', () => {
+                sim.mode = 'town';
+                sim.townPlayerX = 180;
+                resetFishingState();
+                updateHUD();
+            });
+        } else {
+            sim.mode = 'sea';
+            resetFishingState();
+            updateHUD();
+        }
     });
 
-    // Harpoon Toggle
     document.getElementById('btnHarpoonToggle').addEventListener('click', () => {
         state.harpoonArmed = !state.harpoonArmed;
         updateHUD();
@@ -1432,179 +1773,199 @@ function setupListeners() {
 
     // Charts Modal
     document.getElementById('btnOpenCharts').addEventListener('click', () => {
-        const nw = getNetWorth();
-        const html = LOCATIONS.map((loc) => {
-            const unlocked = state.unlockedLocations.includes(loc.id);
-            const active = state.currentLocation === loc.id;
-            const canUnlock = nw >= loc.unlockNetWorth;
-            return `
-            <div class="maritime-card rounded-xl p-4 flex items-center justify-between gap-4">
-                <div>
-                    <div class="font-bold text-amber-100">${loc.name} <span class="text-xs font-mono-num text-emerald-300">(${loc.mult}x Value)</span></div>
-                    <div class="text-xs text-slate-300 mt-0.5">${loc.desc}</div>
-                </div>
-                <button data-loc-id="${loc.id}" class="${active ? 'btn-slate' : 'btn-brass'}" ${!unlocked && !canUnlock ? 'disabled' : ''}>
-                    ${active ? 'Anchored' : unlocked ? 'Sail Here' : `Req. $${loc.unlockNetWorth.toLocaleString()} NW`}
-                </button>
-            </div>`;
-        }).join('');
+        runWithBriefing('charts', () => {
+            const nw = getNetWorth();
+            const html = LOCATIONS.map((loc) => {
+                const unlocked = state.unlockedLocations.includes(loc.id);
+                const active = state.currentLocation === loc.id;
+                const canUnlock = nw >= loc.unlockNetWorth;
+                return `
+                <div class="maritime-card rounded-xl p-4 flex items-center justify-between gap-4">
+                    <div>
+                        <div class="font-bold text-amber-100">${loc.name} <span class="text-xs font-mono-num text-emerald-300">(${loc.mult}x Value)</span></div>
+                        <div class="text-xs text-slate-300 mt-0.5">${loc.desc}</div>
+                    </div>
+                    <button data-loc-id="${loc.id}" class="${active ? 'btn-slate' : 'btn-brass'}" ${!unlocked && !canUnlock ? 'disabled' : ''}>
+                        ${active ? 'Anchored' : unlocked ? 'Sail Here' : `Req. $${loc.unlockNetWorth.toLocaleString()} NW`}
+                    </button>
+                </div>`;
+            }).join('');
 
-        openUniversalModal('Expedition Navigation Charts', 'Global Waters (100 Species Each)', html);
-        document.querySelectorAll('[data-loc-id]').forEach((btn) => {
-            btn.addEventListener('click', () => {
-                const id = btn.getAttribute('data-loc-id');
-                if (!state.unlockedLocations.includes(id)) {
-                    state.unlockedLocations.push(id);
-                }
-                state.currentLocation = id;
-                sim.mode = 'sea';
-                spawnSchoolForLocation();
-                resetFishingState();
-                saveState();
-                updateHUD();
-                closeUniversalModal();
-                showToast(`Anchored at ${LOCATIONS.find((l) => l.id === id).name}.`);
+            openUniversalModal('Expedition Navigation Charts', 'Global Waters (100 Species Each)', html);
+            document.querySelectorAll('[data-loc-id]').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const id = btn.getAttribute('data-loc-id');
+                    if (!state.unlockedLocations.includes(id)) {
+                        state.unlockedLocations.push(id);
+                    }
+                    state.currentLocation = id;
+                    sim.mode = 'sea';
+                    spawnSchoolForLocation();
+                    resetFishingState();
+                    saveState();
+                    updateHUD();
+                    closeUniversalModal();
+                    showToast(`Anchored at ${LOCATIONS.find((l) => l.id === id).name}.`);
+                });
             });
         });
     });
 
     // Empire HQ Modal
     document.getElementById('btnOpenEmpire').addEventListener('click', () => {
-        const discount = state.character === 'industrialist' ? 0.85 : 1.0;
-        const renderEmpire = () => {
-            const html = EMPIRE_ASSETS.map((asset) => {
-                const count = state.empire[asset.id] || 0;
-                const cost = Math.round(asset.baseCost * Math.pow(1.22, count) * discount);
-                return `
-                <div class="maritime-card rounded-xl p-4 flex items-center justify-between gap-4">
-                    <div>
-                        <div class="font-bold text-amber-100">${asset.name} <span class="font-mono-num text-xs text-amber-300">×${count}</span></div>
-                        <div class="text-xs text-slate-300">${asset.desc} <span class="text-emerald-300 font-mono-num">(+$${asset.income}/s base)</span></div>
-                    </div>
-                    <button data-buy-emp="${asset.id}" class="btn-brass" ${state.cash < cost ? 'disabled' : ''}>
-                        Expand $${cost.toLocaleString()}
-                    </button>
-                </div>`;
-            }).join('');
-
-            openUniversalModal('Maritime Business HQ', `Fleet & Industrial Assets ($${getPassiveIncomePerSec().toLocaleString()}/s)`, html);
-            document.querySelectorAll('[data-buy-emp]').forEach((btn) => {
-                btn.addEventListener('click', () => {
-                    const id = btn.getAttribute('data-buy-emp');
-                    const asset = EMPIRE_ASSETS.find((a) => a.id === id);
-                    const count = state.empire[id] || 0;
+        runWithBriefing('empire', () => {
+            const discount = state.character === 'industrialist' ? 0.85 : 1.0;
+            const renderEmpire = () => {
+                const html = EMPIRE_ASSETS.map((asset) => {
+                    const count = state.empire[asset.id] || 0;
                     const cost = Math.round(asset.baseCost * Math.pow(1.22, count) * discount);
-                    if (state.cash >= cost) {
-                        state.cash -= cost;
-                        state.empire[id] = count + 1;
-                        sound.playCoin();
-                        saveState();
-                        updateHUD(true);
-                        renderEmpire();
-                    }
+                    return `
+                    <div class="maritime-card rounded-xl p-4 flex items-center justify-between gap-4">
+                        <div>
+                            <div class="font-bold text-amber-100">${asset.name} <span class="font-mono-num text-xs text-amber-300">×${count}</span></div>
+                            <div class="text-xs text-slate-300">${asset.desc} <span class="text-emerald-300 font-mono-num">(+$${asset.income}/s base)</span></div>
+                        </div>
+                        <button data-buy-emp="${asset.id}" class="btn-brass" ${state.cash < cost ? 'disabled' : ''}>
+                            Expand $${cost.toLocaleString()}
+                        </button>
+                    </div>`;
+                }).join('');
+
+                openUniversalModal('Maritime Business HQ', `Fleet & Industrial Assets ($${getPassiveIncomePerSec().toLocaleString()}/s)`, html);
+                document.querySelectorAll('[data-buy-emp]').forEach((btn) => {
+                    btn.addEventListener('click', () => {
+                        const id = btn.getAttribute('data-buy-emp');
+                        const asset = EMPIRE_ASSETS.find((a) => a.id === id);
+                        const count = state.empire[id] || 0;
+                        const cost = Math.round(asset.baseCost * Math.pow(1.22, count) * discount);
+                        if (state.cash >= cost) {
+                            state.cash -= cost;
+                            state.empire[id] = count + 1;
+                            sound.playCoin();
+                            saveState();
+                            updateHUD(true);
+                            renderEmpire();
+                        }
+                    });
                 });
-            });
-        };
-        renderEmpire();
+            };
+            renderEmpire();
+        });
     });
 
     // Patrol & Risk Modal
     document.getElementById('btnOpenRisk').addEventListener('click', () => {
-        const renderRisk = () => {
-            const html = `
-            <div class="bg-rose-950/40 border border-rose-400/30 rounded-xl p-4 flex items-center justify-between">
-                <div>
-                    <div class="text-xs uppercase font-label text-rose-300">Coast Guard Patrol Heat</div>
-                    <div class="font-mono-num text-2xl font-bold text-white">${state.heat}%</div>
-                    <div class="text-xs text-slate-300">If Patrol Heat hits 100%, the Coast Guard siren sounds, livewell catches are confiscated, and a 35% fine is issued.</div>
-                </div>
-                <button id="btnCoolHeat" class="btn-slate" ${state.heat === 0 || state.cash < 100 ? 'disabled' : ''}>Lay Low (-25% Heat • $100)</button>
-            </div>
-            ${RISK_OPERATIONS.map((op) => {
-                const active = !!state.activeRisks[op.id];
-                return `
-                <div class="maritime-card rounded-xl p-4 flex items-center justify-between gap-4">
+        runWithBriefing('risk', () => {
+            const renderRisk = () => {
+                const html = `
+                <div class="bg-rose-950/40 border border-rose-400/30 rounded-xl p-4 flex items-center justify-between gap-4">
                     <div>
-                        <div class="font-bold text-amber-100">${op.name}</div>
-                        <div class="text-xs text-slate-300 mt-0.5">${op.desc}</div>
+                        <div class="text-xs uppercase font-label text-rose-300">Coast Guard Patrol Heat</div>
+                        <div class="font-mono-num text-2xl font-bold text-white">${state.heat}%</div>
+                        <div class="text-xs text-slate-300">If Patrol Heat hits 100%, the Coast Guard siren sounds, livewell catches are confiscated, and a 35% fine is issued.</div>
                     </div>
-                    <button data-toggle-risk="${op.id}" class="${active ? 'btn-brass' : 'btn-slate'}">
-                        ${active ? 'ACTIVE' : 'ENABLE'}
-                    </button>
-                </div>`;
-            }).join('')}`;
+                    <button id="btnCoolHeat" class="btn-slate" ${state.heat === 0 || state.cash < 100 ? 'disabled' : ''}>Lay Low (-25% Heat • $100)</button>
+                </div>
+                ${RISK_OPERATIONS.map((op) => {
+                    const active = !!state.activeRisks[op.id];
+                    return `
+                    <div class="maritime-card rounded-xl p-4 flex items-center justify-between gap-4">
+                        <div>
+                            <div class="font-bold text-amber-100">${op.name}</div>
+                            <div class="text-xs text-slate-300 mt-0.5">${op.desc}</div>
+                        </div>
+                        <button data-toggle-risk="${op.id}" class="${active ? 'btn-brass' : 'btn-slate'}">
+                            ${active ? 'ACTIVE' : 'ENABLE'}
+                        </button>
+                    </div>`;
+                }).join('')}`;
 
-            openUniversalModal('Maritime Patrol & Risk Operations', 'High-Stakes Trawling Directives', html);
+                openUniversalModal('Maritime Patrol & Risk Operations', 'High-Stakes Trawling Directives', html);
 
-            const coolBtn = document.getElementById('btnCoolHeat');
-            if (coolBtn) {
-                coolBtn.addEventListener('click', () => {
-                    if (state.cash >= 100 && state.heat > 0) {
-                        state.cash -= 100;
-                        state.heat = Math.max(0, state.heat - 25);
+                const coolBtn = document.getElementById('btnCoolHeat');
+                if (coolBtn) {
+                    coolBtn.addEventListener('click', () => {
+                        if (state.cash >= 100 && state.heat > 0) {
+                            state.cash -= 100;
+                            state.heat = Math.max(0, state.heat - 25);
+                            saveState();
+                            updateHUD();
+                            renderRisk();
+                        }
+                    });
+                }
+
+                document.querySelectorAll('[data-toggle-risk]').forEach((btn) => {
+                    btn.addEventListener('click', () => {
+                        const id = btn.getAttribute('data-toggle-risk');
+                        state.activeRisks[id] = !state.activeRisks[id];
                         saveState();
                         updateHUD();
                         renderRisk();
-                    }
+                    });
                 });
-            }
-
-            document.querySelectorAll('[data-toggle-risk]').forEach((btn) => {
-                btn.addEventListener('click', () => {
-                    const id = btn.getAttribute('data-toggle-risk');
-                    state.activeRisks[id] = !state.activeRisks[id];
-                    saveState();
-                    updateHUD();
-                    renderRisk();
-                });
-            });
-        };
-        renderRisk();
+            };
+            renderRisk();
+        });
     });
 
     // FishDex Modal
     document.getElementById('btnOpenFishDex').addEventListener('click', () => {
-        const regionFish = FISH_SPECIES.filter((f) => f.regionId === state.currentLocation);
-        const caughtCount = regionFish.filter((f) => state.discovered.includes(f.id)).length;
-        const grid = regionFish
-            .map((f) => {
-                const found = state.discovered.includes(f.id);
-                return `
-                <div class="maritime-card rounded-lg p-2.5 text-xs ${found ? '' : 'opacity-45'}">
-                    <div class="font-bold truncate" style="color:${found ? f.color : '#64748b'}">${found ? f.name : '??? Undiscovered'}</div>
-                    <div class="text-[10px] text-slate-400 mt-0.5">${f.rarity} • Base $${f.baseValue}</div>
-                </div>`;
-            })
-            .join('');
+        runWithBriefing('fishdex', () => {
+            const regionFish = FISH_SPECIES.filter((f) => f.regionId === state.currentLocation);
+            const caughtCount = regionFish.filter((f) => state.discovered.includes(f.id)).length;
+            const grid = regionFish
+                .map((f) => {
+                    const found = state.discovered.includes(f.id);
+                    return `
+                    <div class="maritime-card rounded-lg p-2.5 text-xs ${found ? '' : 'opacity-45'}">
+                        <div class="font-bold truncate" style="color:${found ? f.color : '#64748b'}">${found ? f.name : '??? Undiscovered'}</div>
+                        <div class="text-[10px] text-slate-400 mt-0.5">${f.rarity} • Base $${f.baseValue}</div>
+                    </div>`;
+                })
+                .join('');
 
-        openUniversalModal(
-            'Regional Ichthyology Catalog',
-            `FishDex (${caughtCount}/100 Local • ${state.discovered.length}/600 Global)`,
-            `<div class="grid grid-cols-2 sm:grid-cols-3 gap-2">${grid}</div>`
-        );
+            openUniversalModal(
+                'Regional Ichthyology Catalog',
+                `FishDex (${caughtCount}/100 Local • ${state.discovered.length}/600 Global)`,
+                `<div class="grid grid-cols-2 sm:grid-cols-3 gap-2">${grid}</div>`
+            );
+        });
     });
 
     // Leaderboard Modal
     document.getElementById('btnOpenLeaderboard').addEventListener('click', () => {
-        const entries = [
-            ...RIVAL_LEADERS,
-            { name: `${state.captainName} (${state.vesselName})`, worth: getNetWorth(), isPlayer: true }
-        ].sort((a, b) => b.worth - a.worth);
+        runWithBriefing('leaderboard', () => {
+            const entries = [
+                ...RIVAL_LEADERS,
+                { name: `${state.captainName} (${state.vesselName})`, worth: getNetWorth(), isPlayer: true }
+            ].sort((a, b) => b.worth - a.worth);
 
-        const html = entries
-            .map(
-                (entry, idx) => `
-            <div class="maritime-card rounded-xl p-3.5 flex items-center justify-between ${entry.isPlayer ? 'border-amber-400 bg-amber-500/10' : ''}">
-                <div class="flex items-center gap-3">
-                    <span class="font-mono-num font-bold text-amber-300 w-6">#${idx + 1}</span>
-                    <span class="font-bold text-sm ${entry.isPlayer ? 'text-amber-200' : 'text-slate-100'}">${entry.name}</span>
-                </div>
-                <span class="font-mono-num font-bold text-emerald-300">$${entry.worth.toLocaleString()}</span>
-            </div>`
-            )
-            .join('');
+            const html = entries
+                .map(
+                    (entry, idx) => `
+                <div class="maritime-card rounded-xl p-3.5 flex items-center justify-between ${entry.isPlayer ? 'border-amber-400 bg-amber-500/10' : ''}">
+                    <div class="flex items-center gap-3">
+                        <span class="font-mono-num font-bold text-amber-300 w-6">#${idx + 1}</span>
+                        <span class="font-bold text-sm ${entry.isPlayer ? 'text-amber-200' : 'text-slate-100'}">${entry.name}</span>
+                    </div>
+                    <span class="font-mono-num font-bold text-emerald-300">$${entry.worth.toLocaleString()}</span>
+                </div>`
+                )
+                .join('');
 
-        openUniversalModal('Global Maritime Registry', 'Net Worth Rankings', html);
+            openUniversalModal('Global Maritime Registry', 'Net Worth Rankings', html);
+        });
+    });
+
+    // Briefing Modal Continue
+    document.getElementById('btnContinueBriefing').addEventListener('click', () => {
+        document.getElementById('briefingModal').classList.add('hidden');
+        if (pendingBriefingCallback) {
+            const fn = pendingBriefingCallback;
+            pendingBriefingCallback = null;
+            fn();
+        }
     });
 
     // Start Menu & Options Controls
@@ -1643,6 +2004,12 @@ function setupListeners() {
         updateHUD();
     });
 
+    document.getElementById('btnResetBriefings').addEventListener('click', () => {
+        state.seenBriefings = {};
+        saveState();
+        showToast('First-time feature briefings have been reset.');
+    });
+
     document.getElementById('btnResetSave').addEventListener('click', () => {
         state = getDefaultState();
         saveState();
@@ -1666,7 +2033,6 @@ setInterval(() => {
         state.totalEarned += income;
     }
 
-    // Continuous drift-net patrol heat
     if (state.activeRisks.overlimit_nets) {
         state.heat = Math.min(100, state.heat + 1);
         if (state.heat >= 100) {
@@ -1683,6 +2049,7 @@ setInterval(() => {
 setInterval(saveState, 10000);
 
 // Boot Sequence
+injectIcons();
 document.getElementById('captainNameInput').value = state.captainName;
 document.getElementById('vesselNameInput').value = state.vesselName;
 renderCharacterSelector();
