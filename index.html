@@ -576,5 +576,12 @@
     </div>
 
     <script src="game.js" defer></script>
+    <div id="mobileDebug" style="position:fixed;bottom:0;left:0;right:0;max-height:35vh;overflow:auto;background:rgba(0,0,0,0.9);color:#f87171;font:12px monospace;z-index:99999;padding:8px;display:none;"></div>
+<script>
+  const d = document.getElementById('mobileDebug');
+  const logErr = (m) => { d.style.display='block'; d.innerHTML += '<div>' + m + '</div>'; };
+  window.onerror = (msg, src, line) => logErr('Error: ' + msg + ' (Line ' + line + ')');
+  window.onunhandledrejection = (e) => logErr('Promise Error: ' + e.reason);
+</script>
 </body>
 </html>
