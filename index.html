@@ -1,4 +1,245 @@
->Charts</span>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Serene Waters — Maritime Fishery &amp; Fleet Tycoon</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%230284c7'/%3E%3Cstop offset='100%25' stop-color='%23061320'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Ccircle cx='32' cy='15' r='5.5' fill='none' stroke='%23fbbf24' stroke-width='4'/%3E%3Cline x1='32' y1='21' x2='32' y2='52' stroke='%23fbbf24' stroke-width='4.5' stroke-linecap='round'/%3E%3Cline x1='21' y1='29' x2='43' y2='29' stroke='%23fbbf24' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M15 39c0 10 8 15 17 15s17-5 17-15' fill='none' stroke='%23fbbf24' stroke-width='4.5' stroke-linecap='round'/%3E%3C/svg%3E">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Editorial Maritime Typography: Cormorant Garamond, Syne, Manrope & IBM Plex Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="relative w-screen h-screen overflow-hidden select-none">
+
+    <!-- Main Interactive Ocean & Empire Canvas -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- START MENU OVERLAY (Blurred Backdrop, Play, Character Select, Options) -->
+    <div id="startMenuScreen" class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/75 backdrop-blur-md transition-opacity duration-500">
+        <div class="w-full max-w-2xl maritime-card modal-animate-in rounded-3xl border border-amber-300/30 p-5 sm:p-7 relative overflow-hidden">
+            <div class="absolute -top-24 -right-24 w-64 h-64 rounded-full bg-amber-400/10 blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -left-24 w-64 h-64 rounded-full bg-sky-500/10 blur-3xl pointer-events-none"></div>
+
+            <!-- Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-700/70">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-300 via-amber-500 to-amber-700 p-[1px] shadow-lg shrink-0">
+                        <div class="w-full h-full rounded-2xl bg-slate-950 flex items-center justify-center text-amber-300">
+                            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="5" r="3"></circle>
+                                <line x1="12" y1="22" x2="12" y2="8"></line>
+                                <path d="M5 12H2a10 10 0 0 0 20 0h-3"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="font-accent text-[10px] uppercase tracking-[0.26em] text-amber-300/90 font-bold">Maritime Fishery &amp; Fleet Tycoon</div>
+                        <h1 class="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight leading-none mt-0.5">Serene Waters</h1>
+                    </div>
+                </div>
+
+                <!-- Start Menu Navigation Tabs -->
+                <div class="flex items-center gap-1.5 bg-slate-950/80 p-1 rounded-xl border border-slate-700/80 self-start sm:self-auto">
+                    <button id="startTabPlay" class="start-menu-tab px-3 py-1.5 rounded-lg text-[11px] font-accent uppercase tracking-wider font-bold bg-amber-400 text-slate-950 transition">Play</button>
+                    <button id="startTabChars" class="start-menu-tab px-3 py-1.5 rounded-lg text-[11px] font-accent uppercase tracking-wider font-bold text-slate-300 hover:text-white transition">Characters</button>
+                    <button id="startTabOptions" class="start-menu-tab px-3 py-1.5 rounded-lg text-[11px] font-accent uppercase tracking-wider font-bold text-slate-300 hover:text-white transition">Options</button>
+                </div>
+            </div>
+
+            <!-- Tab 1: Play & Charter -->
+            <div id="startPanePlay" class="pt-4 space-y-4">
+                <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+                    Command a single skiff out of <span class="text-amber-200 font-semibold">Willow Creek</span>, haul catches to <span class="text-sky-300 font-semibold">Harbor Town</span> to fulfill guild contracts, and scale into an oceanic fleet across <span class="text-emerald-300 font-semibold">600 endemic species</span>.
+                </p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="bg-slate-950/75 border border-slate-700/80 rounded-2xl p-3.5 text-left">
+                        <label for="captainNameInput" class="block font-accent text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1.5">Captain &amp; Charter Name</label>
+                        <input id="captainNameInput" type="text" maxlength="22" placeholder="Capt. Vance" class="w-full bg-slate-900 border border-slate-700 focus:border-amber-400 rounded-xl px-3 py-2 text-sm font-semibold text-white outline-none transition" />
+                    </div>
+                    <div class="bg-slate-950/75 border border-slate-700/80 rounded-2xl p-3.5 flex items-center justify-between">
+                        <div>
+                            <div class="font-accent text-[10px] uppercase tracking-widest text-slate-400 font-bold">Selected Role</div>
+                            <div id="startSelectedCharName" class="font-display text-lg font-bold text-amber-300 mt-0.5">The Master Fisher</div>
+                            <div id="startSelectedCharPerk" class="text-[11px] text-emerald-300">+25% Catch Size &amp; Wider Strike Zone</div>
+                        </div>
+                        <button id="switchCharQuickBtn" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-[11px] font-semibold text-slate-200 transition">Change</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2.5 text-left">
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-2.5">
+                        <div class="font-accent text-[10px] uppercase tracking-wider text-sky-300 font-bold">01. Cast &amp; Haul</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">Fill your vessel hold &amp; harpoon colossal leviathans.</div>
+                    </div>
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-2.5">
+                        <div class="font-accent text-[10px] uppercase tracking-wider text-amber-300 font-bold">02. Walk Town</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">Stroll the harbor pier to sell fish, take quests &amp; upgrade.</div>
+                    </div>
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-2.5">
+                        <div class="font-accent text-[10px] uppercase tracking-wider text-emerald-300 font-bold">03. Global Rank</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">Expand fleets &amp; climb the maritime leaderboard.</div>
+                    </div>
+                </div>
+
+                <button id="launchGameBtn" class="btn-nautical btn-shimmer w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-300 to-orange-500 text-slate-950 font-accent text-xs sm:text-sm font-extrabold uppercase tracking-[0.18em] shadow-xl flex items-center justify-center gap-2.5 cursor-pointer">
+                    <span>Set Sail &amp; Play</span>
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </button>
+            </div>
+
+            <!-- Tab 2: Playable Character Roles -->
+            <div id="startPaneChars" class="hidden pt-4 space-y-3">
+                <p class="text-xs text-slate-300">Choose your maritime specialist. Your character appears on your boat and walks the Harbor Town boardwalk with unique economic and angling perks.</p>
+                <div id="characterGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[52vh] overflow-y-auto custom-scroll pr-1"></div>
+            </div>
+
+            <!-- Tab 3: Options & Preferences -->
+            <div id="startPaneOptions" class="hidden pt-4 space-y-3">
+                <div class="bg-slate-900/85 border border-slate-800 rounded-2xl p-4 flex items-center justify-between">
+                    <div>
+                        <div class="text-sm font-bold text-white">Maritime Audio &amp; Sonar Synth</div>
+                        <div class="text-xs text-slate-400">Procedural splash, reel tension, coin register &amp; alert audio.</div>
+                    </div>
+                    <button id="optSoundToggleBtn" class="px-4 py-2 rounded-xl bg-emerald-500/20 border border-emerald-400/50 text-emerald-200 font-accent text-xs font-bold uppercase tracking-wider">Enabled</button>
+                </div>
+
+                <div class="bg-slate-900/85 border border-slate-800 rounded-2xl p-4 flex items-center justify-between">
+                    <div>
+                        <div class="text-sm font-bold text-white">Atmosphere &amp; Time of Day</div>
+                        <div class="text-xs text-slate-400">Switch lighting between Daylight, Golden Dusk, and Starlit Night.</div>
+                    </div>
+                    <button id="optTimeToggleBtn" class="px-4 py-2 rounded-xl bg-sky-500/20 border border-sky-400/50 text-sky-200 font-accent text-xs font-bold uppercase tracking-wider">Daylight</button>
+                </div>
+
+                <div class="bg-rose-950/30 border border-rose-500/30 rounded-2xl p-4 flex items-center justify-between">
+                    <div>
+                        <div class="text-sm font-bold text-rose-200">Reset Charter Ledger</div>
+                        <div class="text-xs text-rose-300/75">Erase saved fleet, coins, and FishDex records to start fresh.</div>
+                    </div>
+                    <button id="optResetSaveBtn" class="px-4 py-2 rounded-xl bg-rose-600/80 hover:bg-rose-500 text-white font-accent text-xs font-bold uppercase tracking-wider">Reset Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FEATURE BRIEFING / EXPLANATORY SPLASH OVERLAY (Blurred Backdrop) -->
+    <div id="transitionSplash" class="hidden fixed inset-0 z-40 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md transition-opacity duration-200">
+        <div class="w-full max-w-lg maritime-card modal-animate-in rounded-3xl border border-amber-300/35 p-6 text-left shadow-2xl">
+            <div class="flex items-center gap-3 mb-3">
+                <div id="splashIconContainer" class="w-12 h-12 rounded-2xl bg-amber-400/15 border border-amber-300/40 flex items-center justify-center text-amber-300 shrink-0"></div>
+                <div>
+                    <div id="splashKicker" class="font-accent text-[10px] uppercase tracking-[0.24em] text-amber-300 font-bold">Harbor Briefing</div>
+                    <h2 id="splashTitle" class="font-display text-2xl sm:text-3xl font-bold text-white leading-tight">Docking at Harbor Town</h2>
+                </div>
+            </div>
+
+            <p id="splashSubtitle" class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-4">
+                Walk the boardwalk to sell your livewell hold at the Fishmonger, claim Harbormaster contracts, or upgrade your gear.
+            </p>
+
+            <div id="splashHighlights" class="space-y-2 mb-5 bg-slate-950/75 border border-slate-800 rounded-2xl p-3.5 text-xs text-slate-200"></div>
+
+            <div class="flex items-center justify-end gap-2.5">
+                <button id="splashCancelBtn" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-accent text-xs font-bold uppercase tracking-wider transition">Stay at Sea</button>
+                <button id="splashProceedBtn" class="btn-nautical px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-accent text-xs font-extrabold uppercase tracking-wider shadow-lg flex items-center gap-2">
+                    <span id="splashProceedLabel">Continue</span>
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Floating HUD -->
+    <header class="fixed top-0 left-0 right-0 z-20 pointer-events-none p-2 sm:p-4 flex flex-col gap-1.5 sm:gap-2">
+        <div class="flex flex-wrap items-start justify-between gap-1.5 sm:gap-2 max-w-7xl mx-auto w-full">
+
+            <!-- Left Group: Treasury, Boat Hold & Active Region -->
+            <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 pointer-events-auto">
+                <!-- Treasury & Net Worth -->
+                <div class="maritime-panel rounded-2xl px-2.5 sm:px-3.5 py-1.5 sm:py-2 flex items-center gap-2 sm:gap-2.5">
+                    <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-amber-400/15 border border-amber-300/35 flex items-center justify-center text-amber-300 shrink-0">
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M14.8 9A2 2 0 0 0 13 8h-2a2 2 0 0 0 0 4h2a2 2 0 0 1 0 4h-2a2 2 0 0 1-1.8-1"></path><line x1="12" y1="6" x2="12" y2="18"></line></svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-1.5 sm:gap-2">
+                            <span id="hudCoins" class="font-mono-num text-amber-300 font-bold text-xs sm:text-base leading-none">$20</span>
+                            <span id="hudPassiveRate" class="font-mono-num text-[9px] sm:text-[10px] font-semibold text-emerald-300 bg-emerald-500/15 border border-emerald-400/30 px-1 sm:px-1.5 py-0.5 rounded-md">+$0.0/s</span>
+                        </div>
+                        <div class="text-[9px] sm:text-[10px] text-slate-300 font-medium mt-0.5 flex items-center gap-1 sm:gap-1.5">
+                            <span id="hudRoleBadge" class="text-amber-200 font-semibold">Fisher</span>
+                            <span>•</span>
+                            <span>Net: <span id="hudNetWorth" class="font-mono-num text-slate-100">$20</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Boat Livewell Hold (Sell in Town) -->
+                <button id="openTownHoldBtn" class="btn-nautical maritime-panel rounded-2xl px-2.5 sm:px-3.5 py-1.5 sm:py-2 flex items-center gap-2 sm:gap-2.5 text-left cursor-pointer border-sky-400/30 hover:border-sky-300/60">
+                    <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-sky-400/15 border border-sky-300/35 flex items-center justify-center text-sky-300 shrink-0">
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-1 sm:gap-1.5">
+                            <span class="font-accent text-[9px] sm:text-[10px] uppercase tracking-wider text-sky-300 font-bold">Hold</span>
+                            <span id="hudHoldCount" class="font-mono-num text-[11px] sm:text-xs font-bold text-white">0/12</span>
+                        </div>
+                        <div class="text-[9px] sm:text-[10px] text-emerald-300 font-mono-num font-semibold mt-0.5"><span id="hudHoldValue">$0</span></div>
+                    </div>
+                </button>
+
+                <!-- Region & Weather Pill -->
+                <button id="openLocationsQuickBtn" class="btn-nautical maritime-panel rounded-2xl px-2.5 sm:px-3 py-1.5 sm:py-2 flex items-center gap-2 text-left cursor-pointer">
+                    <div id="hudWeatherIcon" class="w-7 h-7 rounded-lg bg-slate-800/90 border border-slate-600/60 flex items-center justify-center text-amber-300 shrink-0"></div>
+                    <div class="hidden sm:block">
+                        <div id="hudLocationName" class="text-xs font-bold text-white leading-tight">Willow Creek Village</div>
+                        <div id="hudEventLabel" class="text-[10px] text-sky-300 font-medium">Calm Seas (1.0x)</div>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Right Group: Go to Town, Leaderboard, Risk, Empire, Charts, FishDex, Start Menu -->
+            <div class="flex flex-wrap items-center gap-1 sm:gap-2 pointer-events-auto">
+                <!-- GO TO TOWN (Primary Action) -->
+                <button id="openTownBtn" class="btn-nautical pulse-gold rounded-2xl px-2.5 sm:px-3.5 py-2 text-[11px] sm:text-xs font-accent font-bold uppercase tracking-wider bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 shadow-lg flex items-center gap-1.5 cursor-pointer">
+                    <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"></path><path d="M5 21V7l8-4v18"></path><path d="M19 21V11l-6-4"></path><path d="M9 9v.01"></path><path d="M9 12v.01"></path><path d="M9 15v.01"></path><path d="M9 18v.01"></path></svg>
+                    <span>Town</span>
+                </button>
+
+                <!-- ROLE CAMPAIGN -->
+                <button id="openCampaignBtn" class="btn-nautical maritime-panel hover:bg-indigo-950/70 border-indigo-400/40 rounded-2xl p-2 sm:px-3 sm:py-2 text-xs font-semibold text-indigo-200 flex items-center gap-1.5 cursor-pointer" title="Role Story Campaign">
+                    <svg class="w-4 h-4 text-indigo-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
+                    <span class="hidden sm:inline">Campaign</span>
+                    <span id="hudCampaignBadge" class="font-mono-num text-[10px] bg-indigo-500/30 border border-indigo-300/40 px-1.5 py-0.2 rounded-full text-indigo-100">1/4</span>
+                </button>
+
+                <!-- Global Leaderboard -->
+                <button id="openLeaderboardBtn" class="btn-nautical maritime-panel hover:bg-slate-800/90 rounded-2xl p-2 sm:px-3 sm:py-2 text-xs font-semibold text-amber-200 flex items-center gap-1.5 cursor-pointer" title="Global Fishery Leaderboard">
+                    <svg class="w-4 h-4 text-amber-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>
+                    <span class="hidden md:inline">Leaderboard</span>
+                </button>
+
+                <!-- Risk & Contraband -->
+                <button id="openRiskBtn" class="btn-nautical maritime-panel hover:bg-rose-950/60 border-rose-400/35 rounded-2xl p-2 sm:px-3 sm:py-2 text-xs font-semibold text-rose-200 flex items-center gap-1.5 cursor-pointer" title="High-Risk Operations">
+                    <svg class="w-4 h-4 text-rose-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <span class="hidden md:inline">Risk</span>
+                    <span id="hudRiskBadge" class="hidden font-mono-num text-[10px] bg-rose-500/30 border border-rose-300/40 px-1.5 py-0.2 rounded-full text-rose-100">0</span>
+                </button>
+
+                <!-- Empire HQ -->
+                <button id="openBusinessBtn" class="btn-nautical maritime-panel hover:bg-slate-800/90 rounded-2xl p-2 sm:px-3 sm:py-2 text-xs font-semibold text-emerald-200 flex items-center gap-1.5 cursor-pointer" title="Empire & Fleet HQ">
+                    <svg class="w-4 h-4 text-emerald-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                    <span class="hidden sm:inline">Empire</span>
+                </button>
+
+                <!-- Regions / Charts -->
+                <button id="openLocationsBtn" class="btn-nautical maritime-panel hover:bg-slate-800/90 rounded-2xl p-2 sm:px-3 sm:py-2 text-xs font-semibold text-sky-200 flex items-center gap-1.5 cursor-pointer" title="Expedition Charts">
+                    <svg class="w-4 h-4 text-sky-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
+                    <span class="hidden lg:inline">Charts</span>
                 </button>
 
                 <!-- FishDex -->
