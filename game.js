@@ -1042,7 +1042,10 @@ function getRoleCampaignStatus(roleId = player.characterId) {
 }
 
 function hasRoleMastery(roleId) {
-    return getRoleCampaignStatus(roleId).masteryUnlocked;
+    const camp = ROLE_CAMPAIGNS[roleId];
+    if (!camp) return false;
+    const claimed = player.claimedCampaignChapters || {};
+    return camp.chapters.every(ch => !!claimed[ch.id]);
 }
 
 function getActiveCharacter() {
@@ -4363,3 +4366,4 @@ if (document.readyState === 'loading') {
 } else {
     startSereneWaters();
 }
+    
