@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Serene Waters: Maritime Fishery & Fleet Tycoon — Full Game Engine
+   Serene Waters: Maritime Fishery & Fleet Tycoon — Full-Detail Game Engine
    ========================================================================== */
 
 // --------------------------------------------------------------------------
@@ -360,12 +360,12 @@ const FEATURE_BRIEFINGS = {
 // 5. LOCATIONS, 600 SPECIES GENERATOR, UPGRADES, EMPIRE & RISK DATA
 // --------------------------------------------------------------------------
 const LOCATIONS = [
-    { id: 'creek', name: 'Willow Creek Village', unlockNetWorth: 0, mult: 1.0, skyTop: '#1e3a5f', skyBot: '#60a5fa', waterTop: '#0ea5e9', waterBot: '#032539', desc: 'Calm freshwater tributary ideal for small vessels.' },
-    { id: 'lake', name: 'Emerald Mist Lake', unlockNetWorth: 800, mult: 1.8, skyTop: '#134e4a', skyBot: '#34d399', waterTop: '#10b981', waterBot: '#022c22', desc: 'Deep glacial basin teeming with prized carp and pike.' },
-    { id: 'atoll', name: 'Sunburst Coral Atoll', unlockNetWorth: 4500, mult: 3.4, skyTop: '#7c2d12', skyBot: '#fb923c', waterTop: '#06b6d4', waterBot: '#083344', desc: 'Warm tropical reef lagoons rich in exotic pelagic species.' },
-    { id: 'fjord', name: 'Stormwatch Nordic Fjord', unlockNetWorth: 25000, mult: 7.0, skyTop: '#1e293b', skyBot: '#64748b', waterTop: '#0284c7', waterBot: '#091526', desc: 'Steep basalt cliffs and frigid currents.' },
-    { id: 'trench', name: 'Mariana Obsidian Trench', unlockNetWorth: 120000, mult: 15.0, skyTop: '#090d16', skyBot: '#1e1b4b', waterTop: '#1d4ed8', waterBot: '#020617', desc: 'Abyssal drop-off home to bioluminescent leviathans.' },
-    { id: 'polar', name: 'Aurora Polar Ice Shelf', unlockNetWorth: 600000, mult: 32.0, skyTop: '#064e3b', skyBot: '#2dd4bf', waterTop: '#38bdf8', waterBot: '#041221', desc: 'Sub-zero pack ice hiding ancient apex titans.' }
+    { id: 'creek', name: 'Willow Creek Village', unlockNetWorth: 0, mult: 1.0, skyTop: '#1e3a5f', skyBot: '#60a5fa', waterTop: '#0ea5e9', waterBot: '#032539', hillCol: '#1e4620', desc: 'Calm freshwater tributary ideal for small vessels.' },
+    { id: 'lake', name: 'Emerald Mist Lake', unlockNetWorth: 800, mult: 1.8, skyTop: '#134e4a', skyBot: '#34d399', waterTop: '#10b981', waterBot: '#022c22', hillCol: '#0f3d3e', desc: 'Deep glacial basin teeming with prized carp and pike.' },
+    { id: 'atoll', name: 'Sunburst Coral Atoll', unlockNetWorth: 4500, mult: 3.4, skyTop: '#7c2d12', skyBot: '#fb923c', waterTop: '#06b6d4', waterBot: '#083344', hillCol: '#854d0e', desc: 'Warm tropical reef lagoons rich in exotic pelagic species.' },
+    { id: 'fjord', name: 'Stormwatch Nordic Fjord', unlockNetWorth: 25000, mult: 7.0, skyTop: '#1e293b', skyBot: '#64748b', waterTop: '#0284c7', waterBot: '#091526', hillCol: '#334155', desc: 'Steep basalt cliffs and frigid currents.' },
+    { id: 'trench', name: 'Mariana Obsidian Trench', unlockNetWorth: 120000, mult: 15.0, skyTop: '#090d16', skyBot: '#1e1b4b', waterTop: '#1d4ed8', waterBot: '#020617', hillCol: '#1e1b4b', desc: 'Abyssal drop-off home to bioluminescent leviathans.' },
+    { id: 'polar', name: 'Aurora Polar Ice Shelf', unlockNetWorth: 600000, mult: 32.0, skyTop: '#064e3b', skyBot: '#2dd4bf', waterTop: '#38bdf8', waterBot: '#041221', hillCol: '#bae6fd', desc: 'Sub-zero pack ice hiding ancient apex titans.' }
 ];
 
 const RARITIES = [
@@ -409,7 +409,7 @@ LOCATIONS.forEach((loc, locIdx) => {
             speed: rarity.speed,
             barSpeed: rarity.barSpeed,
             requiresHarpoon: !!rarity.requiresHarpoon,
-            sizeScale: rarityIdx === 5 ? 2.4 : 0.75 + rarityIdx * 0.22
+            sizeScale: rarityIdx === 5 ? 2.35 : 0.78 + rarityIdx * 0.22
         });
     }
 });
@@ -500,7 +500,7 @@ let state = loadState();
 
 function loadState() {
     try {
-        const raw = localStorage.getItem('serene_waters_v5');
+        const raw = localStorage.getItem('serene_waters_v6');
         if (raw) {
             return { ...getDefaultState(), ...JSON.parse(raw) };
         }
@@ -512,7 +512,7 @@ function loadState() {
 
 function saveState() {
     try {
-        localStorage.setItem('serene_waters_v5', JSON.stringify(state));
+        localStorage.setItem('serene_waters_v6', JSON.stringify(state));
     } catch (e) {
         console.warn('Save write error:', e);
     }
@@ -606,7 +606,7 @@ function triggerCoastGuardApprehension() {
 }
 
 // --------------------------------------------------------------------------
-// 8. CANVAS SIMULATION (SEA FISHING & FULL-DETAIL WALKABLE HARBOR TOWN)
+// 8. CANVAS SIMULATION (FULL-DETAIL BOAT, WAVES, FISH & HARBOR TOWN)
 // --------------------------------------------------------------------------
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -632,17 +632,18 @@ const sim = {
     reelDir: 1,
     reelProgress: 0,
     underwaterFish: [],
+    seaweed: [],
     particles: [],
     clouds: [],
     gulls: [],
     smokePuffs: [],
-    townPlayerX: 180,
+    townPlayerX: 185,
     townWalkDir: 0,
     townBuildings: [
-        { id: 'boat', name: 'Moored Vessel (Return to Sea)', x: 110, w: 150, color: '#0284c7', roof: '#0369a1' },
-        { id: 'market', name: 'Pier 01 Fishmonger Market', x: 350, w: 185, color: '#d97706', roof: '#b45309' },
-        { id: 'guild', name: 'Harbormaster Guild Hall', x: 620, w: 185, color: '#059669', roof: '#047857' },
-        { id: 'outfitter', name: 'Drydock Outfitter & Gear', x: 890, w: 185, color: '#7c3aed', roof: '#6d28d9' }
+        { id: 'boat', name: 'Moored Vessel (Return to Sea)', x: 100, w: 165, color: '#0284c7', roof: '#0369a1' },
+        { id: 'market', name: 'Pier 01 Fishmonger Market', x: 345, w: 195, color: '#d97706', roof: '#b45309' },
+        { id: 'guild', name: 'Harbormaster Guild Hall', x: 620, w: 195, color: '#059669', roof: '#047857' },
+        { id: 'outfitter', name: 'Drydock Outfitter & Gear', x: 895, w: 195, color: '#7c3aed', roof: '#6d28d9' }
     ],
     villagers: [
         {
@@ -650,7 +651,7 @@ const sim = {
             name: 'Old Man Barnaby',
             role: 'Retired Whaler',
             x: 310,
-            minX: 260,
+            minX: 270,
             maxX: 540,
             dir: 1,
             speed: 24,
@@ -663,7 +664,7 @@ const sim = {
             name: 'Chef Clara',
             role: 'Harbor Bistro Owner',
             x: 590,
-            minX: 520,
+            minX: 530,
             maxX: 830,
             dir: -1,
             speed: 28,
@@ -675,9 +676,9 @@ const sim = {
             id: 'orin',
             name: 'Naturalist Orin',
             role: 'Marine Biologist',
-            x: 860,
-            minX: 780,
-            maxX: 1080,
+            x: 865,
+            minX: 790,
+            maxX: 1090,
             dir: 1,
             speed: 20,
             coat: '#14b8a6',
@@ -688,17 +689,20 @@ const sim = {
 };
 
 for (let i = 0; i < 6; i++) {
-    sim.clouds.push({ x: Math.random() * 1400, y: 60 + Math.random() * 110, speed: 10 + Math.random() * 14, scale: 0.7 + Math.random() * 0.6 });
+    sim.clouds.push({ x: Math.random() * 1400, y: 55 + Math.random() * 105, speed: 10 + Math.random() * 14, scale: 0.75 + Math.random() * 0.65 });
 }
 for (let i = 0; i < 5; i++) {
-    sim.gulls.push({ x: Math.random() * 1200, y: 85 + Math.random() * 95, speed: 35 + Math.random() * 25, flap: Math.random() * 6 });
+    sim.gulls.push({ x: Math.random() * 1200, y: 80 + Math.random() * 90, speed: 35 + Math.random() * 25, flap: Math.random() * 6 });
+}
+for (let i = 0; i < 22; i++) {
+    sim.seaweed.push({ x: 40 + i * 75, h: 35 + Math.random() * 55, phase: Math.random() * Math.PI * 2 });
 }
 
 function spawnSchoolForLocation() {
     sim.underwaterFish = [];
     const pool = FISH_SPECIES.filter((f) => f.regionId === state.currentLocation);
     const campaign = getCampaign();
-    const waterTopY = height * 0.38;
+    const waterTopY = height * 0.39;
 
     for (let i = 0; i < 16; i++) {
         let candidate = pool[Math.floor(Math.random() * pool.length)];
@@ -709,8 +713,8 @@ function spawnSchoolForLocation() {
 
         sim.underwaterFish.push({
             species: candidate,
-            x: 120 + Math.random() * (width - 200),
-            y: waterTopY + 55 + Math.random() * (height - waterTopY - 110),
+            x: 160 + Math.random() * (width - 230),
+            y: waterTopY + 60 + Math.random() * (height - waterTopY - 120),
             dir: Math.random() < 0.5 ? 1 : -1,
             wiggle: Math.random() * Math.PI * 2
         });
@@ -726,7 +730,6 @@ function resetFishingState() {
 }
 
 function getNearestTownTarget() {
-    // Check strolling villagers first (within 75px)
     let bestVillager = null;
     let bestVDist = 75;
     sim.villagers.forEach((v) => {
@@ -738,7 +741,6 @@ function getNearestTownTarget() {
     });
     if (bestVillager) return { type: 'villager', data: bestVillager };
 
-    // Otherwise check buildings (within 105px)
     let bestBuilding = null;
     let bestBDist = 105;
     sim.townBuildings.forEach((b) => {
@@ -809,11 +811,11 @@ function handlePrimaryActionDown() {
 function handlePrimaryActionUp() {
     if (sim.mode !== 'sea') return;
     if (sim.fishPhase === 'charging') {
-        const waterY = height * 0.38;
-        const castDist = 180 + sim.castPower * (width * 0.62);
-        sim.bobber.x = 130;
-        sim.bobber.y = waterY - 40;
-        sim.bobber.targetX = Math.min(width - 80, 130 + castDist);
+        const waterY = height * 0.39;
+        const castDist = 195 + sim.castPower * (width * 0.58);
+        sim.bobber.x = 185;
+        sim.bobber.y = waterY - 48;
+        sim.bobber.targetX = Math.min(width - 80, 185 + castDist);
         sim.fishPhase = 'casted';
         sound.playCast();
         updateActionPrompt();
@@ -878,7 +880,6 @@ function completeCatch(fishObj) {
         state.leviathansCaught += 1;
     }
 
-    // Check Coast Guard Patrol Heat
     let heatAdded = 0;
     RISK_OPERATIONS.forEach((op) => {
         if (state.activeRisks[op.id]) heatAdded += op.heatAdd;
@@ -925,9 +926,108 @@ function spawnParticles(x, y, color, count) {
 }
 
 // --------------------------------------------------------------------------
-// 10. CANVAS RENDERING (SEA & ANIMATED HARBOR TOWN WITH VILLAGERS)
+// 10. FULL-DETAIL CANVAS RENDERING (BOAT, WAVES, FISH & HARBOR TOWN)
 // --------------------------------------------------------------------------
-function renderSkyAndBackdrop(dt) {
+function drawDetailedFish(f, nowSec) {
+    const sp = f.species;
+    ctx.save();
+    ctx.translate(f.x, f.y);
+    ctx.scale(f.dir * sp.sizeScale, sp.sizeScale);
+
+    // Radar rarity ring
+    if (state.upgrades.radar > 0) {
+        ctx.strokeStyle = sp.color;
+        ctx.lineWidth = 1.4 / sp.sizeScale;
+        ctx.beginPath();
+        ctx.arc(0, 0, 21, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+
+    const tailSwing = Math.sin(f.wiggle) * 4.5;
+
+    // Tail fin
+    ctx.fillStyle = sp.color;
+    ctx.beginPath();
+    ctx.moveTo(-14, 0);
+    ctx.lineTo(-24, -7 + tailSwing);
+    ctx.lineTo(-21, 0);
+    ctx.lineTo(-24, 7 + tailSwing);
+    ctx.closePath();
+    ctx.fill();
+
+    // Dorsal & ventral fins
+    ctx.beginPath();
+    ctx.moveTo(-4, -7);
+    ctx.lineTo(2, -13);
+    ctx.lineTo(6, -7);
+    ctx.closePath();
+    ctx.fill();
+
+    // Streamlined body with belly highlight
+    const bodyGrad = ctx.createLinearGradient(0, -8, 0, 8);
+    bodyGrad.addColorStop(0, sp.color);
+    bodyGrad.addColorStop(1, '#f8fafc');
+    ctx.fillStyle = bodyGrad;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 16, 7.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Gill line & eye
+    ctx.strokeStyle = 'rgba(15, 23, 42, 0.45)';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.arc(6, 0, 4.5, -Math.PI * 0.4, Math.PI * 0.4);
+    ctx.stroke();
+
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.arc(10, -2, 1.8, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+}
+
+function drawPlayerCharacter(x, y, scale = 1) {
+    const campaign = getCampaign();
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(scale, scale);
+
+    // Boots
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(-7, 32, 6, 8);
+    ctx.fillRect(1, 32, 6, 8);
+
+    // Oilskin coat / maritime attire
+    ctx.fillStyle = campaign.coatColor;
+    ctx.beginPath();
+    ctx.roundRect(-10, 12, 20, 22, 4);
+    ctx.fill();
+
+    // Brass buttons
+    ctx.fillStyle = '#fde047';
+    ctx.beginPath();
+    ctx.arc(0, 18, 1.3, 0, Math.PI * 2);
+    ctx.arc(0, 24, 1.3, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Head
+    ctx.fillStyle = '#fed7aa';
+    ctx.beginPath();
+    ctx.arc(0, 5, 7.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Captain / Sou'wester Hat
+    ctx.fillStyle = campaign.hatColor;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 12, 3.2, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillRect(-7, -6, 14, 6);
+
+    ctx.restore();
+}
+
+function renderSkyAndBackdrop(dt, nowSec) {
     const loc = LOCATIONS.find((l) => l.id === state.currentLocation) || LOCATIONS[0];
     const timeMode = TIME_MODES[timeModeIdx];
 
@@ -937,7 +1037,8 @@ function renderSkyAndBackdrop(dt) {
         skyGrad.addColorStop(1, '#0f172a');
     } else if (timeMode === 'Sunset') {
         skyGrad.addColorStop(0, '#31102f');
-        skyGrad.addColorStop(1, '#f97316');
+        skyGrad.addColorStop(0.55, '#c2410c');
+        skyGrad.addColorStop(1, '#fb923c');
     } else {
         skyGrad.addColorStop(0, loc.skyTop);
         skyGrad.addColorStop(1, loc.skyBot);
@@ -945,21 +1046,31 @@ function renderSkyAndBackdrop(dt) {
     ctx.fillStyle = skyGrad;
     ctx.fillRect(0, 0, width, height * 0.45);
 
-    // Distant mountain ridge
-    ctx.fillStyle = timeMode === 'Night' ? 'rgba(15,23,42,0.75)' : 'rgba(15,23,42,0.22)';
+    // Sun or Moon glow
+    const orbX = width * 0.78;
+    const orbY = height * 0.14;
+    ctx.fillStyle = timeMode === 'Night' ? 'rgba(241, 245, 249, 0.85)' : 'rgba(254, 240, 138, 0.85)';
     ctx.beginPath();
-    ctx.moveTo(0, height * 0.38);
-    ctx.lineTo(width * 0.18, height * 0.25);
-    ctx.lineTo(width * 0.36, height * 0.34);
-    ctx.lineTo(width * 0.58, height * 0.22);
-    ctx.lineTo(width * 0.82, height * 0.32);
-    ctx.lineTo(width, height * 0.26);
-    ctx.lineTo(width, height * 0.38);
-    ctx.closePath();
+    ctx.arc(orbX, orbY, timeMode === 'Night' ? 18 : 28, 0, Math.PI * 2);
     ctx.fill();
 
+    // Multi-layered Parallax Horizon Hills
+    ctx.fillStyle = timeMode === 'Night' ? 'rgba(15, 23, 42, 0.82)' : loc.hillCol;
+    ctx.globalAlpha = 0.42;
+    ctx.beginPath();
+    ctx.moveTo(0, height * 0.39);
+    ctx.lineTo(width * 0.15, height * 0.26);
+    ctx.lineTo(width * 0.35, height * 0.35);
+    ctx.lineTo(width * 0.58, height * 0.22);
+    ctx.lineTo(width * 0.82, height * 0.33);
+    ctx.lineTo(width, height * 0.25);
+    ctx.lineTo(width, height * 0.39);
+    ctx.closePath();
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
     // Drifting clouds
-    ctx.fillStyle = timeMode === 'Night' ? 'rgba(148,163,184,0.08)' : 'rgba(255,255,255,0.16)';
+    ctx.fillStyle = timeMode === 'Night' ? 'rgba(148,163,184,0.08)' : 'rgba(255,255,255,0.18)';
     sim.clouds.forEach((c) => {
         c.x += c.speed * dt;
         if (c.x > width + 140) c.x = -140;
@@ -971,7 +1082,7 @@ function renderSkyAndBackdrop(dt) {
     });
 
     // Soaring gulls
-    ctx.strokeStyle = timeMode === 'Night' ? 'rgba(226,232,240,0.35)' : 'rgba(15,23,42,0.5)';
+    ctx.strokeStyle = timeMode === 'Night' ? 'rgba(226,232,240,0.35)' : 'rgba(15,23,42,0.55)';
     ctx.lineWidth = 2;
     sim.gulls.forEach((g) => {
         g.x += g.speed * dt;
@@ -988,70 +1099,132 @@ function renderSkyAndBackdrop(dt) {
 
 function renderSeaScene(dt, nowSec) {
     const loc = LOCATIONS.find((l) => l.id === state.currentLocation) || LOCATIONS[0];
-    const waterY = height * 0.38;
+    const waterY = height * 0.39;
 
+    // Deep Water Gradient
     const wGrad = ctx.createLinearGradient(0, waterY, 0, height);
     wGrad.addColorStop(0, loc.waterTop);
     wGrad.addColorStop(1, loc.waterBot);
     ctx.fillStyle = wGrad;
     ctx.fillRect(0, waterY, width, height - waterY);
 
-    // Sunbeams
+    // Underwater Sunbeams
     ctx.save();
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.045)';
     for (let i = 0; i < 4; i++) {
         ctx.beginPath();
         const bx = width * (0.2 + i * 0.22) + Math.sin(nowSec * 0.5 + i) * 25;
         ctx.moveTo(bx, waterY);
         ctx.lineTo(bx + 70, waterY);
-        ctx.lineTo(bx + 190, height);
-        ctx.lineTo(bx + 60, height);
+        ctx.lineTo(bx + 210, height);
+        ctx.lineTo(bx + 70, height);
         ctx.closePath();
         ctx.fill();
     }
     ctx.restore();
 
-    // Wooden Pier & Character
-    ctx.fillStyle = '#451a03';
-    ctx.fillRect(0, waterY - 12, 125, 16);
-    ctx.fillStyle = '#78350f';
-    ctx.fillRect(20, waterY - 12, 12, 95);
-    ctx.fillRect(95, waterY - 12, 12, 95);
+    // Seafloor Sand & Swaying Kelp
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.45)';
+    ctx.fillRect(0, height - 28, width, 28);
+    ctx.strokeStyle = 'rgba(16, 185, 129, 0.35)';
+    ctx.lineWidth = 4;
+    sim.seaweed.forEach((sw) => {
+        const sway = Math.sin(nowSec * 2 + sw.phase) * 12;
+        ctx.beginPath();
+        ctx.moveTo(sw.x, height - 20);
+        ctx.quadraticCurveTo(sw.x + sway, height - 20 - sw.h * 0.5, sw.x + sway * 1.4, height - 20 - sw.h);
+        ctx.stroke();
+    });
 
-    const campaign = getCampaign();
-    const charX = 95;
-    const charY = waterY - 46;
-    ctx.fillStyle = campaign.coatColor;
-    ctx.fillRect(charX - 8, charY + 12, 16, 22);
-    ctx.fillStyle = '#fde68a';
+    // Animated Surface Wave Crests
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.28)';
+    ctx.lineWidth = 2.5;
     ctx.beginPath();
-    ctx.arc(charX, charY + 6, 7, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = campaign.hatColor;
-    ctx.fillRect(charX - 9, charY - 2, 18, 4);
+    for (let x = 0; x <= width; x += 24) {
+        const wy = waterY + Math.sin(x * 0.025 + nowSec * 3) * 3.5;
+        if (x === 0) ctx.moveTo(x, wy);
+        else ctx.lineTo(x, wy);
+    }
+    ctx.stroke();
 
-    // Fishing Rod
-    const rodTipX = charX + 34;
-    const rodTipY = charY - 14;
-    ctx.strokeStyle = '#e2e8f0';
+    // Bobbing Maritime Fishing Vessel (Trawler Hull + Wheelhouse + Mast)
+    const boatBob = Math.sin(nowSec * 2.4) * 4.5;
+    const boatTilt = Math.cos(nowSec * 2.4) * 0.03;
+    const boatX = 105;
+    const boatY = waterY - 8 + boatBob;
+
+    ctx.save();
+    ctx.translate(boatX, boatY);
+    ctx.rotate(boatTilt);
+
+    // Hull
+    ctx.fillStyle = '#1e293b';
+    ctx.beginPath();
+    ctx.moveTo(-72, -10);
+    ctx.lineTo(82, -10);
+    ctx.lineTo(62, 22);
+    ctx.lineTo(-56, 22);
+    ctx.closePath();
+    ctx.fill();
+
+    // Brass & Red Waterline Trim
+    ctx.fillStyle = '#e11d48';
+    ctx.fillRect(-64, 6, 134, 6);
+    ctx.fillStyle = '#fbbf24';
+    ctx.fillRect(-70, -12, 150, 3);
+
+    // Wheelhouse Cabin
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(-48, -42, 46, 32);
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(-52, -46, 54, 6);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(-38, -36, 26, 12);
+
+    // Mast & Lantern
+    ctx.strokeStyle = '#cbd5e1';
     ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(charX + 6, charY + 18);
+    ctx.moveTo(-25, -46);
+    ctx.lineTo(-25, -82);
+    ctx.stroke();
+    ctx.fillStyle = '#fde047';
+    ctx.beginPath();
+    ctx.arc(-25, -84, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Angler Character on Deck
+    drawPlayerCharacter(36, -50, 1);
+
+    // Fishing Rod
+    const rodStartX = 44;
+    const rodStartY = -30;
+    const rodTipX = 88;
+    const rodTipY = -66;
+    ctx.strokeStyle = '#f8fafc';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(rodStartX, rodStartY);
     ctx.lineTo(rodTipX, rodTipY);
     ctx.stroke();
 
+    ctx.restore();
+
+    const worldRodTipX = boatX + 88;
+    const worldRodTipY = boatY - 66;
+
     // Underwater Fish
     sim.underwaterFish.forEach((f) => {
-        f.wiggle += dt * 5 * f.species.speed;
+        f.wiggle += dt * 5.5 * f.species.speed;
 
         if (sim.fishPhase === 'casted' && !sim.hookedFish) {
             const dx = sim.bobber.x - f.x;
             const dy = sim.bobber.y - f.y;
             const dist = Math.hypot(dx, dy);
-            if (dist < 175) {
+            if (dist < 185) {
                 f.dir = dx >= 0 ? 1 : -1;
-                f.x += (dx / dist) * 75 * dt;
-                f.y += (dy / dist) * 75 * dt;
+                f.x += (dx / dist) * 78 * dt;
+                f.y += (dy / dist) * 78 * dt;
                 if (dist < 18) {
                     sim.hookedFish = f;
                     sim.fishPhase = 'reeling';
@@ -1065,37 +1238,15 @@ function renderSeaScene(dt, nowSec) {
             }
         } else if (sim.hookedFish === f) {
             f.x = sim.bobber.x + Math.sin(nowSec * 14) * 10;
-            f.y = sim.bobber.y + 14;
+            f.y = sim.bobber.y + 16;
         } else {
             f.x += f.dir * 38 * f.species.speed * dt;
         }
 
-        if (f.x < 135) f.dir = 1;
+        if (f.x < 175) f.dir = 1;
         if (f.x > width - 60) f.dir = -1;
 
-        if (state.upgrades.radar > 0) {
-            ctx.strokeStyle = f.species.color;
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.arc(f.x, f.y, 18 * f.species.sizeScale, 0, Math.PI * 2);
-            ctx.stroke();
-        }
-
-        ctx.save();
-        ctx.translate(f.x, f.y);
-        ctx.scale(f.dir * f.species.sizeScale, f.species.sizeScale);
-        ctx.fillStyle = f.species.color;
-        ctx.beginPath();
-        ctx.ellipse(0, 0, 15, 7, 0, 0, Math.PI * 2);
-        ctx.fill();
-        const tailWag = Math.sin(f.wiggle) * 4;
-        ctx.beginPath();
-        ctx.moveTo(-13, 0);
-        ctx.lineTo(-22, -6 + tailWag);
-        ctx.lineTo(-22, 6 + tailWag);
-        ctx.closePath();
-        ctx.fill();
-        ctx.restore();
+        drawDetailedFish(f, nowSec);
     });
 
     // Bobber & Line
@@ -1103,11 +1254,18 @@ function renderSeaScene(dt, nowSec) {
         sim.bobber.x += (sim.bobber.targetX - sim.bobber.x) * Math.min(1, dt * 6);
         sim.bobber.y = waterY + Math.sin(nowSec * 4) * 4;
 
-        ctx.strokeStyle = 'rgba(248, 250, 252, 0.75)';
+        ctx.strokeStyle = 'rgba(248, 250, 252, 0.8)';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.moveTo(rodTipX, rodTipY);
+        ctx.moveTo(worldRodTipX, worldRodTipY);
         ctx.lineTo(sim.bobber.x, sim.bobber.y);
+        ctx.stroke();
+
+        // Water ripple rings around bobber
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.ellipse(sim.bobber.x, sim.bobber.y + 4, 14 + Math.sin(nowSec * 5) * 4, 4, 0, 0, Math.PI * 2);
         ctx.stroke();
 
         ctx.fillStyle = '#ef4444';
@@ -1125,9 +1283,9 @@ function renderSeaScene(dt, nowSec) {
         sim.castPower = Math.min(1, sim.castPower + dt * 1.15);
         const barW = 140;
         const barH = 14;
-        const bx = charX - 20;
-        const by = charY - 40;
-        ctx.fillStyle = 'rgba(15,23,42,0.85)';
+        const bx = boatX + 10;
+        const by = boatY - 95;
+        ctx.fillStyle = 'rgba(15,23,42,0.88)';
         ctx.fillRect(bx, by, barW, barH);
         ctx.fillStyle = '#f59e0b';
         ctx.fillRect(bx + 2, by + 2, (barW - 4) * sim.castPower, barH - 4);
@@ -1136,6 +1294,7 @@ function renderSeaScene(dt, nowSec) {
     // Reeling Timing Bar
     if (sim.fishPhase === 'reeling' && sim.hookedFish) {
         const sp = sim.hookedFish.species;
+        const campaign = getCampaign();
         sim.reelCursor += sim.reelDir * dt * 1.15 * sp.barSpeed;
         if (sim.reelCursor >= 1) {
             sim.reelCursor = 1;
@@ -1148,7 +1307,7 @@ function renderSeaScene(dt, nowSec) {
         const barW = Math.min(360, width * 0.78);
         const barH = 26;
         const bx = (width - barW) / 2;
-        const by = waterY - 82;
+        const by = waterY - 86;
 
         ctx.fillStyle = 'rgba(9, 23, 38, 0.92)';
         ctx.strokeStyle = '#d4a853';
@@ -1179,7 +1338,7 @@ function renderSeaScene(dt, nowSec) {
 function renderTownScene(dt, nowSec) {
     const groundY = height * 0.68;
 
-    // Harbor Water & Bobbing Reflections
+    // Harbor Water & Pilings
     ctx.fillStyle = '#07243b';
     ctx.fillRect(0, groundY - 25, width, height - groundY + 25);
 
@@ -1203,7 +1362,7 @@ function renderTownScene(dt, nowSec) {
         ctx.fill();
     }
 
-    // Wooden Boardwalk & Pilings
+    // Wooden Boardwalk & Support Beams
     ctx.fillStyle = '#451a03';
     ctx.fillRect(0, groundY, width, 28);
     ctx.fillStyle = '#78350f';
@@ -1212,7 +1371,7 @@ function renderTownScene(dt, nowSec) {
     }
 
     // Glowing Harbor Lampposts
-    [290, 580, 850, 1110].forEach((lx) => {
+    [290, 580, 850, 1120].forEach((lx) => {
         ctx.fillStyle = '#1e293b';
         ctx.fillRect(lx - 3, groundY - 95, 6, 95);
         const glow = 0.25 + Math.sin(nowSec * 3 + lx) * 0.05;
@@ -1226,12 +1385,12 @@ function renderTownScene(dt, nowSec) {
         ctx.fill();
     });
 
-    // Detailed Storefronts & Moored Boat
+    // Storefronts & Moored Vessel
     sim.townBuildings.forEach((b) => {
         if (b.id === 'boat') {
             const bob = Math.sin(nowSec * 2.5) * 4;
             const by = groundY - 38 + bob;
-            ctx.fillStyle = '#0369a1';
+            ctx.fillStyle = '#1e293b';
             ctx.beginPath();
             ctx.moveTo(b.x, by);
             ctx.lineTo(b.x + b.w, by);
@@ -1241,27 +1400,31 @@ function renderTownScene(dt, nowSec) {
             ctx.fill();
 
             ctx.fillStyle = '#f8fafc';
-            ctx.fillRect(b.x + 42, by - 26, 54, 26);
+            ctx.fillRect(b.x + 42, by - 28, 56, 28);
+            ctx.fillStyle = '#0284c7';
+            ctx.fillRect(b.x + 38, by - 32, 64, 6);
+
+            ctx.fillStyle = '#f8fafc';
             ctx.font = 'bold 12px Manrope, sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText(b.name, b.x + b.w / 2, by - 42);
+            ctx.fillText(b.name, b.x + b.w / 2, by - 46);
             return;
         }
 
-        const bH = 132;
+        const bH = 136;
         const bY = groundY - bH;
         ctx.fillStyle = '#1e293b';
         ctx.fillRect(b.x, bY, b.w, bH);
 
-        // Animated Awning Stripes
+        // Animated Awning
         const sway = Math.sin(nowSec * 2 + b.x) * 2;
         ctx.fillStyle = b.color;
         ctx.fillRect(b.x - 8, bY - 14 + sway, b.w + 16, 18);
 
         // Warm Lit Windows
-        ctx.fillStyle = 'rgba(253, 224, 71, 0.25)';
-        ctx.fillRect(b.x + 18, bY + 28, 34, 34);
-        ctx.fillRect(b.x + b.w - 52, bY + 28, 34, 34);
+        ctx.fillStyle = 'rgba(253, 224, 71, 0.28)';
+        ctx.fillRect(b.x + 18, bY + 28, 36, 36);
+        ctx.fillRect(b.x + b.w - 54, bY + 28, 36, 36);
 
         // Doorway
         ctx.fillStyle = '#0f172a';
@@ -1282,7 +1445,9 @@ function renderTownScene(dt, nowSec) {
 
         const vy = groundY - 40;
         ctx.fillStyle = v.coat;
-        ctx.fillRect(v.x - 9, vy + 13, 18, 27);
+        ctx.beginPath();
+        ctx.roundRect(v.x - 9, vy + 13, 18, 27, 4);
+        ctx.fill();
         ctx.fillStyle = '#fed7aa';
         ctx.beginPath();
         ctx.arc(v.x, vy + 6, 7.5, 0, Math.PI * 2);
@@ -1290,9 +1455,8 @@ function renderTownScene(dt, nowSec) {
         ctx.fillStyle = v.hat;
         ctx.fillRect(v.x - 10, vy - 2, 20, 4);
 
-        // Floating Task Bubble ("!")
         const floatY = Math.sin(nowSec * 4 + v.x) * 3;
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
         ctx.strokeStyle = '#fbbf24';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
@@ -1309,18 +1473,7 @@ function renderTownScene(dt, nowSec) {
     // Walkable Player Character
     sim.townPlayerX += sim.townWalkDir * 245 * dt;
     sim.townPlayerX = Math.max(80, Math.min(Math.max(width - 80, 1140), sim.townPlayerX));
-
-    const campaign = getCampaign();
-    const px = sim.townPlayerX;
-    const py = groundY - 42;
-    ctx.fillStyle = campaign.coatColor;
-    ctx.fillRect(px - 10, py + 14, 20, 28);
-    ctx.fillStyle = '#fde68a';
-    ctx.beginPath();
-    ctx.arc(px, py + 7, 8, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = campaign.hatColor;
-    ctx.fillRect(px - 11, py - 2, 22, 5);
+    drawPlayerCharacter(sim.townPlayerX, groundY - 40, 1.05);
 
     updateActionPrompt();
 }
@@ -1351,7 +1504,7 @@ function gameLoop(now) {
     lastFrame = now;
 
     ctx.clearRect(0, 0, width, height);
-    renderSkyAndBackdrop(dt);
+    renderSkyAndBackdrop(dt, now / 1000);
 
     if (sim.mode === 'sea') {
         renderSeaScene(dt, now / 1000);
@@ -1493,7 +1646,6 @@ function renderCharacterSelector() {
     });
 }
 
-// Villager Conversation & Custom Task Modal
 function talkToVillager(villager) {
     if (!state.villagerTasks[villager.id]) {
         const loc = LOCATIONS.find((l) => l.id === state.currentLocation) || LOCATIONS[0];
@@ -1545,7 +1697,6 @@ function talkToVillager(villager) {
     }
 }
 
-// Town Building Handlers
 function enterTownBuilding(buildingId) {
     if (buildingId === 'boat') {
         sim.mode = 'sea';
@@ -1708,9 +1859,7 @@ function triggerTownInteraction() {
 function setupListeners() {
     canvas.addEventListener('pointerdown', (e) => {
         if (sim.mode === 'town') {
-            // Allow tapping directly on a villager or building on the boardwalk
-            const clickX = e.clientX;
-            sim.townPlayerX = clickX;
+            sim.townPlayerX = e.clientX;
             triggerTownInteraction();
             return;
         }
@@ -1741,7 +1890,6 @@ function setupListeners() {
         }
     });
 
-    // Town Walk Buttons
     const btnLeft = document.getElementById('btnWalkLeft');
     const btnRight = document.getElementById('btnWalkRight');
     btnLeft.addEventListener('pointerdown', () => (sim.townWalkDir = -1));
@@ -1750,12 +1898,11 @@ function setupListeners() {
     btnRight.addEventListener('pointerup', () => (sim.townWalkDir = 0));
     document.getElementById('btnTownInteract').addEventListener('click', triggerTownInteraction);
 
-    // Toggle Sea / Town (with one-time briefing)
     document.getElementById('btnToggleTown').addEventListener('click', () => {
         if (sim.mode === 'sea') {
             runWithBriefing('town', () => {
                 sim.mode = 'town';
-                sim.townPlayerX = 180;
+                sim.townPlayerX = 185;
                 resetFishingState();
                 updateHUD();
             });
@@ -1771,7 +1918,6 @@ function setupListeners() {
         updateHUD();
     });
 
-    // Charts Modal
     document.getElementById('btnOpenCharts').addEventListener('click', () => {
         runWithBriefing('charts', () => {
             const nw = getNetWorth();
@@ -1811,7 +1957,6 @@ function setupListeners() {
         });
     });
 
-    // Empire HQ Modal
     document.getElementById('btnOpenEmpire').addEventListener('click', () => {
         runWithBriefing('empire', () => {
             const discount = state.character === 'industrialist' ? 0.85 : 1.0;
@@ -1853,7 +1998,6 @@ function setupListeners() {
         });
     });
 
-    // Patrol & Risk Modal
     document.getElementById('btnOpenRisk').addEventListener('click', () => {
         runWithBriefing('risk', () => {
             const renderRisk = () => {
@@ -1909,7 +2053,6 @@ function setupListeners() {
         });
     });
 
-    // FishDex Modal
     document.getElementById('btnOpenFishDex').addEventListener('click', () => {
         runWithBriefing('fishdex', () => {
             const regionFish = FISH_SPECIES.filter((f) => f.regionId === state.currentLocation);
@@ -1933,7 +2076,6 @@ function setupListeners() {
         });
     });
 
-    // Leaderboard Modal
     document.getElementById('btnOpenLeaderboard').addEventListener('click', () => {
         runWithBriefing('leaderboard', () => {
             const entries = [
@@ -1958,7 +2100,6 @@ function setupListeners() {
         });
     });
 
-    // Briefing Modal Continue
     document.getElementById('btnContinueBriefing').addEventListener('click', () => {
         document.getElementById('briefingModal').classList.add('hidden');
         if (pendingBriefingCallback) {
@@ -1968,7 +2109,6 @@ function setupListeners() {
         }
     });
 
-    // Start Menu & Options Controls
     document.getElementById('btnOpenStartMenu').addEventListener('click', () => {
         renderCharacterSelector();
         document.getElementById('startMenuModal').classList.remove('hidden');
