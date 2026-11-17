@@ -4006,6 +4006,25 @@ function setupUIEventListeners() {
             releaseCast();
         }
     });
+    
+        // Dedicated Mobile Bottom Action Button (Cast / Bite / Reel / Hold / Harpoon)
+    const mobileActionBtn = document.getElementById('mobilePrimaryActionBtn');
+    if (mobileActionBtn) {
+        mobileActionBtn.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (worldScene !== 'SEA') return;
+            if (state === GAME_STATE.IDLE) startChargingCast();
+            else if (state === GAME_STATE.BITE) setHookAndStartReeling();
+            else if (state === GAME_STATE.REELING) {
+                reelHoldingInput = true;
+                handleTimingStrike();
+            } else if (state === GAME_STATE.HARPOONING) {
+                fireHarpoonBolt();
+            }
+        });
+    }
+
 
     // Keyboard Input (Fishing + Full-Screen Town Boardwalk Walking & Interaction)
     window.addEventListener('keydown', (e) => {
