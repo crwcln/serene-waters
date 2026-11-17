@@ -58,7 +58,7 @@
             <!-- Tab 1: Play & Charter -->
             <div id="startPanePlay" class="pt-4 space-y-4">
                 <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
-                    Command a single skiff out of <span class="text-amber-200 font-semibold">Willow Creek</span>, haul catches to <span class="text-sky-300 font-semibold">Harbor Town</span> to fulfill guild contracts, and scale into an oceanic fleet across <span class="text-emerald-300 font-semibold">600 endemic species</span>.
+                    Command a single skiff out of <span class="text-amber-200 font-semibold">Willow Creek</span>, haul catches to <span class="text-sky-300 font-semibold">Harbor Town</span> to fulfill guild contracts, and scale into an oceanic fleet across <span class="text-emerald-300 font-semibold">1,600 endemic species</span>.
                 </p>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -74,6 +74,24 @@
                         </div>
                         <button id="switchCharQuickBtn" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-[11px] font-semibold text-slate-200 transition">Change</button>
                     </div>
+                </div>
+
+                <div class="bg-slate-950/80 border border-sky-500/30 rounded-2xl p-3.5">
+                    <div class="flex items-center justify-between gap-2 mb-2.5">
+                        <div class="font-accent text-[10px] uppercase tracking-widest text-sky-300 font-bold">Captain Account &amp; Leaderboard</div>
+                        <div id="accountStatusText" class="text-[10px] text-slate-400">Not signed in</div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <input id="loginUsernameInput" type="text" maxlength="18" placeholder="Username" autocomplete="username" class="w-full bg-slate-900 border border-slate-700 focus:border-sky-400 rounded-xl px-3 py-2 text-sm font-semibold text-white outline-none transition" />
+                        <input id="loginPasswordInput" type="password" maxlength="40" placeholder="Password" autocomplete="current-password" class="w-full bg-slate-900 border border-slate-700 focus:border-sky-400 rounded-xl px-3 py-2 text-sm font-semibold text-white outline-none transition" />
+                        <input id="registerDisplayNameInput" type="text" maxlength="22" placeholder="Display name (register)" class="w-full bg-slate-900 border border-slate-700 focus:border-sky-400 rounded-xl px-3 py-2 text-sm font-semibold text-white outline-none transition" />
+                    </div>
+                    <div class="flex flex-wrap gap-2 mt-2.5">
+                        <button id="loginBtn" class="px-4 py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/35 border border-sky-400/50 text-sky-100 font-accent text-[11px] font-bold uppercase tracking-wider cursor-pointer">Log In</button>
+                        <button id="registerBtn" class="px-4 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/35 border border-emerald-400/50 text-emerald-100 font-accent text-[11px] font-bold uppercase tracking-wider cursor-pointer">Create Account</button>
+                        <button id="logoutBtn" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-300 font-accent text-[11px] font-bold uppercase tracking-wider cursor-pointer">Sign Out</button>
+                    </div>
+                    <div class="text-[10px] text-slate-500 mt-2">Default admin: <span class="font-mono-num text-slate-400">admiral</span> / <span class="font-mono-num text-slate-400">harbor2026</span>. Accounts and saves are stored in this browser only.</div>
                 </div>
 
                 <div class="grid grid-cols-3 gap-2.5 text-left">
@@ -254,10 +272,28 @@
                 </button>
 
                 <!-- FishDex -->
-                <button id="openDexBtn" class="btn-nautical maritime-panel hover:bg-slate-800/90 rounded-2xl p-2 sm:px-3 sm:py-2 text-xs font-semibold text-slate-200 flex items-center gap-1.5 cursor-pointer" title="600-Species Encyclopedia">
+                <button id="openDexBtn" class="btn-nautical maritime-panel hover:bg-slate-800/90 rounded-2xl p-2 sm:px-3 sm:py-2 text-xs font-semibold text-slate-200 flex items-center gap-1.5 cursor-pointer" title="1,600-SPECIES ENCYCLOPEDIA">
                     <svg class="w-4 h-4 text-teal-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
                     <span class="hidden">FishDex</span>
-                    <span id="hudDexCount" class="font-mono-num text-[10px] sm:text-[11px] bg-slate-800 px-1.5 py-0.5 rounded-md text-teal-200">0/600</span>
+                    <span id="hudDexCount" class="font-mono-num text-[10px] sm:text-[11px] bg-slate-800 px-1.5 py-0.5 rounded-md text-teal-200">0/1600</span>
+                </button>
+
+                <!-- Fishing Waters -->
+                <button id="openWatersBtn" class="btn-nautical maritime-panel hover:bg-cyan-950/60 border-cyan-400/35 rounded-2xl p-2 sm:px-3 sm:py-2 text-xs font-semibold text-cyan-200 flex items-center gap-1.5 cursor-pointer" title="Choose Fishing Waters">
+                    <svg class="w-4 h-4 text-cyan-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12c2-2 4-2 6 0s4 2 6 0 4-2 6 0"></path><path d="M2 18c2-2 4-2 6 0s4 2 6 0 4-2 6 0"></path></svg>
+                    <span class="hidden md:inline">Waters</span>
+                </button>
+
+                <!-- Account -->
+                <button id="openAccountBtn" class="btn-nautical maritime-panel hover:bg-sky-950/60 border-sky-400/35 rounded-2xl p-2 sm:px-3 sm:py-2 text-xs font-semibold text-sky-200 flex items-center gap-1.5 cursor-pointer" title="Your Captain Account">
+                    <svg class="w-4 h-4 text-sky-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"></path></svg>
+                    <span class="hidden md:inline">Account</span>
+                </button>
+
+                <!-- Admin (hidden for non-admins) -->
+                <button id="openAdminBtn" class="hidden btn-nautical maritime-panel hover:bg-rose-950/60 border-rose-400/45 rounded-2xl p-2 sm:px-3 sm:py-2 text-xs font-semibold text-rose-200 flex items-center gap-1.5 cursor-pointer" title="Admin Control Panel">
+                    <svg class="w-4 h-4 text-rose-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6z"></path><path d="M9 12l2 2 4-4"></path></svg>
+                    <span class="hidden md:inline">Admin</span>
                 </button>
 
                 <!-- Start Menu / Settings Button -->
@@ -515,7 +551,7 @@
             <div class="p-5 border-b border-slate-700/70 flex items-center justify-between">
                 <div>
                     <div class="font-accent text-[10px] uppercase tracking-[0.2em] text-sky-300 font-bold">Navigation Charts</div>
-                    <h2 class="font-display text-2xl font-bold text-white">Expedition Waters (600 Species)</h2>
+                    <h2 class="font-display text-2xl font-bold text-white">Expedition Waters (1,600 Species)</h2>
                     <p class="text-xs text-slate-300 mt-0.5">Each region hosts 100 exclusive endemic species and its own Harbor Town.</p>
                 </div>
                 <button id="closeLocationsBtn" class="w-9 h-9 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center cursor-pointer">
@@ -527,7 +563,7 @@
     </div>
 
     <!-- ===================================================================== -->
-    <!-- MODAL 7: 600-SPECIES ENCYCLOPEDIA (FISHDEX) -->
+    <!-- MODAL 7: 1,600-SPECIES ENCYCLOPEDIA (FISHDEX) -->
     <!-- ===================================================================== -->
     <div id="dexModal" class="hidden fixed inset-0 z-30 bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
         <div class="maritime-card modal-animate-in rounded-3xl max-w-4xl w-full max-h-[88vh] flex flex-col overflow-hidden">
@@ -535,11 +571,11 @@
                 <div>
                     <div class="font-accent text-[10px] uppercase tracking-[0.2em] text-teal-300 font-bold">Marine Registry</div>
                     <h2 class="font-display text-2xl font-bold text-white">Global FishDex Encyclopedia</h2>
-                    <p id="dexProgressSubtitle" class="text-xs text-slate-300 mt-0.5">Discovered 0 of 600 endemic species</p>
+                    <p id="dexProgressSubtitle" class="text-xs text-slate-300 mt-0.5">Discovered 0 of 1,600 endemic species</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <select id="dexRegionFilter" class="bg-slate-900 border border-slate-600 text-slate-200 text-xs rounded-xl px-3 py-2 outline-none">
-                        <option value="all">All Regions (600)</option>
+                        <option value="all">All Regions (1600)</option>
                         <option value="creek">Willow Creek (100)</option>
                         <option value="lake">Emerald Mist Lake (100)</option>
                         <option value="reef">Sunburst Coral Atoll (100)</option>
@@ -579,11 +615,61 @@
     <div id="confirmResetModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
         <div class="maritime-card modal-animate-in rounded-3xl max-w-sm w-full p-6 text-center border-rose-500/40">
             <h3 class="font-display text-xl font-bold text-white mb-2">Reset Charter Progress?</h3>
-            <p class="text-xs text-slate-300 mb-5">This will permanently clear your treasury, fleet, town quests, and 600-species FishDex records.</p>
+            <p class="text-xs text-slate-300 mb-5">This will permanently clear your treasury, fleet, town quests, and 1,600-species FishDex records.</p>
             <div class="flex gap-3">
                 <button id="cancelResetBtn" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs cursor-pointer">Cancel</button>
                 <button id="confirmResetBtn" class="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs cursor-pointer">Reset All</button>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CAPTAIN ACCOUNT -->
+    <div id="accountModal" class="hidden fixed inset-0 z-30 bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
+        <div class="maritime-card modal-animate-in rounded-3xl max-w-md w-full max-h-[88vh] flex flex-col overflow-hidden border-sky-400/35">
+            <div class="p-5 border-b border-sky-500/30 flex items-center justify-between bg-sky-950/25">
+                <div>
+                    <div class="font-accent text-[10px] uppercase tracking-[0.2em] text-sky-300 font-bold">Registry Access</div>
+                    <h2 class="font-display text-2xl font-bold text-white">Captain Account</h2>
+                </div>
+                <button id="closeAccountBtn" class="w-9 h-9 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center cursor-pointer">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div id="accountBody" class="p-5 overflow-y-auto custom-scroll space-y-3"></div>
+        </div>
+    </div>
+
+    <!-- MODAL: ADMIN CONTROL PANEL -->
+    <div id="adminModal" class="hidden fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
+        <div class="maritime-card modal-animate-in rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden border-rose-400/40">
+            <div class="p-5 border-b border-rose-500/30 flex items-center justify-between bg-rose-950/30">
+                <div>
+                    <div class="font-accent text-[10px] uppercase tracking-[0.2em] text-rose-300 font-bold">Harbormaster Authority</div>
+                    <h2 class="font-display text-2xl font-bold text-white">Global Admin Panel</h2>
+                    <p class="text-[11px] text-rose-200/75 mt-0.5">Manage every registered captain in this browser registry.</p>
+                </div>
+                <button id="closeAdminBtn" class="w-9 h-9 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center cursor-pointer">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div id="adminBody" class="p-5 overflow-y-auto custom-scroll space-y-3"></div>
+        </div>
+    </div>
+
+    <!-- MODAL: FISHING WATERS -->
+    <div id="watersModal" class="hidden fixed inset-0 z-30 bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
+        <div class="maritime-card modal-animate-in rounded-3xl max-w-4xl w-full max-h-[88vh] flex flex-col overflow-hidden border-cyan-400/35">
+            <div class="p-5 border-b border-cyan-500/30 flex items-center justify-between bg-cyan-950/25">
+                <div>
+                    <div class="font-accent text-[10px] uppercase tracking-[0.2em] text-cyan-300 font-bold">Navigation &amp; Depth Charts</div>
+                    <h2 class="font-display text-2xl font-bold text-white">Fishing Waters</h2>
+                    <p id="watersSubtitle" class="text-[11px] text-cyan-200/75 mt-0.5">Pick a body of water to fish. Deeper waters hold rarer species.</p>
+                </div>
+                <button id="closeWatersBtn" class="w-9 h-9 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center cursor-pointer">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div id="watersList" class="p-5 overflow-y-auto custom-scroll grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
         </div>
     </div>
 

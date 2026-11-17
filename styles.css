@@ -251,10 +251,10 @@ body.in-town #hudHeader { z-index: 25; }
 
     /* Bottom-sheet modals */
     #townBuildingModal, #leaderboardModal, #riskModal, #businessModal,
-    #locationsModal, #dexModal, #campaignModal { padding: 0; align-items: flex-end; }
+    #locationsModal, #dexModal, #campaignModal, #accountModal, #watersModal { padding: 0; align-items: flex-end; }
     #townBuildingModal > .maritime-card, #leaderboardModal > .maritime-card, #riskModal > .maritime-card,
     #businessModal > .maritime-card, #locationsModal > .maritime-card, #dexModal > .maritime-card,
-    #campaignModal > .maritime-card {
+    #campaignModal > .maritime-card, #accountModal > .maritime-card, #watersModal > .maritime-card {
         max-width: none;
         width: 100%;
         margin: 0;

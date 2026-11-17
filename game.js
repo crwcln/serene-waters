@@ -142,7 +142,7 @@ class SoundEngine {
 const sound = new SoundEngine();
 
 // =========================================================================
-// 2. SIX REGIONS & 600 STRICTLY REGION-LOCKED FISH SPECIES (100 PER REGION)
+// 2. SIXTEEN REGIONS & 1,600 STRICTLY REGION-LOCKED FISH SPECIES (100 PER REGION)
 // =========================================================================
 const LOCATIONS = [
     {
@@ -228,8 +228,185 @@ const LOCATIONS = [
         abyssColor: '#090d16',
         causticColor: 'rgba(224, 242, 254, 0.32)',
         desc: 'Sub-zero glacial waters populated by 100 exclusive polar apex leviathans.'
+    },
+    {
+        id: 'river',
+        name: 'Silverleaf Wild River',
+        townName: 'Silverleaf River Port',
+        subtitle: 'Freeflowing River',
+        unlockNetWorth: 3500000,
+        valueMult: 65,
+        sceneryType: 'forest',
+        surfaceColor: '#0891b2',
+        midColor: '#0e7490',
+        abyssColor: '#083344',
+        causticColor: 'rgba(207, 250, 254, 0.3)',
+        desc: 'Fast-flowing wilderness river holding 100 exclusive riverine species.'
+    },
+    {
+        id: 'swamp',
+        name: 'Mirewood Bayou',
+        townName: 'Mirewood Trading Post',
+        subtitle: 'Cypress Wetland',
+        unlockNetWorth: 12000000,
+        valueMult: 120,
+        sceneryType: 'forest',
+        surfaceColor: '#4d7c0f',
+        midColor: '#365314',
+        abyssColor: '#1a2e05',
+        causticColor: 'rgba(217, 249, 157, 0.22)',
+        desc: 'Shadowed cypress swamps hiding 100 exclusive bayou ambush predators.'
+    },
+    {
+        id: 'canyon',
+        name: 'Copper Canyon Gorge',
+        townName: 'Copper Gorge Landing',
+        subtitle: 'Arid River Gorge',
+        unlockNetWorth: 40000000,
+        valueMult: 220,
+        sceneryType: 'fjord',
+        surfaceColor: '#c2410c',
+        midColor: '#9a3412',
+        abyssColor: '#431407',
+        causticColor: 'rgba(254, 215, 170, 0.24)',
+        desc: 'Red-rock gorge waters containing 100 exclusive desert river species.'
+    },
+    {
+        id: 'kelp',
+        name: 'Giant Kelp Forest',
+        townName: 'Kelp Haven Dock',
+        subtitle: 'Temperate Kelp Forest',
+        unlockNetWorth: 130000000,
+        valueMult: 400,
+        sceneryType: 'tropics',
+        surfaceColor: '#059669',
+        midColor: '#047857',
+        abyssColor: '#022c22',
+        causticColor: 'rgba(167, 243, 208, 0.28)',
+        desc: 'Towering kelp canopies sheltering 100 exclusive forest-dwelling species.'
+    },
+    {
+        id: 'volcano',
+        name: 'Ember Ridge Caldera',
+        townName: 'Ember Ridge Port',
+        subtitle: 'Volcanic Caldera',
+        unlockNetWorth: 450000000,
+        valueMult: 750,
+        sceneryType: 'volcanic',
+        surfaceColor: '#dc2626',
+        midColor: '#991b1b',
+        abyssColor: '#2a0808',
+        causticColor: 'rgba(254, 202, 202, 0.24)',
+        desc: 'Superheated volcanic crater seas with 100 exclusive geothermal species.'
+    },
+    {
+        id: 'shelf',
+        name: 'Continental Shelf Rise',
+        townName: 'Shelf Rise Station',
+        subtitle: 'Continental Shelf',
+        unlockNetWorth: 1500000000,
+        valueMult: 1400,
+        sceneryType: 'glacier',
+        surfaceColor: '#2563eb',
+        midColor: '#1e3a8a',
+        abyssColor: '#0b1120',
+        causticColor: 'rgba(191, 219, 254, 0.26)',
+        desc: 'Vast offshore shelf teeming with 100 exclusive deep-shelf species.'
+    },
+    {
+        id: 'cave',
+        name: 'Luminous Cavern Sea',
+        townName: 'Cavern Light Outpost',
+        subtitle: 'Subterranean Cavern',
+        unlockNetWorth: 5000000000,
+        valueMult: 2600,
+        sceneryType: 'volcanic',
+        surfaceColor: '#7c3aed',
+        midColor: '#4c1d95',
+        abyssColor: '#160428',
+        causticColor: 'rgba(233, 213, 255, 0.22)',
+        desc: 'Glowing subterranean caverns filled with 100 exclusive cave species.'
+    },
+    {
+        id: 'tonga',
+        name: 'Tonga Hadal Trench',
+        townName: 'Tonga Deepwater Rig',
+        subtitle: 'Ultra-Hadal Zone',
+        unlockNetWorth: 18000000000,
+        valueMult: 4800,
+        sceneryType: 'volcanic',
+        surfaceColor: '#4338ca',
+        midColor: '#312e81',
+        abyssColor: '#02010a',
+        causticColor: 'rgba(199, 210, 254, 0.18)',
+        desc: 'The deepest trench on earth, home to 100 exclusive hadal giants.'
+    },
+    {
+        id: 'arctic',
+        name: 'High Arctic Basin',
+        townName: 'Polaris Research Station',
+        subtitle: 'High Arctic Abyss',
+        unlockNetWorth: 60000000000,
+        valueMult: 9000,
+        sceneryType: 'glacier',
+        surfaceColor: '#38bdf8',
+        midColor: '#1e40af',
+        abyssColor: '#070c17',
+        causticColor: 'rgba(240, 249, 255, 0.3)',
+        desc: 'Permanent-ice abyss harboring 100 exclusive arctic apex species.'
+    },
+    {
+        id: 'void',
+        name: 'Abyssal Void Expanse',
+        townName: 'Voidgate Terminal',
+        subtitle: 'Uncharted Void',
+        unlockNetWorth: 250000000000,
+        valueMult: 18000,
+        sceneryType: 'volcanic',
+        surfaceColor: '#6d28d9',
+        midColor: '#3b0764',
+        abyssColor: '#000000',
+        causticColor: 'rgba(221, 214, 254, 0.16)',
+        desc: 'Uncharted frontier beyond the trenches with 100 exclusive void leviathans.'
     }
 ];
+
+const WATER_NAMES = {
+    creek: ['Willow Creek Shallows', 'Cottonwood Bend', 'Millrace Deep Hole'],
+    lake: ['Emerald Lake Shore', 'Glacial Basin Channel', 'Mist Lake Trench'],
+    reef: ['Sunburst Lagoon', 'Pearl Reef Flats', 'Atoll Drop-Off'],
+    fjord: ['Stormwatch Strait', 'Ironclad Fjord', 'Northsea Deep Trench'],
+    abyss: ['Obsidian Upper Shelf', 'Phantom Midwater Zone', 'Mariana Hadal Floor'],
+    polar: ['Aurora Ice Lead', 'Permafrost Channel', 'Polar Abyssal Plain'],
+    river: ['Silverleaf Riffles', 'Cedar Run Channel', 'Falls Basin'],
+    swamp: ['Mirewood Cypress Bayou', 'Blackwater Slough', 'Sunken Bog Hole'],
+    canyon: ['Copper Canyon Rapids', 'Redrock Gorge Pool', 'Basalt Deep Cut'],
+    kelp: ['Kelp Canopy Edge', 'Frond Forest Midwater', 'Holdfast Deep grotto'],
+    volcano: ['Ember Ridge Hot Springs', 'Caldera Sulfur Channel', 'Magma Vent Trench'],
+    shelf: ['Shelf Crest Banks', 'Continental Slope', 'Shelf Break Abyss'],
+    cave: ['Luminous Cavern Mouth', 'Glowworm Gallery', 'Crystal Grotto Deep'],
+    tonga: ['Tonga Upper Slope', 'Hadal Terrace', 'Challenger Deep Floor'],
+    arctic: ['Polaris Ice Lead', 'Fram Strait', 'Arctic Abyssal Basin'],
+    void: ['Voidgate Threshold', 'Blackwater Expanse', 'Uncharted Void Core']
+};
+
+const WATER_SUBTITLES = ['Shallow Mangrove & Shore', 'Mid-Depth Channel', 'Abyssal Deep Water'];
+const WATERS = LOCATIONS.flatMap((loc, li) => WATER_NAMES[loc.id].map((name, wi) => ({
+    id: `${loc.id}_w${wi}`,
+    name,
+    region: loc.id,
+    subtitle: `${loc.subtitle} · ${WATER_SUBTITLES[wi]}`,
+    unlockNetWorth: Math.round(loc.unlockNetWorth * [1, 2.5, 5][wi]),
+    valueMult: [1.0, 1.35, 1.8][wi],
+    depthMin: [0, 0.25, 0.55][wi],
+    depthMax: [0.45, 0.8, 1.0][wi],
+    desc: `Body of water #${li * 3 + wi + 1} in ${loc.name}. ${['Ideal for beginner casts and Common shoals.', 'Strong currents hold Uncommon through Legendary specimens.', 'The deepest holes hold Mythic fish and Colossal leviathans.'][wi]}`
+})));
+
+function getActiveWater() {
+    const locId = getActiveLocation().id;
+    return WATERS.find(w => w.id === player.currentWater && w.region === locId) || WATERS.find(w => w.region === locId) || WATERS[0];
+}
 
 const RARITY_WEIGHTS = {
     Common: 44,
@@ -277,10 +454,70 @@ const REGION_CATALOG_DATA = {
         nouns: ['Icefish', 'Snailfish', 'Capelin', 'Sculpin', 'Eelpout', 'Toothfish', 'Notothen', 'Char', 'Smelt', 'Flounder'],
         leviathans: ['Colossal Patagonian Toothfish', 'Leviathan Polar Sleeper Shark', 'Titan Beluga Sturgeon', 'Glacial Crown Leviathan', 'Sovereign Ice-Shelf Narwhal'],
         palettes: [['#7dd3fc', '#f0f9ff', '#0369a1'], ['#a5f3fc', '#ecfeff', '#0891b2'], ['#e2e8f0', '#ffffff', '#64748b'], ['#34d399', '#d1fae5', '#047857']]
+    },
+    river: {
+        adjectives: ['Silverleaf', 'Cedar', 'Rushing', 'Clear', 'Trout', 'Willow', 'Granite', 'Wild', 'River', 'Freestone'],
+        nouns: ['Trout', 'Steelhead', 'Darter', 'Sucker', 'Redhorse', 'Sturgeon', 'Smelt', 'Salmon', 'Crayfish', 'Shad'],
+        leviathans: ['Colossal River Sturgeon', 'Titan Silverleaf Steelhead', 'Leviathan Falls Catfish', 'Goliath Freshwater Shark', 'Sovereign River Gar'],
+        palettes: [['#22d3ee', '#ecfeff', '#0e7490'], ['#a3e635', '#ecfccb', '#3f6212'], ['#f59e0b', '#fef3c7', '#92400e'], ['#94a3b8', '#f1f5f9', '#334155']]
+    },
+    swamp: {
+        adjectives: ['Mirewood', 'Cypress', 'Blackwater', 'Silt', 'Bayou', 'Spanish', 'Ghost', 'Peat', 'Snake', 'Hollow'],
+        nouns: ['Catfish', 'Bowfin', 'Gar', 'Crawfish', 'Sunfish', 'Pickerel', 'Eel', 'Bullhead', 'Salamander', 'Pike'],
+        leviathans: ['Colossal Bayou Alligator Gar', 'Titan Swamp Catfish', 'Leviathan Cypress Eel', 'Goliath Blackwater Bowfin', 'Sovereign Mirewood Pike'],
+        palettes: [['#4d7c0f', '#d9f99d', '#1a2e05'], ['#84cc16', '#f7fee7', '#365314'], ['#a16207', '#fef08a', '#422006'], ['#64748b', '#e2e8f0', '#1e293b']]
+    },
+    canyon: {
+        adjectives: ['Copper', 'Redrock', 'Basalt', 'Arid', 'Canyon', 'Gorge', 'Sunbaked', 'Rust', 'Sandstone', 'Desert'],
+        nouns: ['Carp', 'Chub', 'Dace', 'Sucker', 'Trout', 'Catfish', 'Minnow', 'Sturgeon', 'Perch', 'Bass'],
+        leviathans: ['Colossal Canyon Carp', 'Titan Redrock Sturgeon', 'Leviathan Gorge Catfish', 'Goliath Desert Gar', 'Sovereign Copper Bass'],
+        palettes: [['#f97316', '#ffedd5', '#7c2d12'], ['#dc2626', '#fee2e2', '#7f1d1d'], ['#eab308', '#fef9c3', '#713f12'], ['#a8a29e', '#f5f5f4', '#44403c']]
+    },
+    kelp: {
+        adjectives: ['Kelp', 'Frond', 'Giant', 'Temperate', 'Green', 'Canopy', 'Holdfast', 'Blade', 'Forest', 'Coastal'],
+        nouns: ['Rockfish', 'Kelp Bass', 'Sheephead', 'Lingcod', 'Opaleye', 'Perch', 'Cabezon', 'Sculpin', 'Wrasse', 'Halibut'],
+        leviathans: ['Colossal Giant Kelp Bass', 'Titan Forest Lingcod', 'Leviathan Canopy Halibut', 'Goliath Frond Rockfish', 'Sovereign Kelp Sheepshead'],
+        palettes: [['#10b981', '#d1fae5', '#065f46'], ['#34d399', '#ecfdf5', '#047857'], ['#0ea5e9', '#e0f2fe', '#075985'], ['#facc15', '#fef9c3', '#854d0e']]
+    },
+    volcano: {
+        adjectives: ['Ember', 'Sulfur', 'Caldera', 'Magma', 'Volcanic', 'Cinder', 'Scorching', 'Obsidian', 'Ash', 'Thermal'],
+        nouns: ['Tilapia', 'Catfish', 'Eel', 'Goby', 'Sturgeon', 'Pufferfish', 'Cichlid', 'Ray', 'Shark', 'Anglerfish'],
+        leviathans: ['Colossal Caldera Eel', 'Titan Magma Ray', 'Leviathan Sulfur Shark', 'Goliath Ember Sturgeon', 'Sovereign Volcanic Angler'],
+        palettes: [['#ef4444', '#fee2e2', '#7f1d1d'], ['#f97316', '#ffedd5', '#7c2d12'], ['#eab308', '#fef9c3', '#713f12'], ['#a855f7', '#f3e8ff', '#581c87']]
+    },
+    shelf: {
+        adjectives: ['Continental', 'Shelf', 'Slope', 'Crest', 'Offshore', 'Blue', 'Bank', 'Deepwater', 'Abyssal', 'Pelagic'],
+        nouns: ['Cod', 'Hake', 'Turbot', 'Sole', 'Pollock', 'Mackerel', 'Grenadier', 'Dory', 'Skate', 'Squid'],
+        leviathans: ['Colossal Shelf Grenadier', 'Titan Continental Skate', 'Leviathan Slope Squid', 'Goliath Deepwater Dory', 'Sovereign Blue Hake'],
+        palettes: [['#3b82f6', '#dbeafe', '#1e3a8a'], ['#0ea5e9', '#e0f2fe', '#075985'], ['#14b8a6', '#ccfbf1', '#115e59'], ['#c084fc', '#f3e8ff', '#6b21a8']]
+    },
+    cave: {
+        adjectives: ['Luminous', 'Crystal', 'Glowworm', 'Cavern', 'Blind', 'Subterranean', 'Echo', 'Phantom', 'Vault', 'Darkwater'],
+        nouns: ['Cavefish', 'Tetra', 'Eel', 'Catfish', 'Salamander', 'Goby', 'Krill', 'Crab', 'Anglerfish', 'Squid'],
+        leviathans: ['Colossal Glowworm Eel', 'Titan Crystal Cavefish', 'Leviathan Vault Angler', 'Goliath Phantom Squid', 'Sovereign Luminous Catfish'],
+        palettes: [['#a855f7', '#f3e8ff', '#581c87'], ['#22d3ee', '#cffafe', '#155e75'], ['#34d399', '#d1fae5', '#065f46'], ['#f472b6', '#fdf2f8', '#831843']]
+    },
+    tonga: {
+        adjectives: ['Tonga', 'Hadal', 'Challenger', 'Ultra', 'Trench', 'Crushing', 'Abyssal', 'Spectral', 'Nether', 'Nightmare'],
+        nouns: ['Snailfish', 'Amphipod', 'Anglerfish', 'Viperfish', 'Gulper', 'Cuscus', 'Eel', 'Squid', 'Dragonfish', 'Coelacanth'],
+        leviathans: ['Colossal Hadal Snailfish', 'Titan Tonga Squid', 'Leviathan Challenger Eel', 'Goliath Abyssal Dragon', 'Sovereign Trench Coelacanth'],
+        palettes: [['#6366f1', '#e0e7ff', '#312e81'], ['#8b5cf6', '#ede9fe', '#4c1d95'], ['#ec4899', '#fdf2f8', '#831843'], ['#06b6d4', '#cffafe', '#164e63']]
+    },
+    arctic: {
+        adjectives: ['Polaris', 'High Arctic', 'Fram', 'Pack Ice', 'Permanent', 'Frozen', 'Boreal', 'Glacial', 'Icecap', 'Northern'],
+        nouns: ['Icefish', 'Arctic Cod', 'Sculpin', 'Toothfish', 'Char', 'Halibut', 'Shark', 'Ray', 'Eelpout', 'Krill'],
+        leviathans: ['Colossal Arctic Greenland Shark', 'Titan Polaris Halibut', 'Leviathan Icecap Ray', 'Goliath Frozen Toothfish', 'Sovereign Northern Char'],
+        palettes: [['#38bdf8', '#f0f9ff', '#0369a1'], ['#818cf8', '#e0e7ff', '#3730a3'], ['#e2e8f0', '#ffffff', '#475569'], ['#2dd4bf', '#ccfbf1', '#0f766e']]
+    },
+    void: {
+        adjectives: ['Voidgate', 'Uncharted', 'Blackwater', 'Outer', 'Unknown', 'Abyssal', 'Eldritch', 'Nameless', 'Chasm', 'Terminal'],
+        nouns: ['Anglerfish', 'Leviathan', 'Squid', 'Eel', 'Dragonfish', 'Gulper', 'Phantom', 'Wraith', 'Coelacanth', 'Behemoth'],
+        leviathans: ['Colossal Void Leviathan', 'Titan Blackwater Behemoth', 'Leviathan Nameless Eel', 'Goliath Eldritch Squid', 'Sovereign Voidgate Dragon'],
+        palettes: [['#7c3aed', '#ede9fe', '#3b0764'], ['#4c1d95', '#ddd6fe', '#1e1b4b'], ['#be123c', '#ffe4e6', '#4c0519'], ['#0891b2', '#cffafe', '#083344']]
     }
 };
 
-function build600RegionFishSpecies() {
+function buildRegionFishSpecies() {
     const allSpecies = [];
     const shapes = ['fusiform', 'panfish', 'pike', 'eel'];
     const patterns = ['none', 'stripes', 'bars', 'koi', 'rainbow'];
@@ -401,12 +638,226 @@ function build600RegionFishSpecies() {
     return allSpecies;
 }
 
-const FISH_SPECIES = build600RegionFishSpecies();
+const FISH_SPECIES = buildRegionFishSpecies();
 
 // =========================================================================
 // 3. PLAYABLE CHARACTER ROLES, OUTFITTER GEAR, TOWN QUESTS & EMPIRE
 // =========================================================================
-const SAVE_KEY = 'serene_waters_tycoon_v3';
+// =========================================================================
+// 3a. LOCAL ACCOUNT REGISTRY (username/password) & PER-ACCOUNT SAVES
+// =========================================================================
+const LEGACY_SAVE_KEY = 'serene_waters_tycoon_v3';
+const ACCOUNTS_KEY = 'serene_waters_accounts_v1';
+const SESSION_KEY = 'serene_waters_session_v1';
+const ADMIN_USERNAME = 'admiral';
+const DEFAULT_ADMIN_PASSWORD = 'harbor2026';
+let SAVE_KEY = LEGACY_SAVE_KEY;
+
+function hashPassword(pw, salt) {
+    let h = 2166136261 >>> 0;
+    const text = String(salt) + '::' + String(pw);
+    for (let i = 0; i < text.length; i++) {
+        h ^= text.charCodeAt(i);
+        h = Math.imul(h, 16777619) >>> 0;
+    }
+    return h.toString(16).padStart(8, '0');
+}
+
+function makeDefaultAdminAccount() {
+    const salt = 'serene-admin-salt';
+    return {
+        username: ADMIN_USERNAME,
+        displayName: 'Harbormaster',
+        salt,
+        passwordHash: hashPassword(DEFAULT_ADMIN_PASSWORD, salt),
+        isAdmin: true,
+        banned: false,
+        createdAt: Date.now(),
+        lastActiveAt: Date.now()
+    };
+}
+
+function loadAccountRegistry() {
+    let reg = {};
+    try {
+        const raw = localStorage.getItem(ACCOUNTS_KEY);
+        if (raw) reg = JSON.parse(raw) || {};
+    } catch (e) {}
+    if (!reg[ADMIN_USERNAME]) reg[ADMIN_USERNAME] = makeDefaultAdminAccount();
+    return reg;
+}
+
+function saveAccountRegistry(reg) {
+    try { localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(reg)); } catch (e) {}
+}
+
+function getSessionUsername() {
+    try { return localStorage.getItem(SESSION_KEY); } catch (e) { return null; }
+}
+
+function setSessionUsername(username) {
+    try { localStorage.setItem(SESSION_KEY, username); } catch (e) {}
+}
+
+function saveKeyFor(username) {
+    return LEGACY_SAVE_KEY + '__' + String(username).toLowerCase();
+}
+
+function currentUsername() {
+    return getSessionUsername() || ADMIN_USERNAME;
+}
+
+function isCurrentUserAdmin() {
+    const acc = loadAccountRegistry()[currentUsername()];
+    return !!(acc && acc.isAdmin && !acc.banned);
+}
+
+function initializeAccounts() {
+    const reg = loadAccountRegistry();
+    saveAccountRegistry(reg);
+    const session = getSessionUsername();
+    if (!session || !reg[session] || reg[session].banned) {
+        const legacyRaw = localStorage.getItem(LEGACY_SAVE_KEY);
+        const adminKey = saveKeyFor(ADMIN_USERNAME);
+        if (legacyRaw && !localStorage.getItem(adminKey)) {
+            try { localStorage.setItem(adminKey, legacyRaw); } catch (e) {}
+        }
+        setSessionUsername(ADMIN_USERNAME);
+        SAVE_KEY = adminKey;
+    } else {
+        SAVE_KEY = saveKeyFor(session);
+        reg[session].lastActiveAt = Date.now();
+        saveAccountRegistry(reg);
+    }
+}
+
+function validateUsername(username) {
+    const u = String(username || '').trim();
+    if (u.length < 3 || u.length > 18) return 'Username must be 3-18 characters.';
+    if (!/^[a-zA-Z0-9_]+$/.test(u)) return 'Use letters, numbers and underscores only.';
+    return null;
+}
+
+function registerAccount(username, password, displayName) {
+    const uname = String(username || '').trim();
+    const err = validateUsername(uname);
+    if (err) return { ok: false, msg: err };
+    if (String(password || '').length < 4) return { ok: false, msg: 'Password must be at least 4 characters.' };
+    const reg = loadAccountRegistry();
+    if (reg[uname.toLowerCase()]) return { ok: false, msg: 'That username is already taken.' };
+    const salt = 'salt_' + Math.random().toString(36).slice(2, 10);
+    reg[uname.toLowerCase()] = {
+        username: uname,
+        displayName: String(displayName || uname).trim().slice(0, 22) || uname,
+        salt,
+        passwordHash: hashPassword(password, salt),
+        isAdmin: false,
+        banned: false,
+        createdAt: Date.now(),
+        lastActiveAt: Date.now()
+    };
+    saveAccountRegistry(reg);
+    return { ok: true, msg: `Account ${uname} created.`, username: uname.toLowerCase() };
+}
+
+function loginAccount(username, password) {
+    const key = String(username || '').trim().toLowerCase();
+    const reg = loadAccountRegistry();
+    const acc = reg[key];
+    if (!acc) return { ok: false, msg: 'No account with that username.' };
+    if (acc.banned) return { ok: false, msg: 'This account has been suspended.' };
+    if (acc.passwordHash !== hashPassword(password, acc.salt)) return { ok: false, msg: 'Incorrect password.' };
+    acc.lastActiveAt = Date.now();
+    saveAccountRegistry(reg);
+    setSessionUsername(key);
+    SAVE_KEY = saveKeyFor(key);
+    return { ok: true, msg: `Welcome back, ${acc.displayName}.`, username: key };
+}
+
+function logoutAccount() {
+    setSessionUsername(ADMIN_USERNAME);
+    SAVE_KEY = saveKeyFor(ADMIN_USERNAME);
+}
+
+function readAccountSave(username) {
+    try {
+        const raw = localStorage.getItem(saveKeyFor(username));
+        return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+}
+
+function computeNetWorthFromSave(save) {
+    if (!save) return 0;
+    let assetVal = 0;
+    for (const unit of BUSINESS_UNITS) {
+        const owned = (save.business && save.business[unit.id]) || 0;
+        for (let i = 0; i < owned; i++) {
+            assetVal += Math.round(unit.baseCost * Math.pow(unit.costMult, i) * 0.75);
+        }
+    }
+    const holdVal = Array.isArray(save.hold) ? save.hold.reduce((s, it) => s + (it.value || 0), 0) : 0;
+    return Math.round((save.coins || 0) + holdVal + assetVal);
+}
+
+function accountNetWorth(username) {
+    if (username === currentUsername()) return getNetWorth();
+    return computeNetWorthFromSave(readAccountSave(username));
+}
+
+function updateAccountSave(username, mutate) {
+    const key = saveKeyFor(username);
+    let save = null;
+    try {
+        const raw = localStorage.getItem(key);
+        save = raw ? JSON.parse(raw) : getDefaultSave();
+    } catch (e) { save = getDefaultSave(); }
+    mutate(save);
+    try { localStorage.setItem(key, JSON.stringify(save)); } catch (e) {}
+    if (username === currentUsername()) {
+        player = loadProgress();
+        updateHUD();
+    }
+    return save;
+}
+
+function grantCoinsToAccount(username, amount) {
+    const amt = Math.floor(Number(amount));
+    if (!Number.isFinite(amt) || amt === 0) return false;
+    updateAccountSave(username, s => {
+        s.coins = Math.max(0, (s.coins || 0) + amt);
+        if (amt > 0) s.lifetimeEarnings = (s.lifetimeEarnings || 0) + amt;
+    });
+    return true;
+}
+
+function setAccountCoins(username, amount) {
+    const amt = Math.floor(Number(amount));
+    if (!Number.isFinite(amt) || amt < 0) return false;
+    updateAccountSave(username, s => { s.coins = amt; });
+    return true;
+}
+
+function changeAccountPassword(username, newPassword) {
+    if (String(newPassword || '').length < 4) return false;
+    const reg = loadAccountRegistry();
+    const acc = reg[username];
+    if (!acc) return false;
+    const salt = 'salt_' + Math.random().toString(36).slice(2, 10);
+    acc.salt = salt;
+    acc.passwordHash = hashPassword(newPassword, salt);
+    saveAccountRegistry(reg);
+    return true;
+}
+
+function deleteAccountByAdmin(username) {
+    if (username === ADMIN_USERNAME) return false;
+    const reg = loadAccountRegistry();
+    if (!reg[username]) return false;
+    delete reg[username];
+    saveAccountRegistry(reg);
+    try { localStorage.removeItem(saveKeyFor(username)); } catch (e) {}
+    return true;
+}
 
 const CHARACTER_ROLES = [
     {
@@ -651,6 +1102,17 @@ const ROLE_CAMPAIGNS = {
     }
 };
 
+Object.keys(ROLE_CAMPAIGNS).forEach(roleId => {
+    ROLE_CAMPAIGNS[roleId].chapters.forEach(ch => {
+        Object.keys(ch).forEach(field => {
+            if (!/^target/.test(field) || typeof ch[field] !== 'number') return;
+            const mult = field === 'targetWorth' || field === 'targetEarnings' || field === 'targetRate' ? 20 : 3;
+            ch[field] = Math.round(ch[field] * mult);
+        });
+        if (ch.rewardCoins) ch.rewardCoins = Math.round(ch.rewardCoins * 20);
+    });
+});
+
 const UPGRADES = {
     rod: {
         title: 'Precision Fishing Rod',
@@ -765,6 +1227,54 @@ const BUSINESS_UNITS = [
     }
 ];
 
+// Stretch the economy roughly 20x deeper than the original release.
+const PROGRESSION_SCALE = 20;
+const UPGRADE_SUFFIXES = [
+    ['Reinforced', 'Titanium', 'Deepwater', 'Abyssal', 'Leviathan', 'Celestial', 'Mythic', 'Voidforged'],
+    ['Insulated', 'Cryogenic', 'Industrial', 'Hadal', 'Colossal', 'Dimensional', 'Imperial', 'Void'],
+    ['Braided', 'Kevlar', 'Carbon', 'Phantom', 'Abyssal', 'Singularity', 'Eternal', 'Infinite'],
+    ['Scented', 'Radical', 'Nuclear', 'Quantum', 'Astral', 'Eldritch', 'Divine', 'Omnipotent'],
+    ['Digital', 'Adaptive', 'Omni', 'Pan-Oceanic', 'Godseye', 'Transcendent', 'Absolute', 'Universal'],
+    [null, null, 'Reinforced', 'Heavy', 'Railgun', 'Plasma', 'Annihilator', 'Worldbreaker']
+];
+
+(function deepenProgression() {
+    Object.keys(UPGRADES).forEach((key, ki) => {
+        const tiers = UPGRADES[key].tiers;
+        tiers.forEach((t, i) => { if (i > 0) t.cost = Math.round(t.cost * PROGRESSION_SCALE); });
+        for (let i = 1; i <= 8; i++) {
+            const prev = tiers[tiers.length - 1];
+            const next = { ...prev };
+            next.cost = Math.round(prev.cost * 3.15);
+            const label = UPGRADE_SUFFIXES[ki][i - 1] || 'Grand';
+            if (key === 'rod' || key === 'line' || key === 'bait' || key === 'sonar' || key === 'harpoon') {
+                next.name = `${label} ${key === 'rod' ? 'Rod' : key === 'line' ? 'Line' : key === 'bait' ? 'Attractant' : key === 'sonar' ? 'Sonar Array' : 'Harpoon'}`;
+            } else {
+                next.name = `${label} ${key === 'hold' ? 'Livewell' : 'Gear'}`;
+            }
+            if (key === 'rod') next.power = +(prev.power * 1.19).toFixed(2);
+            if (key === 'hold') next.capacity = Math.round(prev.capacity * 1.55);
+            if (key === 'line') next.zoneScale = +(prev.zoneScale + 0.09).toFixed(2);
+            if (key === 'bait') next.luck = Math.round((prev.luck || 0) + 9);
+            if (key === 'sonar') next.level = (prev.level || 0) + 1;
+            if (key === 'harpoon') next.unlocked = true;
+            next.desc = `Tier ${tiers.length + 1} ${key} system. Long-term mastery upgrade.`;
+            tiers.push(next);
+        }
+    });
+
+    BUSINESS_UNITS.forEach(unit => {
+        unit.baseCost = Math.round(unit.baseCost * PROGRESSION_SCALE);
+        unit.incomePerSec = Math.round(unit.incomePerSec * PROGRESSION_SCALE);
+    });
+    [
+        { id: 'cold_chain', name: 'Trans-Oceanic Cold Chain', desc: 'Refrigerated logistics spanning every fishing continent.', baseCost: 650000, costMult: 1.62, incomePerSec: 14000, saleBonusPct: 25 },
+        { id: 'research', name: 'Deepwater Research Consortium', desc: 'Scientific trawling fleet mapping hadal ecosystems.', baseCost: 3200000, costMult: 1.66, incomePerSec: 68000, saleBonusPct: 30 },
+        { id: 'fleetyard', name: 'Automated Megafleet Shipyard', desc: 'Robotic yards churning out industrial trawlers.', baseCost: 18000000, costMult: 1.7, incomePerSec: 320000, saleBonusPct: 36 },
+        { id: 'skyport', name: 'Orbital Cargo Skyport', desc: 'Space-elevator seafood export monopoly.', baseCost: 95000000, costMult: 1.75, incomePerSec: 1600000, saleBonusPct: 45 }
+    ].forEach(unit => BUSINESS_UNITS.push(unit));
+})();
+
 const RISK_TACTICS = [
     {
         id: 'sanctuary_poach',
@@ -808,23 +1318,6 @@ const RISK_TACTICS = [
     }
 ];
 
-const RIVAL_CAPTAINS = [
-    { name: 'Vanguard Oceanic Corp', title: 'Global Syndicate', worth: 4850000 },
-    { name: 'Capt. Astrid Lindqvist', title: 'Nordic Fleet Admiral', worth: 1920000 },
-    { name: 'Kuroshio Deep-Sea Ltd.', title: 'Pacific Conglomerate', worth: 840000 },
-    { name: 'Capt. Mateo Salazar', title: 'Atoll Pearl Baron', worth: 390000 },
-    { name: 'Boreal Harvest Group', title: 'Polar Icebreaker Fleet', worth: 175000 },
-    { name: 'Capt. Eleanor Vance', title: 'High-Seas Industrialist', worth: 82000 },
-    { name: 'Red Tide Smuggling Ring', title: 'Shadow Syndicate', worth: 41000 },
-    { name: 'Capt. Henrik Solberg', title: 'Fjord Trawler Captain', worth: 19500 },
-    { name: 'Emerald Basin Co-op', title: 'Regional Fishery', worth: 8400 },
-    { name: 'Capt. Jonah Mercer', title: 'Harbor Master', worth: 3600 },
-    { name: 'Coral Reef Charters', title: 'Lagoon Outfitters', worth: 1450 },
-    { name: 'Old Man Barnaby', title: 'Veteran Pier Angler', worth: 520 },
-    { name: 'Molly & Sons Fishmongers', title: 'Village Stall', worth: 180 },
-    { name: 'Deckhand Toby', title: 'Skiff Apprentice', worth: 55 }
-];
-
 function generateTownQuests(regionId, netWorth) {
     const loc = LOCATIONS.find(l => l.id === regionId) || LOCATIONS[0];
     const scale = Math.max(1, Math.round(loc.valueMult * (1 + Math.log10(Math.max(10, netWorth)) * 0.35)));
@@ -834,33 +1327,34 @@ function generateTownQuests(regionId, netWorth) {
             title: `${loc.townName} Daily Supply`,
             desc: 'Sell caught fish at the Fishmonger Market.',
             type: 'sell_count',
-            target: 3,
+            target: 6,
             progress: 0,
-            reward: 45 * scale
+            reward: 900 * scale
         },
         {
             id: 'q_sell_weight',
             title: 'Pier Cannery Weight Order',
             desc: 'Sell total fish weight (lbs) at the Harbor Market.',
             type: 'sell_weight',
-            target: Math.round(12 * loc.valueMult),
+            target: Math.round(60 * loc.valueMult),
             progress: 0,
-            reward: 75 * scale
+            reward: 1500 * scale
         },
         {
             id: 'q_catch_rare',
             title: 'Guild Specimen Bounty',
             desc: 'Land Uncommon or rarer fish from local waters.',
             type: 'catch_rare',
-            target: 2,
+            target: 5,
             progress: 0,
-            reward: 110 * scale
+            reward: 2200 * scale
         }
     ];
 }
 
 function getDefaultSave() {
     return {
+        accountUsername: currentUsername(),
         captainName: 'Capt. Vance',
         characterId: 'fisher',
         coins: 20,
@@ -875,14 +1369,15 @@ function getDefaultSave() {
         claimedCampaignChapters: {},
         finesPaid: 0,
         currentLocation: 'creek',
+        currentWater: 'creek_w0',
         harpoonMode: false,
         hold: [],
         quests: generateTownQuests('creek', 20),
         activeVillagerTask: null,
         seenBriefings: {},
         activeRisks: {},
-        upgrades: { rod: 0, hold: 0, line: 0, bait: 0, sonar: 0, harpoon: 0 },
-        business: { village_stall: 0, deckhands: 0, smokehouse: 0, trawlers: 0, cannery: 0, submersible_rig: 0 },
+        upgrades: Object.fromEntries(Object.keys(UPGRADES).map(k => [k, 0])),
+        business: Object.fromEntries(BUSINESS_UNITS.map(u => [u.id, 0])),
         caughtSpecies: {}
     };
 }
@@ -906,6 +1401,7 @@ function loadProgress() {
             hold: Array.isArray(parsed.hold) ? parsed.hold : [],
             quests: Array.isArray(parsed.quests) && parsed.quests.length > 0 ? parsed.quests : def.quests,
             activeVillagerTask: parsed.activeVillagerTask || null,
+            currentWater: parsed.currentWater || (parsed.currentLocation ? `${parsed.currentLocation}_w0` : 'creek_w0'),
             seenBriefings: { ...(parsed.seenBriefings || {}) },
             claimedCampaignChapters: { ...(parsed.claimedCampaignChapters || {}) },
             activeRisks: { ...(parsed.activeRisks || {}) },
@@ -944,6 +1440,7 @@ function computeOfflineEarnings(savedObj) {
     return { earned, elapsedSec: cappedSec };
 }
 
+initializeAccounts();
 let player = loadProgress();
 let activeTownTab = 'market';
 
@@ -1135,9 +1632,13 @@ function getNetWorth() {
 }
 
 function formatMoney(num) {
-    if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
-    if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
-    if (num >= 1e4) return (num / 1e3).toFixed(1) + 'K';
+    if (!Number.isFinite(num)) return '0';
+    const abs = Math.abs(num);
+    if (abs >= 1e15) return (num / 1e15).toFixed(2) + 'Qa';
+    if (abs >= 1e12) return (num / 1e12).toFixed(2) + 'T';
+    if (abs >= 1e9) return (num / 1e9).toFixed(2) + 'B';
+    if (abs >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+    if (abs >= 1e4) return (num / 1e3).toFixed(1) + 'K';
     return Math.round(num).toLocaleString();
 }
 
@@ -1327,13 +1828,19 @@ function initEnvironment() {
 
 function spawnRegionAmbientFish() {
     const loc = getActiveLocation();
-    const regionalPool = FISH_SPECIES.filter(f => f.region === loc.id);
+    const water = getActiveWater();
+    const regionalPool = FISH_SPECIES.filter(f =>
+        f.region === loc.id &&
+        f.maxDepth >= water.depthMin &&
+        f.minDepth <= water.depthMax
+    );
+    const usablePool = regionalPool.length > 0 ? regionalPool : FISH_SPECIES.filter(f => f.region === loc.id);
     const waterTop = getWaterlineY() + 32;
     const waterBot = height - 34;
 
-    ambientFish = Array.from({ length: 16 }, () => {
-        const species = pickWeightedSpecies(regionalPool);
-        const depthRatio = species.minDepth + Math.random() * (species.maxDepth - species.minDepth);
+    ambientFish = Array.from({ length: 22 }, () => {
+        const species = pickWeightedSpecies(usablePool);
+        const depthRatio = Math.max(water.depthMin, Math.min(water.depthMax, species.minDepth + Math.random() * (species.maxDepth - species.minDepth)));
         const y = waterTop + depthRatio * Math.max(80, waterBot - waterTop);
         const dir = Math.random() < 0.5 ? 1 : -1;
         const baseSpeed = species.isSwift ? (115 + Math.random() * 65) : (26 + Math.random() * 34);
@@ -1657,7 +2164,8 @@ function completeCatch(fishEntity) {
     const weight = +((sp.minWeight + (sp.maxWeight - sp.minWeight) * weightRatio) * char.weightBonus).toFixed(1);
     const length = +(sp.minLength + (sp.maxLength - sp.minLength) * weightRatio).toFixed(1);
 
-    const totalMult = (0.85 + weightRatio * 0.45) * ev.valueMult * risk.payoutMult * bizMult * harpoonPayMult;
+    const waterMult = getActiveWater().valueMult;
+    const totalMult = (0.85 + weightRatio * 0.45) * ev.valueMult * risk.payoutMult * bizMult * harpoonPayMult * waterMult;
     const estValue = Math.max(1, Math.round(sp.baseValue * totalMult));
 
     const isNewSpecies = !player.caughtSpecies[sp.id];
@@ -1796,6 +2304,14 @@ function drawUnderwaterFish(fish, timeSec) {
         ctx.lineTo(-bodyLen * 0.45, -bodyH * 0.7);
         ctx.closePath();
         ctx.fill();
+    } else {
+        ctx.strokeStyle = sp.colorFin;
+        ctx.lineWidth = Math.max(1.5, bodyH * 0.35);
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(bodyLen * 0.7, -bodyH * 0.3 + tailWag * 0.15);
+        ctx.quadraticCurveTo(0, -bodyH * 0.9, -bodyLen * 0.75, bodyH * 0.15 - tailWag * 0.2);
+        ctx.stroke();
     }
 
     // Caudal (Tail) Fin
@@ -1847,12 +2363,15 @@ function drawUnderwaterFish(fish, timeSec) {
             ctx.arc(bodyLen * 0.32, bodyH * 0.18, bodyH * 0.48, 0, Math.PI * 2);
             ctx.fill();
         } else if (sp.pattern === 'rainbow') {
-            const rb = ctx.createLinearGradient(0, -bodyH, 0, bodyH);
-            rb.addColorStop(0, sp.colorPrimary);
-            rb.addColorStop(0.5, sp.colorSecondary);
-            rb.addColorStop(1, '#ffffff');
+            const rb = ctx.createLinearGradient(-bodyLen, 0, bodyLen, 0);
+            rb.addColorStop(0, '#ef4444');
+            rb.addColorStop(0.2, '#f97316');
+            rb.addColorStop(0.4, '#facc15');
+            rb.addColorStop(0.6, '#22c55e');
+            rb.addColorStop(0.8, '#3b82f6');
+            rb.addColorStop(1, '#a855f7');
             ctx.fillStyle = rb;
-            ctx.globalAlpha = 0.65;
+            ctx.globalAlpha = 0.62;
             ctx.fillRect(-bodyLen * 1.3, -bodyH * 1.6, bodyLen * 2.6, bodyH * 3.2);
         }
         ctx.restore();
@@ -3247,7 +3766,7 @@ function renderTownModal() {
 // 8. OTHER MODALS, FIRST-TIME SPLASH BRIEFINGS & HUD SYNCHRONIZATION
 // =========================================================================
 function closeAllModals() {
-    ['townBuildingModal', 'villagerModal', 'campaignModal', 'catchModal', 'leaderboardModal', 'riskModal', 'businessModal', 'locationsModal', 'dexModal', 'transitionSplash'].forEach(id => {
+    ['townBuildingModal', 'villagerModal', 'campaignModal', 'catchModal', 'leaderboardModal', 'riskModal', 'businessModal', 'locationsModal', 'dexModal', 'accountModal', 'adminModal', 'watersModal', 'transitionSplash'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.add('hidden');
     });
@@ -3286,65 +3805,106 @@ function showFeatureBriefing(key, config, onProceed) {
     };
 }
 
-function buildSpeciesPreviewSVG(sp) {
-    const clipId = `fishClip_${sp.id.replace(/[^a-zA-Z0-9]/g, '_')}`;
-    let bodySvg = `<ellipse cx="64" cy="30" rx="34" ry="15" fill="${sp.colorPrimary}" />`;
-    let clipShape = `<ellipse cx="64" cy="30" rx="34" ry="15" />`;
-    let tailSvg = `<polygon points="32,30 12,15 19,30 12,45" fill="${sp.colorFin}" />`;
-    let finSvg = `<polygon points="62,16 50,7 46,17" fill="${sp.colorFin}" />`;
-    let eyeX = 84, eyeY = 26;
-
-    if (sp.bodyShape === 'panfish') {
-        const path = `M96,30 Q74,6 50,10 Q32,18 28,30 Q32,42 50,50 Q74,54 96,30 Z`;
-        bodySvg = `<path d="${path}" fill="${sp.colorPrimary}" />`;
-        clipShape = `<path d="${path}" />`;
-        tailSvg = `<polygon points="30,30 13,17 18,30 13,43" fill="${sp.colorFin}" />`;
-        finSvg = `<polygon points="60,11 45,3 42,13" fill="${sp.colorFin}" />`;
-        eyeX = 81; eyeY = 24;
-    } else if (sp.bodyShape === 'pike') {
-        const path = `M106,28 Q80,17 48,18 L24,23 L24,37 L48,42 Q80,43 106,32 Z`;
-        bodySvg = `<path d="${path}" fill="${sp.colorPrimary}" />`;
-        clipShape = `<path d="${path}" />`;
-        tailSvg = `<polygon points="26,30 8,15 15,30 8,45" fill="${sp.colorFin}" />`;
-        finSvg = `<polygon points="48,18 36,10 33,19" fill="${sp.colorFin}" />`;
-        eyeX = 91; eyeY = 27;
-    } else if (sp.bodyShape === 'eel') {
-        const path = `M104,30 C82,16 54,42 14,26 C52,48 82,24 104,30 Z`;
-        bodySvg = `<path d="${path}" fill="${sp.colorPrimary}" />`;
-        clipShape = `<path d="${path}" />`;
-        tailSvg = ``;
-        finSvg = `<path d="M84,24 Q60,14 34,27" stroke="${sp.colorFin}" stroke-width="3" fill="none" />`;
-        eyeX = 93; eyeY = 28;
+function getFishArtPaths(sp) {
+    switch (sp.bodyShape) {
+        case 'panfish':
+            return {
+                body: 'M124,45 C104,17 72,14 50,22 C30,28 26,38 32,45 C26,52 30,62 50,68 C72,76 104,73 124,45 Z',
+                tail: 'M34,45 L10,26 L19,45 L10,64 Z',
+                dorsal: 'M78,24 L66,8 L52,22 Z',
+                eye: [104, 39]
+            };
+        case 'pike':
+            return {
+                body: 'M140,42 C112,30 78,28 46,31 L28,35 L28,55 L46,59 C78,62 112,60 140,48 Z',
+                tail: 'M30,45 L6,25 L14,45 L6,65 Z',
+                dorsal: 'M62,30 L48,15 L42,30 Z',
+                eye: [124, 43]
+            };
+        case 'eel':
+            return {
+                body: 'M140,45 C112,28 80,62 22,37 C70,72 112,32 140,45 Z',
+                tail: '',
+                dorsal: 'M118,37 C92,24 62,46 40,40',
+                eye: [127, 44]
+            };
+        default:
+            return {
+                body: 'M132,45 C112,25 76,22 52,29 C34,34 30,40 32,45 C30,50 34,56 52,61 C76,68 112,65 132,45 Z',
+                tail: 'M34,45 L10,27 L20,45 L10,63 Z',
+                dorsal: 'M80,27 L68,10 L54,26 Z',
+                eye: [112, 40]
+            };
     }
+}
 
-    let patternSvg = '';
+function buildSpeciesPreviewSVG(sp, opts = {}) {
+    const uid = `fish_${String(sp.id).replace(/[^a-zA-Z0-9]/g, '_')}_${Math.random().toString(36).slice(2, 7)}`;
+    const art = getFishArtPaths(sp);
+    const scale = Math.min(1.25, Math.max(0.72, 0.8 + (sp.sizeScale || 1) * 0.2));
+    const rare = ['Rare', 'Epic', 'Legendary', 'Mythic', 'Colossal'].includes(sp.rarity);
+    const auraColor = sp.rarity === 'Colossal' ? '#fb7185' : sp.rarity === 'Mythic' ? '#c084fc' : sp.rarity === 'Legendary' ? '#fbbf24' : '#38bdf8';
+    let pattern = '';
+
     if (sp.pattern === 'bars') {
-        patternSvg = `<g clip-path="url(#${clipId})" opacity="0.55" fill="${sp.colorSecondary}">
-            <rect x="42" y="5" width="6" height="50"/><rect x="56" y="5" width="6" height="50"/><rect x="70" y="5" width="6" height="50"/>
+        pattern = `<g clip-path="url(#${uid}_clip)" fill="${sp.colorSecondary}" opacity="0.55">
+            <rect x="46" y="8" width="9" height="80"/><rect x="68" y="8" width="9" height="80"/><rect x="90" y="8" width="9" height="80"/><rect x="112" y="8" width="9" height="80"/>
         </g>`;
     } else if (sp.pattern === 'stripes') {
-        patternSvg = `<g clip-path="url(#${clipId})" opacity="0.65" stroke="${sp.colorSecondary}" stroke-width="2.5">
-            <line x1="20" y1="25" x2="105" y2="25"/><line x1="20" y1="33" x2="105" y2="33"/>
+        pattern = `<g clip-path="url(#${uid}_clip)" stroke="${sp.colorSecondary}" stroke-width="3.5" opacity="0.68">
+            <line x1="24" y1="37" x2="140" y2="37"/><line x1="24" y1="48" x2="140" y2="48"/><line x1="24" y1="58" x2="140" y2="58"/>
         </g>`;
     } else if (sp.pattern === 'koi') {
-        patternSvg = `<g clip-path="url(#${clipId})" opacity="0.8" fill="${sp.colorSecondary}">
-            <circle cx="54" cy="25" r="8"/><circle cx="75" cy="33" r="7"/>
+        pattern = `<g clip-path="url(#${uid}_clip)" fill="${sp.colorSecondary}" opacity="0.82">
+            <ellipse cx="62" cy="39" rx="13" ry="11"/><ellipse cx="98" cy="53" rx="11" ry="9"/><ellipse cx="120" cy="35" rx="7" ry="6"/>
         </g>`;
     } else if (sp.pattern === 'rainbow') {
-        patternSvg = `<g clip-path="url(#${clipId})" opacity="0.55">
-            <rect x="15" y="24" width="90" height="7" fill="${sp.colorSecondary}"/>
+        pattern = `<g clip-path="url(#${uid}_clip)" opacity="0.62">
+            <rect x="20" y="24" width="130" height="42" fill="url(#${uid}_rainbow)"/>
         </g>`;
     }
 
+    const scales = `<g clip-path="url(#${uid}_clip)" opacity="0.18" stroke="#ffffff" stroke-width="1" fill="none">
+        ${Array.from({ length: 7 }, (_, r) => Array.from({ length: 10 }, (_, c) => `<path d="M${34 + c * 11},${27 + r * 6} q5,-4 10,0"/>`).join('')).join('')}
+    </g>`;
+
     return `
-        <svg class="w-36 h-20" viewBox="0 0 120 60">
-            <defs><clipPath id="${clipId}">${clipShape}</clipPath></defs>
-            ${finSvg}
-            ${tailSvg}
-            ${bodySvg}
-            ${patternSvg}
-            <circle cx="${eyeX}" cy="${eyeY}" r="3.6" fill="#ffffff" />
-            <circle cx="${eyeX + 1}" cy="${eyeY}" r="1.8" fill="#0f172a" />
+        <svg class="${opts.className || 'w-36 h-20'}" viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="${uid}_body" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="${sp.colorSecondary}"/>
+                    <stop offset="42%" stop-color="${sp.colorPrimary}"/>
+                    <stop offset="100%" stop-color="${sp.colorFin}"/>
+                </linearGradient>
+                <linearGradient id="${uid}_fin" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="${sp.colorFin}"/>
+                    <stop offset="100%" stop-color="${sp.colorPrimary}"/>
+                </linearGradient>
+                <linearGradient id="${uid}_rainbow" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stop-color="#ef4444"/><stop offset="20%" stop-color="#f97316"/>
+                    <stop offset="40%" stop-color="#facc15"/><stop offset="60%" stop-color="#22c55e"/>
+                    <stop offset="80%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#a855f7"/>
+                </linearGradient>
+                <clipPath id="${uid}_clip"><path d="${art.body}"/></clipPath>
+            </defs>
+            ${rare ? `<ellipse cx="72" cy="45" rx="72" ry="40" fill="${auraColor}" opacity="0.12"/>` : ''}
+            <g transform="translate(80 45) scale(${scale}) translate(-80 -45)">
+                ${art.tail ? `<path d="${art.tail}" fill="url(#${uid}_fin)" stroke="${sp.colorFin}" stroke-width="1.5"/>` : ''}
+                ${sp.bodyShape === 'eel'
+                    ? `<path d="${art.dorsal}" stroke="${sp.colorFin}" stroke-width="5" fill="none" stroke-linecap="round" opacity="0.9"/>`
+                    : `<path d="${art.dorsal}" fill="url(#${uid}_fin)" stroke="${sp.colorFin}" stroke-width="1"/>`}
+                <path d="M70,60 L58,78 L88,63 Z" fill="url(#${uid}_fin)" opacity="0.85"/>
+                <path d="${art.body}" fill="url(#${uid}_body)" stroke="${sp.colorFin}" stroke-width="1.6"/>
+                ${scales}
+                ${pattern}
+                <path d="M36,42 C60,28 96,29 126,40" stroke="#ffffff" stroke-width="2" fill="none" opacity="0.28"/>
+                <circle cx="${art.eye[0]}" cy="${art.eye[1]}" r="5.6" fill="#f8fafc"/>
+                <circle cx="${art.eye[0] + 1}" cy="${art.eye[1]}" r="3" fill="#0f172a"/>
+                <circle cx="${art.eye[0] - 1}" cy="${art.eye[1] - 2}" r="1.2" fill="#ffffff"/>
+                <path d="M${art.eye[0] - 9},${art.eye[1] + 7} q8,4 16,0" stroke="${sp.colorFin}" stroke-width="1.6" fill="none" opacity="0.75"/>
+            </g>
+            <circle cx="146" cy="20" r="2.4" fill="#ffffff" opacity="0.55"/>
+            <circle cx="152" cy="12" r="1.6" fill="#ffffff" opacity="0.4"/>
         </svg>
     `;
 }
@@ -3423,15 +3983,38 @@ function renderCampaignModal() {
     });
 }
 
+function getLeaderboardEntries() {
+    const reg = loadAccountRegistry();
+    const me = currentUsername();
+    const entries = Object.keys(reg)
+        .filter(key => !reg[key].banned)
+        .map(key => {
+            const acc = reg[key];
+            const save = readAccountSave(key);
+            return {
+                username: key,
+                name: acc.displayName || acc.username || key,
+                title: acc.isAdmin ? 'Harbormaster · Admin' : (save ? getCharacterNameById(save.characterId) : 'Fishery Captain'),
+                worth: accountNetWorth(key),
+                caught: (save && save.totalCaught) || 0,
+                dex: save && save.caughtSpecies ? Object.keys(save.caughtSpecies).length : 0,
+                isPlayer: key === me
+            };
+        })
+        .sort((a, b) => b.worth - a.worth);
+    return entries;
+}
+
+function getCharacterNameById(id) {
+    const c = CHARACTER_ROLES.find(r => r.id === id);
+    return c ? c.name : 'Fishery Captain';
+}
+
 function renderLeaderboardModal() {
     const myWorth = getNetWorth();
-    const entries = [
-        ...RIVAL_CAPTAINS.map(r => ({ ...r, isPlayer: false })),
-        { name: `${player.captainName} (You)`, title: getActiveCharacter().name, worth: myWorth, isPlayer: true }
-    ].sort((a, b) => b.worth - a.worth);
-
+    const entries = getLeaderboardEntries();
     const myRank = entries.findIndex(e => e.isPlayer) + 1;
-    document.getElementById('playerGlobalRankText').textContent = `#${myRank}`;
+    document.getElementById('playerGlobalRankText').textContent = `#${myRank || 1}`;
     document.getElementById('playerGlobalWorthText').textContent = `$${formatMoney(myWorth)}`;
 
     document.getElementById('leaderboardList').innerHTML = entries.map((e, idx) => `
@@ -3439,13 +4022,212 @@ function renderLeaderboardModal() {
             <div class="flex items-center gap-3">
                 <span class="font-mono-num text-xs font-bold w-7 h-7 rounded-lg flex items-center justify-center ${idx < 3 ? 'bg-amber-400 text-slate-950' : 'bg-slate-800 text-slate-300'}">#${idx + 1}</span>
                 <div>
-                    <div class="text-xs sm:text-sm font-bold ${e.isPlayer ? 'text-amber-300' : 'text-white'}">${e.name}</div>
-                    <div class="text-[11px] text-slate-400">${e.title}</div>
+                    <div class="text-xs sm:text-sm font-bold ${e.isPlayer ? 'text-amber-300' : 'text-white'}">${e.name}${e.isPlayer ? ' (You)' : ''}</div>
+                    <div class="text-[11px] text-slate-400">@${e.username} · ${e.title} · ${e.dex} species · ${e.caught} catches</div>
                 </div>
             </div>
             <div class="font-mono-num text-xs sm:text-sm font-bold text-emerald-300">$${formatMoney(e.worth)}</div>
         </div>
-    `).join('');
+    `).join('') || '<div class="text-xs text-slate-400 text-center py-6">No registered captains yet.</div>';
+}
+
+function escapeHtml(text) {
+    return String(text == null ? '' : text)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function updateAccountStatusUI() {
+    const reg = loadAccountRegistry();
+    const uname = currentUsername();
+    const acc = reg[uname];
+    const status = document.getElementById('accountStatusText');
+    if (status) status.textContent = acc ? `Signed in as @${acc.username}${acc.isAdmin ? ' · Admin' : ''}` : 'Not signed in';
+    const adminBtn = document.getElementById('openAdminBtn');
+    if (adminBtn) adminBtn.classList.toggle('hidden', !isCurrentUserAdmin());
+    const nameInput = document.getElementById('captainNameInput');
+    if (nameInput && document.activeElement !== nameInput) nameInput.value = player.captainName || 'Capt. Vance';
+}
+
+function renderAccountModal() {
+    const reg = loadAccountRegistry();
+    const uname = currentUsername();
+    const acc = reg[uname];
+    const save = readAccountSave(uname);
+    const rank = getLeaderboardEntries().findIndex(e => e.isPlayer) + 1;
+    document.getElementById('accountBody').innerHTML = `
+        <div class="bg-slate-950/70 border border-slate-700 rounded-2xl p-4 space-y-1.5 text-xs">
+            <div class="flex justify-between"><span class="text-slate-400">Username</span><span class="font-mono-num text-sky-200">@${escapeHtml(acc ? acc.username : uname)}</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Display name</span><span class="text-white">${escapeHtml(acc ? acc.displayName : '')}</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Access level</span><span class="font-bold ${acc && acc.isAdmin ? 'text-rose-300' : 'text-slate-200'}">${acc && acc.isAdmin ? 'Admin' : 'Captain'}</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Leaderboard rank</span><span class="font-mono-num text-amber-300">#${rank || 1}</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Net worth</span><span class="font-mono-num text-emerald-300">$${formatMoney(getNetWorth())}</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Species discovered</span><span class="font-mono-num text-teal-200">${save && save.caughtSpecies ? Object.keys(save.caughtSpecies).length : 0}/${FISH_SPECIES.length}</span></div>
+        </div>
+        <div class="bg-slate-950/70 border border-slate-700 rounded-2xl p-4">
+            <div class="font-accent text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-2">Change Password</div>
+            <div class="flex gap-2">
+                <input id="accountNewPassword" type="password" placeholder="New password (4+ chars)" class="flex-1 min-w-0 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-sky-400" />
+                <button id="accountChangePasswordBtn" class="px-3 py-2 rounded-xl bg-sky-500/20 border border-sky-400/50 text-sky-100 text-[11px] font-bold uppercase cursor-pointer">Update</button>
+            </div>
+        </div>
+        <button id="accountOpenAdminBtn" class="hidden w-full py-2.5 rounded-xl bg-rose-500/20 border border-rose-400/50 text-rose-200 text-[11px] font-bold uppercase tracking-wider cursor-pointer">Open Admin Panel</button>
+    `;
+    const openAdmin = document.getElementById('accountOpenAdminBtn');
+    if (openAdmin && isCurrentUserAdmin()) {
+        openAdmin.classList.remove('hidden');
+        openAdmin.onclick = () => {
+            document.getElementById('accountModal').classList.add('hidden');
+            renderAdminModal();
+            document.getElementById('adminModal').classList.remove('hidden');
+        };
+    }
+    const pwBtn = document.getElementById('accountChangePasswordBtn');
+    if (pwBtn) pwBtn.onclick = () => {
+        const pw = document.getElementById('accountNewPassword').value;
+        if (changeAccountPassword(uname, pw)) {
+            showToast('Password updated.', 'border-emerald-400 text-emerald-200');
+            document.getElementById('accountNewPassword').value = '';
+        } else {
+            showToast('Password must be at least 4 characters.', 'border-rose-400 text-rose-200');
+        }
+    };
+}
+
+function renderAdminModal() {
+    if (!isCurrentUserAdmin()) return;
+    const reg = loadAccountRegistry();
+    const me = currentUsername();
+    const rows = Object.keys(reg).sort().map(key => {
+        const acc = reg[key];
+        const save = readAccountSave(key);
+        const worth = accountNetWorth(key);
+        const fleet = save && save.business ? Object.values(save.business).reduce((a, b) => a + (b || 0), 0) : 0;
+        const safeKey = escapeHtml(key);
+        return `
+            <div class="bg-slate-950/75 border ${key === me ? 'border-amber-400/60' : 'border-slate-700'} rounded-2xl p-3.5 space-y-2.5">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <div class="text-sm font-bold text-white">${escapeHtml(acc.displayName || acc.username)} ${key === me ? '<span class="text-amber-300 text-[10px]">(You)</span>' : ''}</div>
+                        <div class="text-[11px] text-slate-400">@${safeKey} · ${acc.isAdmin ? '<span class="text-rose-300">Admin</span>' : 'Captain'} · ${acc.banned ? '<span class="text-rose-400">Suspended</span>' : 'Active'} · ${escapeHtml(new Date(acc.createdAt || Date.now()).toLocaleDateString())}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-mono-num text-xs font-bold text-emerald-300">$${formatMoney(worth)}</div>
+                        <div class="text-[10px] text-slate-500">${fleet} units · ${save && save.caughtSpecies ? Object.keys(save.caughtSpecies).length : 0} species</div>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <input type="number" id="adminCoins_${safeKey}" value="${save ? Math.floor(save.coins || 0) : 0}" min="0" class="w-28 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-xs font-mono-num text-white outline-none" />
+                    <button data-admin-action="setCoins" data-user="${safeKey}" class="px-2.5 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-100 text-[10px] font-bold uppercase cursor-pointer">Set Coins</button>
+                    <input type="number" id="adminGrant_${safeKey}" placeholder="+ coins" class="w-24 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-xs font-mono-num text-white outline-none" />
+                    <button data-admin-action="grant" data-user="${safeKey}" class="px-2.5 py-1.5 rounded-lg bg-emerald-500/20 border border-emerald-400/40 text-emerald-100 text-[10px] font-bold uppercase cursor-pointer">Grant</button>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button data-admin-action="toggleAdmin" data-user="${safeKey}" class="px-2.5 py-1.5 rounded-lg bg-indigo-500/20 border border-indigo-400/40 text-indigo-100 text-[10px] font-bold uppercase cursor-pointer">${acc.isAdmin ? 'Revoke Admin' : 'Make Admin'}</button>
+                    <button data-admin-action="toggleBan" data-user="${safeKey}" class="px-2.5 py-1.5 rounded-lg bg-amber-500/20 border border-amber-400/40 text-amber-100 text-[10px] font-bold uppercase cursor-pointer">${acc.banned ? 'Unsuspend' : 'Suspend'}</button>
+                    <button data-admin-action="resetPass" data-user="${safeKey}" class="px-2.5 py-1.5 rounded-lg bg-sky-500/20 border border-sky-400/40 text-sky-100 text-[10px] font-bold uppercase cursor-pointer">Reset Pass</button>
+                    ${key !== ADMIN_USERNAME ? `<button data-admin-action="delete" data-user="${safeKey}" class="px-2.5 py-1.5 rounded-lg bg-rose-600/30 border border-rose-400/50 text-rose-100 text-[10px] font-bold uppercase cursor-pointer">Delete</button>` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    document.getElementById('adminBody').innerHTML = `
+        <div class="bg-slate-950/70 border border-slate-700 rounded-2xl p-4">
+            <div class="font-accent text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-2">Your Account · Quick Actions</div>
+            <div class="flex flex-wrap items-center gap-2">
+                <input type="number" id="adminSelfGrant" placeholder="+ coins to self" class="w-40 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono-num text-white outline-none" />
+                <button data-admin-action="grantSelf" class="px-3 py-2 rounded-xl bg-emerald-500/20 border border-emerald-400/50 text-emerald-100 text-[10px] font-bold uppercase cursor-pointer">Grant Self</button>
+                <input id="adminSelfPass" type="password" placeholder="New password" class="w-40 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none" />
+                <button data-admin-action="passSelf" class="px-3 py-2 rounded-xl bg-sky-500/20 border border-sky-400/50 text-sky-100 text-[10px] font-bold uppercase cursor-pointer">Change My Password</button>
+            </div>
+        </div>
+        <div class="text-[10px] uppercase tracking-widest font-bold text-rose-300">All Registered Captains (${Object.keys(reg).length})</div>
+        ${rows}
+    `;
+
+    document.getElementById('adminBody').querySelectorAll('button[data-admin-action]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const action = btn.getAttribute('data-admin-action');
+            const user = btn.getAttribute('data-user');
+            if (action === 'grantSelf') {
+                const amt = document.getElementById('adminSelfGrant').value;
+                if (grantCoinsToAccount(me, amt)) showToast(`Granted $${formatMoney(amt)} to your account.`, 'border-emerald-400 text-emerald-200');
+                else showToast('Enter a valid amount.', 'border-rose-400 text-rose-200');
+            } else if (action === 'passSelf') {
+                const pw = document.getElementById('adminSelfPass').value;
+                if (changeAccountPassword(me, pw)) showToast('Your password was changed.', 'border-sky-400 text-sky-200');
+                else showToast('Password must be at least 4 characters.', 'border-rose-400 text-rose-200');
+            } else if (!user) return;
+            else if (action === 'setCoins') {
+                const v = document.getElementById(`adminCoins_${user}`).value;
+                if (setAccountCoins(user, v)) showToast(`Coins set for @${user}.`, 'border-emerald-400 text-emerald-200');
+                else showToast('Invalid amount.', 'border-rose-400 text-rose-200');
+            } else if (action === 'grant') {
+                const v = document.getElementById(`adminGrant_${user}`).value;
+                if (grantCoinsToAccount(user, v)) showToast(`Granted $${formatMoney(v)} to @${user}.`, 'border-emerald-400 text-emerald-200');
+                else showToast('Invalid amount.', 'border-rose-400 text-rose-200');
+            } else if (action === 'toggleAdmin' || action === 'toggleBan') {
+                const cur = loadAccountRegistry();
+                if (!cur[user]) return;
+                if (action === 'toggleAdmin') cur[user].isAdmin = !cur[user].isAdmin;
+                else cur[user].banned = !cur[user].banned;
+                saveAccountRegistry(cur);
+                showToast(`@${user} updated.`, 'border-amber-400 text-amber-200');
+            } else if (action === 'resetPass') {
+                if (changeAccountPassword(user, 'harbor123')) showToast(`@${user} password reset to harbor123.`, 'border-sky-400 text-sky-200');
+            } else if (action === 'delete') {
+                if (deleteAccountByAdmin(user)) showToast(`@${user} deleted.`, 'border-rose-400 text-rose-200');
+                else showToast('Cannot delete the root admin.', 'border-rose-400 text-rose-200');
+            }
+            updateAccountStatusUI();
+            renderAdminModal();
+        });
+    });
+}
+
+function renderWatersModal() {
+    const loc = getActiveLocation();
+    document.getElementById('watersSubtitle').textContent = `Region: ${loc.name} · Deeper waters hold rarer species and larger payouts.`;
+    const worth = getNetWorth();
+    const waters = WATERS.filter(w => w.region === loc.id);
+    const current = player.currentWater || waters[0].id;
+    document.getElementById('watersList').innerHTML = waters.map(w => {
+        const unlocked = worth >= w.unlockNetWorth;
+        const active = w.id === current;
+        return `
+            <div class="bg-slate-950/75 border ${active ? 'border-cyan-400/70 bg-cyan-950/30' : 'border-slate-700'} rounded-2xl p-3.5">
+                <div class="flex items-start justify-between gap-2">
+                    <div>
+                        <div class="text-sm font-bold ${active ? 'text-cyan-200' : 'text-white'}">${escapeHtml(w.name)} ${active ? '<span class="text-[10px] text-cyan-300">· Fishing here</span>' : ''}</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">${escapeHtml(w.subtitle)}</div>
+                    </div>
+                    <span class="font-mono-num text-[10px] px-2 py-1 rounded-lg ${unlocked ? 'bg-emerald-500/15 text-emerald-300' : 'bg-rose-500/15 text-rose-300'}">${unlocked ? 'OPEN' : '$' + formatMoney(w.unlockNetWorth)}</span>
+                </div>
+                <p class="text-[11px] text-slate-300 mt-2 leading-relaxed">${escapeHtml(w.desc)}</p>
+                <div class="flex items-center justify-between mt-2.5 text-[10px] text-slate-400">
+                    <span>Depth: <span class="font-mono-num text-sky-300">${Math.round(w.depthMin * 100)}–${Math.round(w.depthMax * 100)}m</span></span>
+                    <span>Value: <span class="font-mono-num text-amber-300">${w.valueMult.toFixed(2)}x</span></span>
+                </div>
+                <button data-water="${escapeHtml(w.id)}" ${unlocked && !active ? '' : 'disabled'} class="w-full mt-3 py-2 rounded-xl text-[11px] font-bold uppercase tracking-wider cursor-pointer ${active ? 'bg-cyan-500/15 text-cyan-200 border border-cyan-400/40 cursor-default' : unlocked ? 'bg-gradient-to-r from-cyan-400 to-sky-500 text-slate-950' : 'bg-slate-800 text-slate-500 cursor-not-allowed'}">${active ? 'Current Waters' : unlocked ? 'Fish Here' : 'Locked'}</button>
+            </div>
+        `;
+    }).join('');
+
+    document.getElementById('watersList').querySelectorAll('button[data-water]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-water');
+            const w = WATERS.find(x => x.id === id);
+            if (!w || getNetWorth() < w.unlockNetWorth || w.region !== loc.id) return;
+            player.currentWater = id;
+            saveProgress();
+            sound.playSplash();
+            showToast(`Now fishing: ${w.name}`, 'border-cyan-400 text-cyan-200');
+            renderWatersModal();
+            spawnRegionAmbientFish();
+            updateHUD();
+        });
+    });
 }
 
 function renderRiskModal() {
@@ -3555,6 +4337,7 @@ function renderLocationsModal() {
             if (!loc || getNetWorth() < loc.unlockNetWorth) return;
 
             player.currentLocation = id;
+            player.currentWater = `${id}_w0`;
             player.quests = generateTownQuests(id, getNetWorth());
             spawnRegionAmbientFish();
             saveProgress();
@@ -3581,6 +4364,9 @@ function renderDexModal() {
                 <div class="flex items-center justify-between gap-2">
                     <span class="text-xs font-bold ${discovered ? 'text-white' : 'text-slate-500'}">${discovered ? sp.name : 'Undiscovered Species'}</span>
                     <span class="font-mono-num text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">${sp.rarity}</span>
+                </div>
+                <div class="flex items-center justify-center my-1 ${discovered ? '' : 'grayscale opacity-35'}">
+                    ${buildSpeciesPreviewSVG(sp, { className: 'w-28 h-16' })}
                 </div>
                 <div class="text-[11px] text-slate-400 mt-1 font-mono-num">
                     ${discovered ? `Caught: ${count} • Base Est: $${formatMoney(sp.baseValue)}` : `Region: ${sp.region.toUpperCase()}`}
@@ -3654,7 +4440,7 @@ function updateHUD() {
         riskBadge.classList.add('hidden');
     }
 
-    document.getElementById('hudDexCount').textContent = `${Object.keys(player.caughtSpecies).length}/600`;
+    document.getElementById('hudDexCount').textContent = `${Object.keys(player.caughtSpecies).length}/${FISH_SPECIES.length}`;
 
     const harpoonWrap = document.getElementById('harpoonToggleWrap');
     const harpoonUnlocked = (player.upgrades.harpoon || 0) >= 1;
@@ -3720,9 +4506,69 @@ function setupUIEventListeners() {
         saveProgress();
     });
 
+    const accountStatus = () => {
+        updateAccountStatusUI();
+        renderLeaderboardModal();
+    };
+    accountStatus();
+
+    document.getElementById('loginBtn').addEventListener('click', () => {
+        const res = loginAccount(
+            document.getElementById('loginUsernameInput').value,
+            document.getElementById('loginPasswordInput').value
+        );
+        if (!res.ok) {
+            showToast(res.msg, 'border-rose-400 text-rose-200');
+            return;
+        }
+        player = loadProgress();
+        nameInput.value = player.captainName || 'Capt. Vance';
+        renderCharacterSelectionGrid();
+        spawnRegionAmbientFish();
+        accountStatus();
+        updateHUD();
+        showToast(res.msg, 'border-emerald-400 text-emerald-200');
+    });
+
+    document.getElementById('registerBtn').addEventListener('click', () => {
+        const res = registerAccount(
+            document.getElementById('loginUsernameInput').value,
+            document.getElementById('loginPasswordInput').value,
+            document.getElementById('registerDisplayNameInput').value
+        );
+        if (!res.ok) {
+            showToast(res.msg, 'border-rose-400 text-rose-200');
+            return;
+        }
+        setSessionUsername(res.username);
+        SAVE_KEY = saveKeyFor(res.username);
+        player = getDefaultSave();
+        player.captainName = document.getElementById('registerDisplayNameInput').value.trim() || res.username;
+        saveProgress();
+        nameInput.value = player.captainName;
+        renderCharacterSelectionGrid();
+        spawnRegionAmbientFish();
+        accountStatus();
+        updateHUD();
+        showToast(`Welcome aboard, @${res.username}!`, 'border-emerald-400 text-emerald-200');
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        saveProgress();
+        logoutAccount();
+        player = loadProgress();
+        nameInput.value = player.captainName || 'Capt. Vance';
+        renderCharacterSelectionGrid();
+        spawnRegionAmbientFish();
+        accountStatus();
+        updateHUD();
+        showToast('Signed out. Default admin account loaded.', 'border-sky-400 text-sky-200');
+    });
+
     document.getElementById('launchGameBtn').addEventListener('click', () => {
         sound.init();
         document.getElementById('startMenuScreen').classList.add('hidden');
+        updateAccountStatusUI();
         updateHUD();
     });
 
@@ -3895,11 +4741,11 @@ function setupUIEventListeners() {
             icon: 'trophy',
             kicker: 'Global Standings',
             title: 'International Fishery Registry',
-            subtitle: 'Compare your combined treasury, boat hold, and industrial fleet valuation against rival captains.',
+            subtitle: 'Compare your combined treasury, boat hold, and industrial fleet valuation against every registered captain.',
             proceedLabel: 'View Rankings',
             bullets: [
                 'Net Worth combines liquid cash, livewell inventory, and business assets.',
-                'Expand your fleet in Empire HQ to overtake international syndicates.'
+                'Register an account from the Start Menu to appear on the real player leaderboard.'
             ]
         }, () => {
             renderLeaderboardModal();
@@ -3908,6 +4754,30 @@ function setupUIEventListeners() {
     });
     document.getElementById('closeLeaderboardBtn').addEventListener('click', () => {
         document.getElementById('leaderboardModal').classList.add('hidden');
+    });
+
+    // Account, Admin & Waters
+    document.getElementById('openAccountBtn').addEventListener('click', () => {
+        renderAccountModal();
+        document.getElementById('accountModal').classList.remove('hidden');
+    });
+    document.getElementById('closeAccountBtn').addEventListener('click', () => {
+        document.getElementById('accountModal').classList.add('hidden');
+    });
+    document.getElementById('openAdminBtn').addEventListener('click', () => {
+        if (!isCurrentUserAdmin()) return;
+        renderAdminModal();
+        document.getElementById('adminModal').classList.remove('hidden');
+    });
+    document.getElementById('closeAdminBtn').addEventListener('click', () => {
+        document.getElementById('adminModal').classList.add('hidden');
+    });
+    document.getElementById('openWatersBtn').addEventListener('click', () => {
+        renderWatersModal();
+        document.getElementById('watersModal').classList.remove('hidden');
+    });
+    document.getElementById('closeWatersBtn').addEventListener('click', () => {
+        document.getElementById('watersModal').classList.add('hidden');
     });
 
     // Risk & Contraband
@@ -3961,7 +4831,7 @@ function setupUIEventListeners() {
             subtitle: 'Each region features 100 exclusive endemic species, its own Harbor Town, and higher base payouts.',
             proceedLabel: 'Open Sea Charts',
             bullets: [
-                '600 total species across Creek, Lake, Atoll, Fjord, Abyssal Trench & Polar Shelf.',
+                '1,600 total species across 16 regions, from Willow Creek to the Abyssal Void.',
                 'Unlock new waters automatically as your Net Worth grows.'
             ]
         }, () => {
@@ -4380,10 +5250,18 @@ function gameLoop(now) {
     requestAnimationFrame(gameLoop);
 }
 
+function populateDexRegionFilter() {
+    const sel = document.getElementById('dexRegionFilter');
+    if (!sel) return;
+    sel.innerHTML = `<option value="all">All Regions (${FISH_SPECIES.length})</option>` +
+        LOCATIONS.map(loc => `<option value="${loc.id}">${loc.name} (100)</option>`).join('');
+}
+
 function startSereneWaters() {
     resizeCanvas();
     initEnvironment();
     setupUIEventListeners();
+    populateDexRegionFilter();
     renderCharacterSelectionGrid();
     updateHUD();
     if (pendingOfflineReport) {
