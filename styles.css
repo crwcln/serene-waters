@@ -163,3 +163,24 @@ canvas#gameCanvas {
     to { opacity: 1; }
 }
 .backdrop-animate { animation: backdropFade 0.22s ease-out forwards; }
+
+/* Force Landscape Stage (Works even with iOS/Android Portrait Lock ON) */
+#landscapeStage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100dvh;
+    overflow: hidden;
+}
+
+@media screen and (orientation: portrait) {
+    #landscapeStage {
+        width: 100dvh;
+        height: 100vw;
+        transform: rotate(90deg);
+        transform-origin: top left;
+        left: 100vw;
+        top: 0;
+    }
+}
