@@ -4384,6 +4384,50 @@ function startSereneWaters() {
         saveProgress();
         pendingOfflineReport = null;
     }
+    let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    const nativeBtn = document.getElementById('androidNativeInstallBtn');
+    if (nativeBtn) nativeBtn.classList.remove('hidden');
+});
+
+function enforceHomeScreenLaunch() {
+    const ua = navigator.userAgent || '';
+    const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isAndroid = /Android/i.test(ua);
+    const isMobile = isIOS || isAndroid;
+
+    // True when opened from iOS Home Screen OR Android Installed PWA
+    const isStandalone = window.navigator.standalone === true
+        || window.matchMedia('(display-mode: standalone)').matches
+        || window.matchMedia('(display-mode: fullscreen)').matches;
+
+    if (isMobile && !isStandalone) {
+        const gate = document.getElementById('installGateScreen');
+        const stage = document.getElementById('landscapeStage');
+        if (stage) stage.classList.add('hidden');
+        if (gate) gate.classList.remove('hidden');
+
+        if (isIOS) {
+            document.getElementById('iosInstallSteps')?.classList.remove('hidden');
+        } else {
+            document.getElementById('androidInstallSteps')?.classList.remove('hidden');
+            const nativeBtn = document.getElementById('androidNativeInstallBtn');
+            if (nativeBtn) {
+                nativeBtn.addEventListener('click', async () => {
+                    if (!deferredInstallPrompt) return;
+                    deferredInstallPrompt.prompt();
+                    await deferredInstallPrompt.userChoice;
+                    deferredInstallPrompt = null;
+                });
+            }
+        }
+        return false; // Block game loop until launched from Home Screen
+    }
+    return true;
+}
+
     requestAnimationFrame(gameLoop);
 }
 
