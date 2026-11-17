@@ -649,8 +649,12 @@ const FISH_SPECIES = buildRegionFishSpecies();
 const LEGACY_SAVE_KEY = 'serene_waters_tycoon_v3';
 const ACCOUNTS_KEY = 'serene_waters_accounts_v1';
 const SESSION_KEY = 'serene_waters_session_v1';
-const ADMIN_USERNAME = 'admiral';
-const DEFAULT_ADMIN_PASSWORD = 'harbor2026';
+const ADMIN_ENV = (typeof window !== 'undefined' && window.SERENE_ENV) ? window.SERENE_ENV : {};
+const ADMIN_USERNAME = String(ADMIN_ENV.ADMIN_USERNAME || '').trim().toLowerCase();
+const ADMIN_PASSWORD = String(ADMIN_ENV.ADMIN_PASSWORD || '');
+const ADMIN_SALT = String(ADMIN_ENV.ADMIN_SALT || 'serene-admin');
+const ADMIN_ENABLED = !!ADMIN_USERNAME && !!ADMIN_PASSWORD;
+const LOCAL_USERNAME = 'captain';
 let SAVE_KEY = LEGACY_SAVE_KEY;
 
 function hashPassword(pw, salt) {
@@ -664,12 +668,12 @@ function hashPassword(pw, salt) {
 }
 
 function makeDefaultAdminAccount() {
-    const salt = 'serene-admin-salt';
+    const salt = ADMIN_SALT;
     return {
         username: ADMIN_USERNAME,
         displayName: 'Harbormaster',
         salt,
-        passwordHash: hashPassword(DEFAULT_ADMIN_PASSWORD, salt),
+        passwordHash: hashPassword(ADMIN_PASSWORD, salt),
         isAdmin: true,
         banned: false,
         createdAt: Date.now(),
@@ -683,7 +687,7 @@ function loadAccountRegistry() {
         const raw = localStorage.getItem(ACCOUNTS_KEY);
         if (raw) reg = JSON.parse(raw) || {};
     } catch (e) {}
-    if (!reg[ADMIN_USERNAME]) reg[ADMIN_USERNAME] = makeDefaultAdminAccount();
+    if (ADMIN_ENABLED && !reg[ADMIN_USERNAME]) reg[ADMIN_USERNAME] = makeDefaultAdminAccount();
     return reg;
 }
 
@@ -704,26 +708,43 @@ function saveKeyFor(username) {
 }
 
 function currentUsername() {
-    return getSessionUsername() || ADMIN_USERNAME;
+    return getSessionUsername() || (ADMIN_ENABLED ? ADMIN_USERNAME : LOCAL_USERNAME);
 }
 
 function isCurrentUserAdmin() {
-    const acc = loadAccountRegistry()[currentUsername()];
-    return !!(acc && acc.isAdmin && !acc.banned);
+    if (!ADMIN_ENABLED) return false;
+    const me = currentUsername();
+    const acc = loadAccountRegistry()[me];
+    return !!(me === ADMIN_USERNAME && acc && acc.isAdmin && !acc.banned);
 }
 
 function initializeAccounts() {
     const reg = loadAccountRegistry();
+    const fallback = ADMIN_ENABLED ? ADMIN_USERNAME : LOCAL_USERNAME;
+    if (!reg[fallback]) {
+        reg[fallback] = {
+            username: fallback,
+            displayName: ADMIN_ENABLED ? 'Harbormaster' : 'Captain',
+            salt: ADMIN_SALT,
+            passwordHash: hashPassword(ADMIN_ENABLED ? ADMIN_PASSWORD : 'local', ADMIN_SALT),
+            isAdmin: ADMIN_ENABLED,
+            banned: false,
+            createdAt: Date.now(),
+            lastActiveAt: Date.now()
+        };
+    }
     saveAccountRegistry(reg);
     const session = getSessionUsername();
     if (!session || !reg[session] || reg[session].banned) {
         const legacyRaw = localStorage.getItem(LEGACY_SAVE_KEY);
-        const adminKey = saveKeyFor(ADMIN_USERNAME);
-        if (legacyRaw && !localStorage.getItem(adminKey)) {
-            try { localStorage.setItem(adminKey, legacyRaw); } catch (e) {}
+        const fallbackKey = saveKeyFor(fallback);
+        if (legacyRaw && !localStorage.getItem(fallbackKey)) {
+            try { localStorage.setItem(fallbackKey, legacyRaw); } catch (e) {}
         }
-        setSessionUsername(ADMIN_USERNAME);
-        SAVE_KEY = adminKey;
+        setSessionUsername(fallback);
+        SAVE_KEY = fallbackKey;
+        reg[fallback].lastActiveAt = Date.now();
+        saveAccountRegistry(reg);
     } else {
         SAVE_KEY = saveKeyFor(session);
         reg[session].lastActiveAt = Date.now();
@@ -775,8 +796,9 @@ function loginAccount(username, password) {
 }
 
 function logoutAccount() {
-    setSessionUsername(ADMIN_USERNAME);
-    SAVE_KEY = saveKeyFor(ADMIN_USERNAME);
+    const fallback = ADMIN_ENABLED ? ADMIN_USERNAME : LOCAL_USERNAME;
+    setSessionUsername(fallback);
+    SAVE_KEY = saveKeyFor(fallback);
 }
 
 function readAccountSave(username) {
@@ -3147,6 +3169,8 @@ function enterHarborTown(initialTab = null) {
 
 function leaveHarborTown() {
     closeAllModals();
+    townKeys.left = false;
+    townKeys.right = false;
     worldScene = 'SEA';
     document.getElementById('townHudOverlay').classList.add('hidden');
     document.body.classList.remove('in-town');
@@ -4039,14 +4063,14 @@ function getLeaderboardEntries() {
     const reg = loadAccountRegistry();
     const me = currentUsername();
     const entries = Object.keys(reg)
-        .filter(key => !reg[key].banned)
+        .filter(key => !reg[key].banned && !reg[key].isAdmin)
         .map(key => {
             const acc = reg[key];
             const save = readAccountSave(key);
             return {
                 username: key,
                 name: acc.displayName || acc.username || key,
-                title: acc.isAdmin ? 'Harbormaster · Admin' : (save ? getCharacterNameById(save.characterId) : 'Fishery Captain'),
+                title: save ? getCharacterNameById(save.characterId) : 'Fishery Captain',
                 worth: accountNetWorth(key),
                 caught: (save && save.totalCaught) || 0,
                 dex: save && save.caughtSpecies ? Object.keys(save.caughtSpecies).length : 0,
@@ -4057,6 +4081,11 @@ function getLeaderboardEntries() {
     return entries;
 }
 
+function getMyLeaderboardRank() {
+    if (isCurrentUserAdmin()) return 0;
+    return getLeaderboardEntries().findIndex(e => e.isPlayer) + 1;
+}
+
 function getCharacterNameById(id) {
     const c = CHARACTER_ROLES.find(r => r.id === id);
     return c ? c.name : 'Fishery Captain';
@@ -4065,8 +4094,8 @@ function getCharacterNameById(id) {
 function renderLeaderboardModal() {
     const myWorth = getNetWorth();
     const entries = getLeaderboardEntries();
-    const myRank = entries.findIndex(e => e.isPlayer) + 1;
-    document.getElementById('playerGlobalRankText').textContent = `#${myRank || 1}`;
+    const myRank = getMyLeaderboardRank();
+    document.getElementById('playerGlobalRankText').textContent = myRank ? `#${myRank}` : '—';
     document.getElementById('playerGlobalWorthText').textContent = `$${formatMoney(myWorth)}`;
 
     document.getElementById('leaderboardList').innerHTML = entries.map((e, idx) => `
@@ -4094,7 +4123,9 @@ function updateAccountStatusUI() {
     const uname = currentUsername();
     const acc = reg[uname];
     const status = document.getElementById('accountStatusText');
-    if (status) status.textContent = acc ? `Signed in as @${acc.username}${acc.isAdmin ? ' · Admin' : ''}` : 'Not signed in';
+    if (status) status.textContent = acc
+        ? (isCurrentUserAdmin() ? 'Signed in as Harbormaster · Admin' : `Signed in as @${acc.username}`)
+        : 'Not signed in';
     const adminBtn = document.getElementById('openAdminBtn');
     if (adminBtn) adminBtn.classList.toggle('hidden', !isCurrentUserAdmin());
     const nameInput = document.getElementById('captainNameInput');
@@ -4106,13 +4137,14 @@ function renderAccountModal() {
     const uname = currentUsername();
     const acc = reg[uname];
     const save = readAccountSave(uname);
-    const rank = getLeaderboardEntries().findIndex(e => e.isPlayer) + 1;
+    const rank = getMyLeaderboardRank();
+    const adminView = isCurrentUserAdmin();
     document.getElementById('accountBody').innerHTML = `
         <div class="bg-slate-950/70 border border-slate-700 rounded-2xl p-4 space-y-1.5 text-xs">
-            <div class="flex justify-between"><span class="text-slate-400">Username</span><span class="font-mono-num text-sky-200">@${escapeHtml(acc ? acc.username : uname)}</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Username</span><span class="font-mono-num text-sky-200">${adminView ? 'Harbormaster' : '@' + escapeHtml(acc ? acc.username : uname)}</span></div>
             <div class="flex justify-between"><span class="text-slate-400">Display name</span><span class="text-white">${escapeHtml(acc ? acc.displayName : '')}</span></div>
-            <div class="flex justify-between"><span class="text-slate-400">Access level</span><span class="font-bold ${acc && acc.isAdmin ? 'text-rose-300' : 'text-slate-200'}">${acc && acc.isAdmin ? 'Admin' : 'Captain'}</span></div>
-            <div class="flex justify-between"><span class="text-slate-400">Leaderboard rank</span><span class="font-mono-num text-amber-300">#${rank || 1}</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Access level</span><span class="font-bold ${adminView ? 'text-rose-300' : 'text-slate-200'}">${adminView ? 'Admin' : 'Captain'}</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Leaderboard rank</span><span class="font-mono-num text-amber-300">${rank ? '#' + rank : '—'}</span></div>
             <div class="flex justify-between"><span class="text-slate-400">Net worth</span><span class="font-mono-num text-emerald-300">$${formatMoney(getNetWorth())}</span></div>
             <div class="flex justify-between"><span class="text-slate-400">Species discovered</span><span class="font-mono-num text-teal-200">${save && save.caughtSpecies ? Object.keys(save.caughtSpecies).length : 0}/${FISH_SPECIES.length}</span></div>
         </div>
@@ -4150,7 +4182,8 @@ function renderAdminModal() {
     if (!isCurrentUserAdmin()) return;
     const reg = loadAccountRegistry();
     const me = currentUsername();
-    const rows = Object.keys(reg).sort().map(key => {
+    const listedKeys = Object.keys(reg).sort().filter(key => key !== ADMIN_USERNAME);
+    const rows = listedKeys.map(key => {
         const acc = reg[key];
         const save = readAccountSave(key);
         const worth = accountNetWorth(key);
@@ -4194,7 +4227,7 @@ function renderAdminModal() {
                 <button data-admin-action="passSelf" class="px-3 py-2 rounded-xl bg-sky-500/20 border border-sky-400/50 text-sky-100 text-[10px] font-bold uppercase cursor-pointer">Change My Password</button>
             </div>
         </div>
-        <div class="text-[10px] uppercase tracking-widest font-bold text-rose-300">All Registered Captains (${Object.keys(reg).length})</div>
+        <div class="text-[10px] uppercase tracking-widest font-bold text-rose-300">All Registered Captains (${listedKeys.length})</div>
         ${rows}
     `;
 

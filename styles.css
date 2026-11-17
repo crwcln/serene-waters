@@ -145,7 +145,8 @@ input, textarea { user-select: text; -webkit-user-select: text; }
     padding: calc(env(safe-area-inset-top, 0px) + 72px) calc(env(safe-area-inset-right, 0px) + 12px)
              calc(env(safe-area-inset-bottom, 0px) + 12px) calc(env(safe-area-inset-left, 0px) + 12px);
 }
-body.in-town #hudHeader { z-index: 25; }
+body.in-town #hudHeader { z-index: 10; }
+body.in-town #townHudOverlay { z-index: 30; }
 #toastContainer { bottom: calc(env(safe-area-inset-bottom, 0px) + 80px); right: calc(env(safe-area-inset-right, 0px) + 16px); }
 
 .walk-btn { width: 64px; min-height: 64px; touch-action: none; }
