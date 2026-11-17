@@ -2169,6 +2169,7 @@ function drawHarpoonMiniGameHUD() {
 
     const lockedOn = harpoonLockQuality >= 0.72;
     const aimLen = Math.min(620, width * 0.78);
+    const by = Math.max(width < 640 ? 152 : 115, getWaterlineY() - 75);
     const endX = tip.x + Math.cos(harpoonAimAngle) * aimLen;
     const endY = tip.y + Math.sin(harpoonAimAngle) * aimLen;
 
