@@ -1269,12 +1269,18 @@ window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
 function getWaterlineY() {
-    return Math.round(height * 0.36);
+    const isPortrait = height > width;
+    return Math.round(height * (isPortrait ? 0.34 : 0.36));
 }
 
 function getBoatPos() {
-    return { x: Math.max(95, width * 0.14), y: getWaterlineY() - 6 };
+    const isPortrait = width < 640;
+    return {
+        x: isPortrait ? Math.max(62, width * 0.16) : Math.max(95, width * 0.14),
+        y: getWaterlineY() - 6
+    };
 }
+
 
 function getRodTipPos() {
     const boat = getBoatPos();
