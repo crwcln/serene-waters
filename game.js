@@ -4373,6 +4373,7 @@ function gameLoop(now) {
 }
 
 function startSereneWaters() {
+    if (!enforceHomeScreenLaunch()) return;
     resizeCanvas();
     initEnvironment();
     setupUIEventListeners();
