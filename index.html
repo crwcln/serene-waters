@@ -299,7 +299,7 @@
     <!-- FULL-SCREEN TOWN WALKING CONTROLS & INTERACTIVE BUILDING DRAWER (Only visible when in Town Mode) -->
     <div id="townHudOverlay" class="hidden fixed inset-0 z-20 pointer-events-none flex flex-col justify-between">
         <!-- Top: port title + return to sea -->
-        <div class="max-w-7xl mx-auto w-full flex items-center justify-between gap-2 pointer-events-auto">
+        <div class="max-w-7xl mx-auto w-full flex items-center justify-between gap-2">
             <div class="maritime-panel rounded-2xl px-3.5 py-2 flex items-center gap-2.5 border-amber-400/40">
                 <div class="w-8 h-8 rounded-xl bg-amber-400/15 border border-amber-300/40 flex items-center justify-center text-amber-300 shrink-0">
                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"></path><path d="M5 21V7l8-4v18"></path><path d="M19 21V11l-6-4"></path></svg>
@@ -309,7 +309,7 @@
                     <div id="townTitleName" class="font-display text-base sm:text-xl font-bold text-white leading-none">Willow Creek Harbor</div>
                 </div>
             </div>
-            <button id="returnToSeaBtn" class="btn-nautical rounded-2xl px-3.5 sm:px-4 py-2.5 bg-gradient-to-r from-sky-400 to-blue-500 text-slate-950 text-xs font-accent font-extrabold uppercase tracking-wider shadow-lg cursor-pointer flex items-center gap-1.5">
+            <button id="returnToSeaBtn" class="btn-nautical pointer-events-auto rounded-2xl px-3.5 sm:px-4 py-2.5 bg-gradient-to-r from-sky-400 to-blue-500 text-slate-950 text-xs font-accent font-extrabold uppercase tracking-wider shadow-lg cursor-pointer flex items-center gap-1.5">
                     <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M2 20c2-1 4-1 6 0s4 1 6 0 4-1 6 0"></path><path d="M4 16l2-9h12l2 9"></path><path d="M12 7V3"></path></svg>
                     <span>Board Boat</span>
                 </button>
