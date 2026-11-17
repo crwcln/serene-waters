@@ -1266,21 +1266,29 @@ function resizeCanvas() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 window.addEventListener('resize', resizeCanvas);
+window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 250));
+if (window.visualViewport) window.visualViewport.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
+// ---- Mobile helpers ----
+const IS_TOUCH = window.matchMedia('(pointer: coarse)').matches;
+function mobileText(s) {
+    if (!IS_TOUCH) return s;
+    return s.replace(/\s*\(or Spacebar\)/g, '').replace(/Tap or press Spacebar/g, 'Tap').replace(/or Spacebar/g, '');
+}
+function buzz(ms) { try { if (IS_TOUCH && navigator.vibrate) navigator.vibrate(ms); } catch (e) {} }
+// Town is wider than a phone screen: the camera scrolls along the boardwalk.
+const TOWN_MIN_WORLD_W = 1040;
+let townCamX = 0;
+function getTownWorldW() { return Math.max(width, TOWN_MIN_WORLD_W); }
+
 function getWaterlineY() {
-    const isPortrait = height > width;
-    return Math.round(height * (isPortrait ? 0.34 : 0.36));
+    return Math.round(height * 0.36);
 }
 
 function getBoatPos() {
-    const isPortrait = width < 640;
-    return {
-        x: isPortrait ? Math.max(62, width * 0.16) : Math.max(95, width * 0.14),
-        y: getWaterlineY() - 6
-    };
+    return { x: Math.max(95, width * 0.14), y: getWaterlineY() - 6 };
 }
-
 
 function getRodTipPos() {
     const boat = getBoatPos();
@@ -1623,7 +1631,8 @@ function spawnSplashParticles(x, y, count = 10, color = '#bae6fd') {
 function updateActionPrompt(text, dotColorClass = 'bg-emerald-400') {
     const txt = document.getElementById('statusText');
     const dot = document.getElementById('statusDot');
-    if (txt) txt.textContent = text;
+    if (txt) txt.textContent = mobileText(text);
+    if (/^BITE/.test(text)) buzz(40);
     if (dot) dot.className = `w-2.5 h-2.5 rounded-full ${dotColorClass} animate-pulse`;
 }
 
@@ -2169,7 +2178,6 @@ function drawHarpoonMiniGameHUD() {
 
     const lockedOn = harpoonLockQuality >= 0.72;
     const aimLen = Math.min(620, width * 0.78);
-    const by = Math.max(width < 640 ? 152 : 115, getWaterlineY() - 75);
     const endX = tip.x + Math.cos(harpoonAimAngle) * aimLen;
     const endY = tip.y + Math.sin(harpoonAimAngle) * aimLen;
 
@@ -2269,7 +2277,7 @@ function drawReelingMiniGameHUD() {
     const barW = Math.min(390, width - 44);
     const barH = 24;
     const bx = (width - barW) * 0.5;
-    const by = Math.max(width < 640 ? 152 : 115, getWaterlineY() - 75);
+    const by = Math.max(115, getWaterlineY() - 96);
     const cType = activeReelChallenge.id;
     const isCircular = (cType === 'sonar_ring' || cType === 'tide_dial');
     const panelH = isCircular ? 124 : 88;
@@ -2556,6 +2564,8 @@ function enterHarborTown(initialTab = null) {
 
     document.getElementById('bottomControls').classList.add('hidden');
     document.getElementById('townHudOverlay').classList.remove('hidden');
+    document.body.classList.add('in-town');
+    townCamX = Math.max(0, Math.min(getTownWorldW() - width, townPlayerX * getTownWorldW() - width / 2));
     document.getElementById('townTitleName').textContent = getActiveLocation().townName;
 
     if (initialTab) {
@@ -2568,6 +2578,7 @@ function leaveHarborTown() {
     closeAllModals();
     worldScene = 'SEA';
     document.getElementById('townHudOverlay').classList.add('hidden');
+    document.body.classList.remove('in-town');
     document.getElementById('bottomControls').classList.remove('hidden');
     updateActionPrompt('Hold anywhere on the water (or Spacebar) to cast', 'bg-emerald-400');
 }
@@ -2735,6 +2746,12 @@ function updateTownSimulation(dt) {
 
 function renderFullTownScene(timeSec) {
     const loc = getActiveLocation();
+    const worldW = getTownWorldW();
+    const camTarget = Math.max(0, Math.min(worldW - width, townPlayerX * worldW - width / 2));
+    townCamX += (camTarget - townCamX) * 0.18;
+    if (Math.abs(camTarget - townCamX) < 0.5) townCamX = camTarget;
+    ctx.save();
+    ctx.translate(-Math.round(townCamX), 0);
     const deckY = Math.round(height * 0.74);
 
     // 1. Rich Harbor Sky
@@ -2753,10 +2770,10 @@ function renderFullTownScene(timeSec) {
         skyGrad.addColorStop(1, '#1e293b');
     }
     ctx.fillStyle = skyGrad;
-    ctx.fillRect(0, 0, width, deckY);
+    ctx.fillRect(0, 0, worldW, deckY);
 
     // Sun / Moon & Drifting Clouds
-    const sunX = width * 0.82;
+    const sunX = worldW * 0.82;
     const sunY = timeModeIndex === 1 ? deckY - 190 : 110;
     const sunG = ctx.createRadialGradient(sunX, sunY, 8, sunX, sunY, 90);
     sunG.addColorStop(0, timeModeIndex === 2 ? 'rgba(241,245,249,0.9)' : 'rgba(254,243,199,0.95)');
@@ -2782,16 +2799,16 @@ function renderFullTownScene(timeSec) {
     ctx.fillStyle = 'rgba(15, 35, 58, 0.55)';
     ctx.beginPath();
     ctx.moveTo(0, deckY);
-    for (let hx = 0; hx <= width + 140; hx += 140) {
+    for (let hx = 0; hx <= worldW + 140; hx += 140) {
         const hh = 95 + Math.sin(hx * 0.006 + LOCATIONS.indexOf(loc)) * 45;
         ctx.lineTo(hx, deckY - hh);
     }
-    ctx.lineTo(width, deckY);
+    ctx.lineTo(worldW, deckY);
     ctx.closePath();
     ctx.fill();
 
     // Lighthouse on far headland
-    const lhX = width * 0.16;
+    const lhX = worldW * 0.16;
     const lhBaseY = deckY - 95;
     ctx.fillStyle = '#e2e8f0';
     ctx.beginPath();
@@ -2812,24 +2829,24 @@ function renderFullTownScene(timeSec) {
     waterGrad.addColorStop(0.5, loc.midColor);
     waterGrad.addColorStop(1, loc.abyssColor);
     ctx.fillStyle = waterGrad;
-    ctx.fillRect(0, deckY - 8, width, height - deckY + 8);
+    ctx.fillRect(0, deckY - 8, worldW, height - deckY + 8);
 
     // 4. Timber Pier & Cobblestone Quay
-    const pierStartX = width * 0.17;
+    const pierStartX = worldW * 0.17;
     ctx.fillStyle = '#291509';
-    for (let px = pierStartX + 18; px < width; px += 72) {
+    for (let px = pierStartX + 18; px < worldW; px += 72) {
         ctx.fillRect(px, deckY + 14, 14, height - deckY);
     }
     ctx.fillStyle = '#78350f';
-    ctx.fillRect(pierStartX, deckY, width - pierStartX, 18);
+    ctx.fillRect(pierStartX, deckY, worldW - pierStartX, 18);
     ctx.fillStyle = '#1e293b';
-    ctx.fillRect(width * 0.25, deckY + 18, width * 0.75, height - deckY - 18);
+    ctx.fillRect(worldW * 0.25, deckY + 18, worldW * 0.75, height - deckY - 18);
 
     // 5. Storefronts & Moored Boat
     const { building: nearestB, dist: nearestDist } = getNearestTownBuilding();
 
     TOWN_BUILDINGS.forEach(b => {
-        const cx = b.xPct * width;
+        const cx = b.xPct * worldW;
         const isNear = nearestB.id === b.id && nearestDist < 0.09;
 
         if (b.id === 'boat') {
@@ -2851,7 +2868,7 @@ function renderFullTownScene(timeSec) {
             ctx.fillStyle = '#0284c7';
             ctx.fillRect(cx - 20, by - 21, 14, 10);
         } else {
-            const scaleW = Math.min(1, width / 1150);
+            const scaleW = Math.min(1, worldW / 1150);
             const bw = Math.max(110, b.width * (0.76 + scaleW * 0.25));
             const bh = b.height;
             const left = cx - bw * 0.5;
@@ -2900,7 +2917,7 @@ function renderFullTownScene(timeSec) {
 
     // 6. Harbor Gas Lampposts
     [0.24, 0.50, 0.76].forEach(lxPct => {
-        const lx = lxPct * width;
+        const lx = lxPct * worldW;
         ctx.fillStyle = '#1e293b';
         ctx.fillRect(lx - 2.5, deckY - 78, 5, 78);
         const glow = ctx.createRadialGradient(lx, deckY - 82, 2, lx, deckY - 82, 42);
@@ -2914,7 +2931,7 @@ function renderFullTownScene(timeSec) {
 
     // 7. Ambient Strolling Townsfolk with Task Speech Bubbles
     TOWN_VILLAGERS.forEach(v => {
-        const vx = v.xPct * width;
+        const vx = v.xPct * worldW;
         const isClose = Math.abs(townPlayerX - v.xPct) < 0.065;
         const vbob = isClose ? 0 : Math.abs(Math.sin(v.phase)) * 2.5;
         drawBoardwalkCharacter(ctx, vx, deckY - vbob, v.coat, v.hat, 0.92, isClose ? 0 : v.phase);
@@ -2954,7 +2971,7 @@ function renderFullTownScene(timeSec) {
 
     // 8. Playable Character Walking on Boardwalk
     const char = getActiveCharacter();
-    const px = townPlayerX * width;
+    const px = townPlayerX * worldW;
     const moving = Math.abs(townTargetX - townPlayerX) > 0.004 || townKeys.left || townKeys.right;
     const pbob = moving ? Math.abs(Math.sin(townWalkPhase)) * 4 : 0;
     drawBoardwalkCharacter(ctx, px, deckY - pbob, char.coatColor, char.hatColor, 1.08, moving ? townWalkPhase : 0);
@@ -2967,6 +2984,7 @@ function renderFullTownScene(timeSec) {
     ctx.font = 'bold 10px Manrope, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(player.captainName || 'Captain', px, deckY - 56);
+    ctx.restore();
 }
 
 function drawBoardwalkCharacter(ctx, x, footY, coatColor, hatColor, scale, walkPhase) {
@@ -3836,12 +3854,15 @@ function setupUIEventListeners() {
     // Mobile/Touch Walk Controls
     const leftWalkBtn = document.getElementById('townWalkLeftBtn');
     const rightWalkBtn = document.getElementById('townWalkRightBtn');
-    leftWalkBtn.addEventListener('pointerdown', () => { townKeys.left = true; });
-    leftWalkBtn.addEventListener('pointerup', () => { townKeys.left = false; });
-    leftWalkBtn.addEventListener('pointerleave', () => { townKeys.left = false; });
-    rightWalkBtn.addEventListener('pointerdown', () => { townKeys.right = true; });
-    rightWalkBtn.addEventListener('pointerup', () => { townKeys.right = false; });
-    rightWalkBtn.addEventListener('pointerleave', () => { townKeys.right = false; });
+    const bindHold = (btn, key) => {
+        const on = (e) => { e.preventDefault(); try { btn.setPointerCapture(e.pointerId); } catch (err) {} townKeys[key] = true; buzz(8); };
+        const off = () => { townKeys[key] = false; };
+        btn.addEventListener('pointerdown', on);
+        ['pointerup', 'pointercancel', 'pointerleave', 'lostpointercapture'].forEach(t => btn.addEventListener(t, off));
+        btn.addEventListener('contextmenu', (e) => e.preventDefault());
+    };
+    bindHold(leftWalkBtn, 'left');
+    bindHold(rightWalkBtn, 'right');
 
     document.querySelectorAll('.town-tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -3978,7 +3999,7 @@ function setupUIEventListeners() {
             const modalOpen = !document.getElementById('townBuildingModal').classList.contains('hidden')
                 || !document.getElementById('villagerModal').classList.contains('hidden');
             if (modalOpen) return;
-            const clickPct = Math.max(0.09, Math.min(0.93, e.clientX / width));
+            const clickPct = Math.max(0.09, Math.min(0.93, (e.clientX + townCamX) / getTownWorldW()));
             townTargetX = clickPct;
 
             const tappedVillager = TOWN_VILLAGERS.find(v => Math.abs(clickPct - v.xPct) < 0.055);
@@ -4007,31 +4028,18 @@ function setupUIEventListeners() {
         }
     });
 
-    window.addEventListener('pointerup', () => {
+    const endPointer = () => {
         reelHoldingInput = false;
         if (worldScene === 'SEA' && state === GAME_STATE.CHARGING) {
             releaseCast();
         }
+    };
+    window.addEventListener('pointerup', endPointer);
+    window.addEventListener('pointercancel', endPointer);
+    canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) { townKeys.left = false; townKeys.right = false; reelHoldingInput = false; }
     });
-    
-        // Dedicated Mobile Bottom Action Button (Cast / Bite / Reel / Hold / Harpoon)
-    const mobileActionBtn = document.getElementById('mobilePrimaryActionBtn');
-    if (mobileActionBtn) {
-        mobileActionBtn.addEventListener('pointerdown', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (worldScene !== 'SEA') return;
-            if (state === GAME_STATE.IDLE) startChargingCast();
-            else if (state === GAME_STATE.BITE) setHookAndStartReeling();
-            else if (state === GAME_STATE.REELING) {
-                reelHoldingInput = true;
-                handleTimingStrike();
-            } else if (state === GAME_STATE.HARPOONING) {
-                fireHarpoonBolt();
-            }
-        });
-    }
-
 
     // Keyboard Input (Fishing + Full-Screen Town Boardwalk Walking & Interaction)
     window.addEventListener('keydown', (e) => {
@@ -4373,7 +4381,6 @@ function gameLoop(now) {
 }
 
 function startSereneWaters() {
-    if (!enforceHomeScreenLaunch()) return;
     resizeCanvas();
     initEnvironment();
     setupUIEventListeners();
@@ -4385,50 +4392,6 @@ function startSereneWaters() {
         saveProgress();
         pendingOfflineReport = null;
     }
-    let deferredInstallPrompt = null;
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredInstallPrompt = e;
-    const nativeBtn = document.getElementById('androidNativeInstallBtn');
-    if (nativeBtn) nativeBtn.classList.remove('hidden');
-});
-
-function enforceHomeScreenLaunch() {
-    const ua = navigator.userAgent || '';
-    const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    const isAndroid = /Android/i.test(ua);
-    const isMobile = isIOS || isAndroid;
-
-    // True when opened from iOS Home Screen OR Android Installed PWA
-    const isStandalone = window.navigator.standalone === true
-        || window.matchMedia('(display-mode: standalone)').matches
-        || window.matchMedia('(display-mode: fullscreen)').matches;
-
-    if (isMobile && !isStandalone) {
-        const gate = document.getElementById('installGateScreen');
-        const stage = document.getElementById('landscapeStage');
-        if (stage) stage.classList.add('hidden');
-        if (gate) gate.classList.remove('hidden');
-
-        if (isIOS) {
-            document.getElementById('iosInstallSteps')?.classList.remove('hidden');
-        } else {
-            document.getElementById('androidInstallSteps')?.classList.remove('hidden');
-            const nativeBtn = document.getElementById('androidNativeInstallBtn');
-            if (nativeBtn) {
-                nativeBtn.addEventListener('click', async () => {
-                    if (!deferredInstallPrompt) return;
-                    deferredInstallPrompt.prompt();
-                    await deferredInstallPrompt.userChoice;
-                    deferredInstallPrompt = null;
-                });
-            }
-        }
-        return false; // Block game loop until launched from Home Screen
-    }
-    return true;
-}
-
     requestAnimationFrame(gameLoop);
 }
 
@@ -4437,4 +4400,21 @@ if (document.readyState === 'loading') {
 } else {
     startSereneWaters();
 }
-    
+
+// ---- Mobile HUD drawer ----
+(function setupMobileDrawer() {
+    const more = document.getElementById('hudMoreBtn');
+    const drawer = document.getElementById('hudActions');
+    if (!more || !drawer) return;
+    const setOpen = (open) => {
+        drawer.classList.toggle('open', open);
+        more.setAttribute('aria-expanded', String(open));
+    };
+    more.addEventListener('click', (e) => { e.stopPropagation(); setOpen(!drawer.classList.contains('open')); });
+    drawer.addEventListener('click', (e) => { if (e.target.closest('button')) setOpen(false); });
+    document.addEventListener('pointerdown', (e) => {
+        if (drawer.classList.contains('open') && !drawer.contains(e.target) && !more.contains(e.target)) setOpen(false);
+    });
+    window.addEventListener('keydown', (e) => { if (e.code === 'Escape') setOpen(false); });
+    window.addEventListener('resize', () => { if (window.innerWidth >= 640) setOpen(false); });
+})();
