@@ -2268,7 +2268,7 @@ function drawReelingMiniGameHUD() {
     const barW = Math.min(390, width - 44);
     const barH = 24;
     const bx = (width - barW) * 0.5;
-    const by = Math.max(115, getWaterlineY() - 96);
+    const by = Math.max(width < 640 ? 152 : 115, getWaterlineY() - 75);
     const cType = activeReelChallenge.id;
     const isCircular = (cType === 'sonar_ring' || cType === 'tide_dial');
     const panelH = isCircular ? 124 : 88;
