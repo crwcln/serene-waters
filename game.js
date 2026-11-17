@@ -1723,20 +1723,18 @@ let harpoonTargetPos = { x: 0, y: 0, vx: 75, vy: 30 };
 let harpoonWaveTimer = 0;
 let harpoonLockQuality = 0; // 0..1 proximity of aim line to Leviathan center
 
-// Multi-Challenge Reeling Mini-Game State (6 Distinct Regular Fish Catch Challenges!)
-// 1. 'classic_bar'   : Classic Oscillating Timing Bar
-// 2. 'sonar_ring'    : Contracting Sonar Pulse Ring (Tap as shrinking ring enters target annulus)
-// 3. 'tension_hold'  : Deep-Current Tension Hold (Hold/Tap to keep buoyancy float inside green drift zone)
-// 4. 'triple_rhythm' : Swift Barracuda Triple-Beat Cadence (Hit 3 rhythmic beat markers in sequence)
-// 5. 'dual_pendulum' : Twin-Current Counter-Needle Sync (Strike when both needles cross the central lock)
-// 6. 'tide_dial'     : Rotating Compass Tide Dial (Tap as spinning compass hand sweeps through arc)
+// Multi-Challenge Reeling Mini-Game State (10 Distinct Regular Fish Catch Challenges!)
 const REEL_CHALLENGE_TYPES = [
-    { id: 'classic_bar',   label: 'PRECISION TIMING BAR', prompt: 'Tap or press Spacebar when the needle enters the GREEN or GOLD zone!' },
-    { id: 'sonar_ring',    label: 'SONAR PULSE LOCK',     prompt: 'Tap or press Spacebar as the shrinking white ring aligns with the GREEN target ring!' },
-    { id: 'tension_hold',  label: 'CURRENT DRIFT HOLD',   prompt: 'HOLD or tap repeatedly to keep the bobber float inside the GREEN current band!' },
-    { id: 'triple_rhythm', label: 'TRIPLE-BEAT CADENCE',  prompt: 'Tap or press Spacebar on each of the 3 glowing rhythm pulses as the sweep crosses!' },
-    { id: 'dual_pendulum', label: 'TWIN-NEEDLE SYNC',     prompt: 'Tap or press Spacebar when BOTH opposing needles converge inside the center lock!' },
-    { id: 'tide_dial',     label: 'COMPASS TIDE SWEEP',   prompt: 'Tap or press Spacebar when the rotating compass hand sweeps across the GREEN arc!' }
+    { id: 'classic_bar',    label: 'PRECISION TIMING BAR',  prompt: 'Tap or press Spacebar when the needle enters the GREEN or GOLD zone!' },
+    { id: 'sonar_ring',     label: 'SONAR PULSE LOCK',      prompt: 'Tap or press Spacebar as the shrinking white ring aligns with the GREEN target ring!' },
+    { id: 'tension_hold',   label: 'CURRENT DRIFT HOLD',    prompt: 'HOLD or tap repeatedly to keep the bobber float inside the GREEN current band!' },
+    { id: 'triple_rhythm',  label: 'TRIPLE-BEAT CADENCE',   prompt: 'Tap or press Spacebar on each of the 3 glowing rhythm pulses as the sweep crosses!' },
+    { id: 'dual_pendulum',  label: 'TWIN-NEEDLE SYNC',      prompt: 'Tap or press Spacebar when BOTH opposing needles converge inside the center lock!' },
+    { id: 'tide_dial',      label: 'COMPASS TIDE SWEEP',    prompt: 'Tap or press Spacebar when the rotating compass hand sweeps across the GREEN arc!' },
+    { id: 'drifting_zone',  label: 'DRIFTING STRIKE ZONE',  prompt: 'The strike zone drifts with the current—tap when the needle slides inside it!' },
+    { id: 'current_ladder', label: 'CURRENT LADDER CLIMB',  prompt: 'Hit the 3 ladder rungs in order as the needle sweeps past each one!' },
+    { id: 'undertow_pull',  label: 'UNDERTOW COUNTER-PULL',  prompt: 'The undertow lifts your float—HOLD to pull it down into the GREEN band!' },
+    { id: 'wind_gauge',     label: 'CROSSWIND GAUGE',       prompt: 'Gusts change the needle speed—tap inside the GREEN window to reel in!' }
 ];
 let activeReelChallenge = REEL_CHALLENGE_TYPES[0];
 let reelProgress = 0.25;
@@ -1751,6 +1749,8 @@ let reelDialAngle = 0;
 let reelDialTargetAngle = 1.2;
 let reelHoldingInput = false;
 let reelRhythmIndex = 0;
+let reelZoneDir = 1;
+let reelWindPhase = 0;
 let reelRhythmHitMask = [false, false, false];
 let reelCombo = 0;
 let reelFeedbackText = '';
@@ -1826,7 +1826,7 @@ function initEnvironment() {
     spawnRegionAmbientFish();
 }
 
-function spawnRegionAmbientFish() {
+function getRegionalFishPool() {
     const loc = getActiveLocation();
     const water = getActiveWater();
     const regionalPool = FISH_SPECIES.filter(f =>
@@ -1834,27 +1834,38 @@ function spawnRegionAmbientFish() {
         f.maxDepth >= water.depthMin &&
         f.minDepth <= water.depthMax
     );
-    const usablePool = regionalPool.length > 0 ? regionalPool : FISH_SPECIES.filter(f => f.region === loc.id);
+    return regionalPool.length > 0 ? regionalPool : FISH_SPECIES.filter(f => f.region === loc.id);
+}
+
+function createAmbientFish(enterFromEdge = false) {
+    const water = getActiveWater();
+    const pool = getRegionalFishPool();
     const waterTop = getWaterlineY() + 32;
     const waterBot = height - 34;
+    const species = pickWeightedSpecies(pool);
+    const depthRatio = Math.max(water.depthMin, Math.min(water.depthMax, species.minDepth + Math.random() * (species.maxDepth - species.minDepth)));
+    const dir = Math.random() < 0.5 ? 1 : -1;
+    return {
+        species,
+        x: enterFromEdge ? (dir > 0 ? -35 - Math.random() * 60 : width + 35 + Math.random() * 60) : Math.random() * width,
+        y: waterTop + depthRatio * Math.max(80, waterBot - waterTop),
+        depthRatio,
+        dir,
+        speed: species.isSwift ? (115 + Math.random() * 65) : (26 + Math.random() * 34),
+        tailPhase: Math.random() * Math.PI * 2,
+        attracted: false
+    };
+}
 
-    ambientFish = Array.from({ length: 22 }, () => {
-        const species = pickWeightedSpecies(usablePool);
-        const depthRatio = Math.max(water.depthMin, Math.min(water.depthMax, species.minDepth + Math.random() * (species.maxDepth - species.minDepth)));
-        const y = waterTop + depthRatio * Math.max(80, waterBot - waterTop);
-        const dir = Math.random() < 0.5 ? 1 : -1;
-        const baseSpeed = species.isSwift ? (115 + Math.random() * 65) : (26 + Math.random() * 34);
-        return {
-            species,
-            x: Math.random() * width,
-            y,
-            depthRatio,
-            dir,
-            speed: baseSpeed,
-            tailPhase: Math.random() * Math.PI * 2,
-            attracted: false
-        };
-    });
+function spawnRegionAmbientFish() {
+    ambientFish = Array.from({ length: 22 }, () => createAmbientFish(false));
+}
+
+function replaceCaughtFish(caughtFish) {
+    if (!caughtFish) return;
+    const idx = ambientFish.indexOf(caughtFish);
+    if (idx === -1) return;
+    ambientFish[idx] = createAmbientFish(true);
 }
 
 function pickWeightedSpecies(pool) {
@@ -1906,9 +1917,15 @@ function releaseCast() {
     const maxX = Math.max(minX + 120, width - 65);
 
     const effectivePower = Math.min(1, castPower * reachMult);
-    bobber.targetX = minX + effectivePower * (maxX - minX);
-    bobber.depthRatio = Math.min(0.96, 0.15 + effectivePower * 0.81);
+    const laneRoll = Math.random();
+    const laneBias = laneRoll < 0.34 ? -0.24 : laneRoll > 0.66 ? 0.24 : 0;
+    const aimNoise = (Math.random() - 0.5) * 0.18;
+    const aimFraction = Math.max(0.05, Math.min(0.99, effectivePower + laneBias + aimNoise));
+    const depthNoise = (Math.random() - 0.5) * 0.2;
+    bobber.targetX = minX + aimFraction * (maxX - minX);
+    bobber.depthRatio = Math.max(0.12, Math.min(0.96, 0.14 + effectivePower * 0.72 + depthNoise));
     bobber.targetY = waterTop + bobber.depthRatio * (waterBot - waterTop);
+    bobber.driftX = (Math.random() - 0.5) * 22;
 
     const tip = getRodTipPos();
     bobber.x = tip.x;
@@ -1966,6 +1983,8 @@ function setHookAndStartReeling() {
     reelDialTargetAngle = 1.2 + Math.random() * 3.4;
     reelHoldingInput = false;
     reelRhythmIndex = 0;
+    reelZoneDir = Math.random() < 0.5 ? 1 : -1;
+    reelWindPhase = Math.random() * Math.PI * 2;
     reelRhythmHitMask = [false, false, false];
     reelCombo = 0;
     reelFeedbackTimer = 0;
@@ -2030,17 +2049,22 @@ function handleTimingStrike() {
     const powerMult = rodTier ? rodTier.power : 1.0;
     const cType = activeReelChallenge.id;
 
-    // For Tension Hold, tapping gives an upward buoyancy boost while holding sustains lift
+    // Hold-style challenges: tapping nudges the float, holding sustains lift
     if (cType === 'tension_hold') {
         reelNeedlePos = Math.min(0.95, reelNeedlePos + 0.14);
         sound.playTone(520, 'sine', 0.06, 0.08);
+        return;
+    }
+    if (cType === 'undertow_pull') {
+        reelNeedlePos = Math.max(0.05, reelNeedlePos - 0.14);
+        sound.playTone(410, 'sine', 0.06, 0.08);
         return;
     }
 
     let inCrit = false;
     let inZone = false;
 
-    if (cType === 'classic_bar') {
+    if (cType === 'classic_bar' || cType === 'drifting_zone' || cType === 'wind_gauge') {
         const dist = Math.abs(reelNeedlePos - reelZoneCenter);
         inCrit = dist <= reelCritWidth * 0.5;
         inZone = dist <= reelZoneWidth * 0.5;
@@ -2065,6 +2089,19 @@ function handleTimingStrike() {
             if (reelRhythmHitMask.every(Boolean)) {
                 inCrit = true;
                 reelRhythmHitMask = [false, false, false];
+            }
+        }
+    } else if (cType === 'current_ladder') {
+        const rungs = [0.22, 0.5, 0.78];
+        const target = rungs[reelRhythmIndex % rungs.length];
+        const dist = Math.abs(reelNeedlePos - target);
+        if (dist <= reelZoneWidth * 0.5) {
+            inZone = true;
+            if (dist <= reelCritWidth * 0.5) inCrit = true;
+            reelRhythmIndex++;
+            if (reelRhythmIndex >= rungs.length) {
+                inCrit = true;
+                reelRhythmIndex = 0;
             }
         }
     } else if (cType === 'dual_pendulum') {
@@ -2103,6 +2140,7 @@ function handleTimingStrike() {
         }
     } else {
         reelCombo = 0;
+        if (cType === 'current_ladder') reelRhythmIndex = 0;
         reelProgress -= (0.12 + sp.fightStrength * 0.05);
         reelFeedbackText = 'MISSED TIMING!';
         reelFeedbackColor = '#f87171';
@@ -2226,7 +2264,7 @@ function completeCatch(fishEntity) {
         showToast(`COAST GUARD INSPECTION! Illegal catch confiscated & fined $${formatMoney(fine)}!`, 'border-rose-500 text-rose-200');
         saveProgress();
         updateHUD();
-        spawnRegionAmbientFish();
+        replaceCaughtFish(hookedFish);
         resetToIdle();
         return;
     }
@@ -2235,7 +2273,7 @@ function completeCatch(fishEntity) {
     spawnSplashParticles(bobber.x, bobber.y, 18, '#fbbf24');
     saveProgress();
     updateHUD();
-    spawnRegionAmbientFish();
+    replaceCaughtFish(hookedFish);
     resetToIdle();
     openCatchModal(catchRecord, sp, isNewSpecies);
 }
@@ -2893,6 +2931,20 @@ function drawReelingMiniGameHUD() {
                 ctx.beginPath();
                 ctx.roundRect(bx + bPos * barW - zw * 0.5, by + 2, zw, barH - 4, 6);
                 ctx.fill();
+            });
+        } else if (cType === 'current_ladder') {
+            [0.22, 0.5, 0.78].forEach((bPos, idx) => {
+                const active = idx === (reelRhythmIndex % 3);
+                const cleared = idx < (reelRhythmIndex % 3);
+                const zw = reelZoneWidth * 0.85 * barW;
+                ctx.fillStyle = cleared ? 'rgba(56, 189, 248, 0.45)' : active ? 'rgba(251, 191, 36, 0.55)' : 'rgba(100, 116, 139, 0.4)';
+                ctx.beginPath();
+                ctx.roundRect(bx + bPos * barW - zw * 0.5, by + 2, zw, barH - 4, 6);
+                ctx.fill();
+                ctx.fillStyle = active ? '#fbbf24' : '#94a3b8';
+                ctx.font = 'bold 10px "IBM Plex Mono", monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText(String(idx + 1), bx + bPos * barW, by + barH - 6);
             });
         } else {
             const center = cType === 'dual_pendulum' ? 0.5 : reelZoneCenter;
@@ -5055,6 +5107,7 @@ function updateSimulation(dt, timeSec) {
             spawnSplashParticles(bobber.x, bobber.y, 12, '#bae6fd');
             updateActionPrompt('Waiting for a visible fish to approach your lure...', 'bg-sky-400');
         } else {
+            bobber.targetX = Math.max(getBoatPos().x + 70, Math.min(width - 45, bobber.targetX + (bobber.driftX || 0) * dt));
             bobber.x += (dx / dist) * 560 * dt;
             bobber.y += (dy / dist) * 560 * dt;
         }
@@ -5108,14 +5161,14 @@ function updateSimulation(dt, timeSec) {
         const cType = activeReelChallenge.id;
         const needleSpeed = (1.10 + sp.fightStrength * 0.90) * ev.needleMult;
 
-        if (cType === 'tension_hold') {
-            // Buoyancy float drifts down with current, rises when holding input
-            const lift = reelHoldingInput ? 0.72 : -0.48;
+        if (cType === 'tension_hold' || cType === 'undertow_pull') {
+            const isUnder = cType === 'undertow_pull';
+            const lift = reelHoldingInput ? (isUnder ? -0.72 : 0.72) : (isUnder ? 0.48 : -0.48);
             reelNeedlePos = Math.max(0.04, Math.min(0.96, reelNeedlePos + lift * dt));
             const inZone = Math.abs(reelNeedlePos - reelZoneCenter) <= reelZoneWidth * 0.55;
             if (inZone) {
                 reelProgress += (0.34 - sp.fightStrength * 0.08) * dt;
-                reelFeedbackText = 'HOLDING TENSION!';
+                reelFeedbackText = isUnder ? 'COUNTERING UNDERTOW!' : 'HOLDING TENSION!';
                 reelFeedbackColor = '#34d399';
                 reelFeedbackTimer = 0.25;
                 if (reelProgress >= 1) {
@@ -5125,6 +5178,21 @@ function updateSimulation(dt, timeSec) {
             } else {
                 reelProgress = Math.max(0.02, reelProgress - 0.14 * dt);
             }
+        } else if (cType === 'drifting_zone') {
+            reelZoneCenter += reelZoneDir * (0.17 + sp.fightStrength * 0.12) * dt;
+            if (reelZoneCenter >= 0.72) { reelZoneCenter = 0.72; reelZoneDir = -1; }
+            if (reelZoneCenter <= 0.28) { reelZoneCenter = 0.28; reelZoneDir = 1; }
+            reelNeedlePos += reelNeedleDir * needleSpeed * dt;
+            if (reelNeedlePos >= 1) { reelNeedlePos = 1; reelNeedleDir = -1; }
+            else if (reelNeedlePos <= 0) { reelNeedlePos = 0; reelNeedleDir = 1; }
+            reelProgress = Math.max(0.02, reelProgress - (0.042 + sp.fightStrength * 0.035) * dt);
+        } else if (cType === 'wind_gauge') {
+            reelWindPhase += dt * (2.3 + sp.fightStrength);
+            const gust = 0.55 + 0.55 * (0.5 + 0.5 * Math.sin(reelWindPhase));
+            reelNeedlePos += reelNeedleDir * needleSpeed * gust * dt;
+            if (reelNeedlePos >= 1) { reelNeedlePos = 1; reelNeedleDir = -1; }
+            else if (reelNeedlePos <= 0) { reelNeedlePos = 0; reelNeedleDir = 1; }
+            reelProgress = Math.max(0.02, reelProgress - (0.042 + sp.fightStrength * 0.035) * dt);
         } else if (cType === 'sonar_ring') {
             reelRingRadius -= (0.68 + sp.fightStrength * 0.35) * ev.needleMult * dt;
             if (reelRingRadius <= 0.08) reelRingRadius = 1.0;
